@@ -1,0 +1,16 @@
+body{
+    font-size: 30px;
+}
+
+@font-face{
+    font-family:"MyFont";
+    src:url('./laurenscript-webfont.woff') format('woff'),
+    url('./laurenscript-webfont.woff2') format('woff2');
+    font-weight:bold;
+    font-style:normal;
+}
+.hello{
+    font-family:'MyFont';
+    font-size: 40px;
+    /*background:url('./SOS.png')*/
+}
