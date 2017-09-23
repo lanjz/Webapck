@@ -12,3 +12,12 @@ loaders: [{
       loader: 'babel-loader'    
   }]  
 ```
+
+### IE下不支持Promise 解决方法
+
+```javascript
+npm install --save-dev babel-polyfill
+
+//main.js 头部import babel-polyfill
+import 'babel-polyfill'
+```
