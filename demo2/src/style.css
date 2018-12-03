@@ -1,3 +1,14 @@
+:root {
+    --text-color: blue;
+}
+html{
+    font-size: 1000PX
+}
 .hello {
-    color: red;
+    color: var(--text-color);
+    border: solid 1px red;
+    display: flex;
+    border-radius: 50%;
+    font-size: 30px;
+    width: 200px;
 }
