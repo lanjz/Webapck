@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "module": "es2015",
+    "target": "es5",
+    "jsx": "react",
+    "strict": false,
+    "moduleResolution": "node",
+    "allowJs": true,
+    "noImplicitAny": false,
+    "typeRoots": ["./types","node_modules/vue/types"],
+    "experimentalDecorators": true,
+  }
+}

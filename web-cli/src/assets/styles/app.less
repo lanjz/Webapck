@@ -1,0 +1,55 @@
+*{
+  box-sizing: border-box;
+}
+.app{
+  border: 1px solid #d7dde4;
+  background: @primary-color;
+  position: absolute;
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  font-size: 14px;
+  letter-spacing: 0.4px;
+}
+
+.flex{
+  display: flex;
+}
+.flex-1{
+  flex: 1;
+}
+.flex.direction-column{
+  flex-direction: column;
+}
+.flex.align-items-center{
+  align-items: center;
+}
+.flex.justify-content-space-between{
+  justify-content: space-between;
+}
+.absolute-full{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.relative{
+  position: relative;
+}
+
+.default-btn{
+  border: solid 1px @border-color;
+  background: #fff;
+  border-radius: 5px;
+  padding: 2px 8px;
+}
+
+.default-btn.act{
+  border: solid 1px @primary-color;
+  background: @primary-color;
+  color: #fff;
+}

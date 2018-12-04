@@ -1,9 +1,9 @@
 <template>
-    <CodeEdit v-model="codeValue"></CodeEdit>
+    <!--<CodeEdit v-model="codeValue"></CodeEdit>-->
 </template>
 
 <script>
-  import CodeEdit from '../components/CodeEdit'
+  // import CodeEdit from '../components/CodeEdit'
 
   export default {
     name: 'hello-world',
@@ -13,7 +13,7 @@
       }
     },
     components: {
-      CodeEdit
+      // CodeEdit
     },
     watch: {
       codeValue(value) {
