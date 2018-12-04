@@ -6,5 +6,9 @@
         "useBuiltIns": "usage"
       }
     ]
-  ]
+  ],
+  "plugins": [["import", {
+    "libraryName": "iview",
+    "libraryDirectory": "src/components"
+  }]]
 }
