@@ -1,14 +1,18 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
-    "module": "es2015",
-    "target": "es5",
-    "jsx": "react",
+    "module": "commonjs",  // 生成符合commonjs规范的文件
+    "outDir": "./dist/", // 指定输出文件的根目录
+    "target": "es6",  // 生成代码所需要兼容的版本
+    "jsx": "react", // 用于指定按照何种方式生成jsx代码，可选react和preserve
     "strict": false,
-    "moduleResolution": "node",
-    "allowJs": true,
-    "noImplicitAny": false,
+    "moduleResolution": "node", // 指定模块的解析策略
+    "allowJs": true, // 当设置为true时，js文件也会被编译
+    "lib": [ "es2015" ],
+    "noImplicitAny": false, // noImplicitAny 当表达式和申明 类型为any时，是否需要发出警告，设置true，则不警告
     "typeRoots": ["./types","node_modules/vue/types"],
-    "experimentalDecorators": true,
-  }
+    "experimentalDecorators": true // 设置为true，则支持ES7的装饰器特性
+  },
+  "include": [  // TS编译哪里的文件
+    "server/**/*"
+  ]
 }
