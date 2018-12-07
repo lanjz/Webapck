@@ -1,8 +1,7 @@
 import db from '../db'
 
 async function add(userInfo) {
-  const result = db.insert('user', userInfo)
-  return result
+  return await db.insertOne('user', userInfo)
 }
 
 export default {

@@ -1,29 +1,45 @@
 const MongoClient = rquire('mongodb').MongoClient
-const dburl = 'mongodb://127.0.0.1:27017/test'
+const DBURL = 'mongodb://127.0.0.1:27017/test'
 
 // 连接数据库
 
-function _connectDB(callback) {
-  MongoClient.connect(dburl, (err, db) =>{
-    callback(err, db)
-  })
-}
-
-// 插入数据
-
-module.export.insertOne = function (collection, json, callback) {
-  _connectDB((err, db) => {
-    if(err){
-      console.log('数据库连接失败')
-      return
-    }
-    db.collection(collection).insertOne(json,(err,result)=>{
-      callback(err,result)
-      db.close()
+function _connectDB() {
+  return new Promise((resolve, _) => {
+    MongoClient.connect(DBURL, (err, db) =>{
+      resolve({err, db})
     })
   })
 }
 
+function returnResult(err = null, result = '') {
+  return {
+    err,
+    result
+  }
+}
+
+// 插入数据
+function insertOne(collection, json) {
+  return new Promise(async (resolve, reject) => {
+    const {err, db} = await _connectDB()
+    if(err) {
+      resolve(returnResult('数据库连接失败'))
+      db.close()
+    } else {
+      db.collection(collection).insertOne(json,(err,result)=>{
+        resolve(returnResult(err, result))
+        db.close()
+      })
+    }
+
+  })
+}
+
+export default {
+  insertOne
+}
+
+/*
 //删除函数的封装
 module.exports.deleteMany = function(collection,json,callback){
   _connectDB(function(err,db){
@@ -104,3 +120,4 @@ module.exports.find = function(collection,json,C,D){
     })
   })
 }
+*/
