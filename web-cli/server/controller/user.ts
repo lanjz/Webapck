@@ -1,4 +1,7 @@
 import modalUser from '../modal/user'
+
+modalUser.add()
+
 async function add(ctx, next) {
   ctx.send(0, '测试', ctx.request.query)
 }
