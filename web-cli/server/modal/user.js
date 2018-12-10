@@ -1,13 +1,7 @@
-import * as mongoose from 'mongoose'
-
-const DBURL = 'mongodb://127.0.0.1:27017/test'
-mongoose.connect(DBURL, { useNewUrlParser: true })
-
+import baseModel from './base'
 import validator from '../utils/validator'
 
 const VALIDA_ERR_MSG = '{PATH} = {VALUE} : Format error'
-
-function test() {}
 
 /**
  * @param {Function} f 校验函数
@@ -22,11 +16,13 @@ function definedValidate(f) {
   }
 }
 
-class UserModel {
+class UserModel extends baseModel{
   constructor() {
-    this.name = 'user'
-    this.schema = new mongoose.Schema(this.getSchema())
-    this.model = mongoose.model(this.name, this.schema)
+    super()
+    this.assectPath = '_id userName email sex'
+  }
+  getName() {
+    return 'user'
   }
   getSchema() {
     return {
@@ -58,24 +54,44 @@ class UserModel {
     }
   }
   save(data) {
-    console.log('this.model', this.model)
-    this.model.save(data)
+    const user = new this.model(data)
+    const error = user.validateSync()
+    if (error) {
+      return Promise.reject(error.message)
+    }
+    return user.save()
+  }
+  listCount() {
+    return this.model.countDocuments();
+  }
+  findByEmail(email) {
+    return this.model.findOne({ email })
   }
 
-}
+  findById(id) {
+    return this.model.findOne({
+      _id: id
+    });
+  }
+  list() {
+    return this.model.find().select(this.assectPath).exec();  //显示id name email role
+  }
+  listWithPaging(page, limit) {
+    page = parseInt(page);
+    limit = parseInt(limit);
+    return this.model.find().sort({ _id: -1 }).skip((page - 1) * limit).limit(limit).select(this.assectPath).exec();
+  }
+  del(id) {
+    return this.model.remove({
+      _id: id
+    });
+  }
 
-async function add() {
-  const user = new UserModel()
-  const result = user.save({
-    userName: 'lanjz',
-    passWord: '1234',
-    email: 'lanjz',
-    sex: 1
-  })
-  console.info(result)
+  update(id, data) {
+    return this.model.update({
+      _id: id
+    }, data);
+  }
 }
-
-export default {
-  add
-}
+export default UserModel
 
