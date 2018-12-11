@@ -16,7 +16,6 @@ const app = new Koa()
 // app.use(hotMiddleware(compiler))
 
 middleware(app)
-
 // mon()
 
 app.listen(3000, () => {

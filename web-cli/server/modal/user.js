@@ -19,7 +19,7 @@ function definedValidate(f) {
 class UserModel extends baseModel{
   constructor() {
     super()
-    this.assectPath = '_id userName email sex'
+    this.assectPath = '_id userName email sex createTime updateTime'
   }
   getName() {
     return 'user'
@@ -49,8 +49,8 @@ class UserModel extends baseModel{
       avatar: {
         type: String,
       },
-      createDate: { type: Date, default: Date.now },
-      updateDate: { type: Date, default: Date.now },
+      createTime: { type: Number},
+      updateTime: { type: Number, default: (new Date()).getTime() },
     }
   }
   save(data) {
@@ -64,33 +64,31 @@ class UserModel extends baseModel{
   listCount() {
     return this.model.countDocuments();
   }
-  findByEmail(email) {
-    return this.model.findOne({ email })
-  }
+  findByEmail(email) {return this.model.findOne({ email }).select(this.assectPath).exec()}
 
   findById(id) {
-    return this.model.findOne({
-      _id: id
-    });
+    return this.model.findOne({ _id: id }).select(this.assectPath).exec();
   }
   list() {
+    console.log('AA134')
     return this.model.find().select(this.assectPath).exec();  //显示id name email role
   }
-  listWithPaging(page, limit) {
-    page = parseInt(page);
+  listWithPaging(start=0, limit=10) {
+    console.log('134')
+    start = parseInt(start);
     limit = parseInt(limit);
-    return this.model.find().sort({ _id: -1 }).skip((page - 1) * limit).limit(limit).select(this.assectPath).exec();
+    return this.model.find().sort({ _id: -1 }).skip(start).limit(limit).select(this.assectPath).exec();
   }
   del(id) {
-    return this.model.remove({
-      _id: id
-    });
+    return this.model.remove({ _id: id });
   }
 
-  update(id, data) {
-    return this.model.update({
-      _id: id
-    }, data);
+  updateOne(id, data) {
+    return this.model.updateOne({ _id: id }, data);
+  }
+  // 会有提示，所以暂时不用这个方法了
+  findOneAndUpdate(id, data) {
+    return this.model.findOneAndUpdate({ _id: id }, data, { new: true }).select(this.assectPath).exec();
   }
 }
 export default UserModel

@@ -5,6 +5,10 @@ class baseModel{
   constructor() {
     this.name = this.getName()
     this.schema = new mongoose.Schema(this.getSchema())
+    this.schema.pre('save', function(next){
+      if(!this.createTime) this.createTime = (new Date()).getTime()
+      next()
+    })
     this.model = dbModel(this.name, this.schema)
   }
   /**

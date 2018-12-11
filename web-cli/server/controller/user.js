@@ -44,42 +44,97 @@ result2.then(res =>{
     console.log('err', err)
   })*/
 /**
- * @deal: '/user'
+ * @POST: '/user'
  * */
-function add(ctx, next) {
-  // ctx.send(0, '测试', ctx.request.query)
-  console.log('ctx.request.body', ctx.request.query)
-  // ctx.request.body支持获取到x-www.form-urlencoded和application/json格式的参数
-  console.log('ctx.request.body', ctx.request.body)
+async function add(ctx, next) {
+  try{
+    const { errMsg, filterData } = filterParams(ctx.request.body, user.getSchema())
+    if(errMsg) {
+      ctx.send(2,  ctx.request.body, errMsg,)
+    } else {
+      const result = await user.save(filterData)
+      ctx.send(1,  { id: result._id}, '')
+    }
+  } catch (e) {
+    ctx.send(2,  '', e)
+  }
+}
 
-  const { errMsg, filterData } = filterParams(ctx.request.body, user.getSchema())
-  if(errMsg) {
-    ctx.send(0,  ctx.request.body, errMsg,)
-  } else {
-      user.save(filterData)
-        .then(res =>{
-          console.log('ers', res)
-          ctx.send(0,  res, '添加成功')
-        })
-        .catch(err => {
-          console.log('err', err)
-          ctx.send(0,  '', err)
-        })
+/**
+ * @GET: '/user'
+ * */
+async function find(ctx) {
+  const { start, limit } = ctx.request.query
+  // 如果没有提供start和limit则查找全部
+  const findFn = (!start && !limit) ? user.list() : user.listWithPaging(start, limit)
+  try{
+    const result = await Promise.all([findFn, user.listCount()])
+    ctx.send(1,  {
+      data: result[0],
+      count: result[1]
+    }, '')
+  } catch (e) {
+    ctx.send(2,  '', e)
   }
 }
 
 
-function find(ctx) {
-  user.list()
-    .then(res =>{
-      ctx.send(0,  res, '查房')
-    })
-    .catch(err => {
-      ctx.send(0,  '', err)
-    })
+/**
+ * @GET: '/user:id'
+ * */
+async function findById(ctx) {
+  const { id } = ctx.params
+  if(!id) {
+    ctx.send(2,  '', 'id不能为空')
+  }
+  try{
+    const result = await user.findById(id)
+    ctx.send(1,  result, '')
+  } catch (e) {
+    const errMsg = e.name === 'CastError' ? `id为${id}的用户不存在` : e.message
+    ctx.send(2,  '', errMsg)
+  }
 }
+
+/**
+ * @DELETE: '/user'
+ * */
+async function deleteById(ctx) {
+  const { id } = ctx.request.body
+  if(!id) {
+    ctx.send(2,  '', 'id不能为空')
+  }
+  try{
+    await user.del(id)
+    ctx.send(1,  '删除成功', '')
+  } catch (e) {
+    const errMsg = e.name === 'CastError' ? `id为${id}的用户不存在` : e.message
+    ctx.send(2,  '', errMsg)
+  }
+}
+
+/**
+ * @PUT: '/user'
+ * */
+async function modify(ctx) {
+  const { id } = ctx.request.body
+  if(!id) {
+    ctx.send(2,  '', 'id不能为空')
+  }
+  try{
+    const result = await user.findOneAndUpdate(id, ctx.request.body)
+    ctx.send(1,  result, '')
+  } catch (e) {
+    const errMsg = e.name === 'CastError' ? `id为${id}的用户不存在` : e.message
+    ctx.send(2,  '', errMsg)
+  }
+}
+
 
 export default {
   add,
-  find
+  find,
+  findById,
+  modify,
+  deleteById
 }
