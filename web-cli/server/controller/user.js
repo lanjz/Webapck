@@ -24,7 +24,6 @@ async function login(ctx, next) {
   }
   try {
     const result = await userAuth({userName, passWord})
-    console.log('result', result)
     if(!result) {
       ctx.send(3,  '', '登录失败：账号或密码错误')
     } else {
@@ -71,13 +70,11 @@ async function add(ctx, next) {
  * @GET: '/user' 获取用户列表
  * */
 async function find(ctx, next) {
-  console.log('ctx,id', ctx.state.userId)
   const { start, limit } = ctx.request.query
   // 如果没有提供start和limit则查找全部
   const findFn = (!start && !limit) ? user.list() : user.listWithPaging(start, limit)
   try{
     const result = await Promise.all([findFn, user.listCount()])
-    console.log('result', result)
     ctx.send(1,  {
       data: result[0],
       count: result[1]

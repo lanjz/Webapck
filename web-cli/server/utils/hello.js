@@ -9,7 +9,7 @@ import userCtrl from '../controller/user'
  * */
 
 function dealError(e, tart) {
-  console.log('e', e.message)
+  console.log('e', e)
   let errMsg = ''
   if(e.code === 11000) {
     errMsg = `${tart}已经存在`
@@ -69,7 +69,6 @@ async function checkAuth(ctx, next) {
   if(ctx.url.indexOf('/api') > -1) {
     const getHelloToken = ctx.cookies.get('helloToken')
     const { clientUser, clientPass } = decodeLoginTypeJwt(getHelloToken)
-    console.log('clientUser', clientUser, clientPass)
     if(!clientUser||!clientPass) {
       ctx.send(2, '', 'Token无效请重新登录')
       return
