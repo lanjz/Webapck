@@ -1,3 +1,10 @@
+/**
+ * @retCode
+ * 1： 请求成功
+ * 2： 一般错误
+ * 3： 账号密码错误
+ * */
+
 function params(ctx) {
   console.log('ctx', ctx)
 }

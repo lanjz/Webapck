@@ -1,54 +1,59 @@
-import modalUser from '../modal/user'
-import validator from '../utils/validator'
+import hello from '../utils/hello'
+import ModalUser from '../modal/user'
 
-const user  = new modalUser()
+// import crypto from '../utils/crypto'
 
+const user  = new ModalUser()
+
+function userAuth({userName, passWord}) {
+  return user.findOne({userName, passWord})
+}
 
 /**
- * @param { Object } params, { Object } model  根据model过滤参数
- * @return { Object } filterData 返回过滤后的参数
+ * @POST：'/login' 登录验证
  * */
-function filterParams(params, model) {
-  const errMsg = []
-  const filterData = {}
-  Object.keys(model).forEach((item, index) => {
-    if(model[item].required&&!params[item]) {
-      errMsg.push(`${item}不能为空`)
-    } else if(model[item]['validate']&&!validator[item](params[item])) {
-      console.log('134')
-      errMsg.push(`${item}格式不正确`)
+async function login(ctx, next) {
+  const { userName, passWord } = ctx.request.body
+  if(!userName) {
+    ctx.send(2, '', '用户名不能为空')
+    return
+  }
+  if(!passWord) {
+    ctx.send(2, '', '密码不能为空')
+    return
+  }
+  try {
+    const result = await userAuth({userName, passWord})
+    console.log('result', result)
+    if(!result) {
+      ctx.send(3,  '', '登录失败：账号或密码错误')
     } else {
-      filterData[item] = params[item]
+      const userTokenInfo = {
+        clientUser: result.userName,
+        clientPass: result.passWord
+      }
+      ctx.cookies.set(
+        'helloToken',
+        hello.encodeLoginTypeJwt(userTokenInfo),
+        {
+          path: '/'
+        }
+      )
+      ctx.send(1,  '', '登录成功')
     }
-  })
-  console.log('errMsg', errMsg)
-  return { errMsg: errMsg.join(), filterData }
+  } catch (e) {
+    ctx.send(2,  '', hello.dealError(e))
+  } finally {
+    next()
+  }
 }
 
-const testUser = {
-  userName: 'lanjz2',
-  passWord: '1234',
-  email: 'lanjz',
-  sex: 1
-}
-
-/*const result = user.list()
-result.then(res =>{
-  console.log('res', res)
-})*/
-/*const result2 = user.save(testUser)
-result2.then(res =>{
-  console.log('res', res)
-})
-  .catch(err => {
-    console.log('err', err)
-  })*/
 /**
- * @POST: '/user'
+ * @POST: '/user' 添加客户
  * */
 async function add(ctx, next) {
   try{
-    const { errMsg, filterData } = filterParams(ctx.request.body, user.getSchema())
+    const { errMsg, filterData } = hello.filterParams(ctx.request.body, user.getSchema())
     if(errMsg) {
       ctx.send(2,  ctx.request.body, errMsg,)
     } else {
@@ -56,33 +61,38 @@ async function add(ctx, next) {
       ctx.send(1,  { id: result._id}, '')
     }
   } catch (e) {
-    ctx.send(2,  '', e)
+    ctx.send(2,  '', hello.dealError(e, ctx.request.body.userName))
+  } finally {
+    next()
   }
 }
 
 /**
- * @GET: '/user'
+ * @GET: '/user' 获取用户列表
  * */
-async function find(ctx) {
+async function find(ctx, next) {
+  console.log('ctx,id', ctx.state.userId)
   const { start, limit } = ctx.request.query
   // 如果没有提供start和limit则查找全部
   const findFn = (!start && !limit) ? user.list() : user.listWithPaging(start, limit)
   try{
     const result = await Promise.all([findFn, user.listCount()])
+    console.log('result', result)
     ctx.send(1,  {
       data: result[0],
       count: result[1]
     }, '')
   } catch (e) {
-    ctx.send(2,  '', e)
+    ctx.send(2,  '', hello.dealError(e))
+  } finally {
+    next()
   }
 }
 
-
 /**
- * @GET: '/user:id'
+ * @GET: '/user:id' 获取某个用户
  * */
-async function findById(ctx) {
+async function findById(ctx, next) {
   const { id } = ctx.params
   if(!id) {
     ctx.send(2,  '', 'id不能为空')
@@ -91,15 +101,16 @@ async function findById(ctx) {
     const result = await user.findById(id)
     ctx.send(1,  result, '')
   } catch (e) {
-    const errMsg = e.name === 'CastError' ? `id为${id}的用户不存在` : e.message
-    ctx.send(2,  '', errMsg)
+    ctx.send(2,  '', hello.dealError(e, id))
+  } finally {
+    await next()
   }
 }
 
 /**
- * @DELETE: '/user'
+ * @DELETE: '/user' 删除用户
  * */
-async function deleteById(ctx) {
+async function deleteById(ctx, next) {
   const { id } = ctx.request.body
   if(!id) {
     ctx.send(2,  '', 'id不能为空')
@@ -108,15 +119,16 @@ async function deleteById(ctx) {
     await user.del(id)
     ctx.send(1,  '删除成功', '')
   } catch (e) {
-    const errMsg = e.name === 'CastError' ? `id为${id}的用户不存在` : e.message
-    ctx.send(2,  '', errMsg)
+    ctx.send(2,  '', hello.dealError(e, id))
+  } finally {
+    await next()
   }
 }
 
 /**
- * @PUT: '/user'
+ * @PUT: '/user' 修改用户
  * */
-async function modify(ctx) {
+async function modify(ctx, next) {
   const { id } = ctx.request.body
   if(!id) {
     ctx.send(2,  '', 'id不能为空')
@@ -125,16 +137,18 @@ async function modify(ctx) {
     const result = await user.findOneAndUpdate(id, ctx.request.body)
     ctx.send(1,  result, '')
   } catch (e) {
-    const errMsg = e.name === 'CastError' ? `id为${id}的用户不存在` : e.message
-    ctx.send(2,  '', errMsg)
+    ctx.send(2,  '', hello.dealError(e, id))
+  } finally {
+    await next()
   }
 }
-
 
 export default {
   add,
   find,
   findById,
   modify,
-  deleteById
+  deleteById,
+  login,
+  userAuth
 }

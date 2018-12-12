@@ -28,6 +28,7 @@ class UserModel extends baseModel{
     return {
       userName: {
         type: String,
+        unique:  true,
         required: true,
         validate: definedValidate(validator.userName)
       },
@@ -70,7 +71,6 @@ class UserModel extends baseModel{
     return this.model.findOne({ _id: id }).select(this.assectPath).exec();
   }
   list() {
-    console.log('AA134')
     return this.model.find().select(this.assectPath).exec();  //显示id name email role
   }
   listWithPaging(start=0, limit=10) {
@@ -80,9 +80,11 @@ class UserModel extends baseModel{
     return this.model.find().sort({ _id: -1 }).skip(start).limit(limit).select(this.assectPath).exec();
   }
   del(id) {
-    return this.model.remove({ _id: id });
+    return this.model.deleteOne({ _id: id });
   }
-
+  findOne(query) {
+    return this.model.findOne(query)
+  }
   updateOne(id, data) {
     return this.model.updateOne({ _id: id }, data);
   }

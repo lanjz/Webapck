@@ -3,6 +3,8 @@ import userCtl from './controller/user'
 
 const router = new Router({prefix: '/api'})
 
+
+router.post('/login', userCtl.login)
 router.get('/user', userCtl.find)
 router.get('/user/:id', userCtl.findById)
 router.delete('/user', userCtl.deleteById)

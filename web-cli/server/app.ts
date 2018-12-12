@@ -1,5 +1,5 @@
 import * as Koa from 'koa'
-import middleware from './middleware'
+import middleware from './middleware/index'
 
 import  mon from './db/mon.js'
 
@@ -19,5 +19,5 @@ middleware(app)
 // mon()
 
 app.listen(3000, () => {
-  console.log('Example app listening on port 3000!\n')
+  // console.log('Example app listening on port 3000!\n')
 })
