@@ -10,7 +10,7 @@ import userCtrl from '../controller/user'
 
 function dealError(e, tart) {
   console.log('e', e)
-  let errMsg = ''
+  let errMsg = e
   if(e.code === 11000) {
     errMsg = `${tart}已经存在`
   } else if(e.name === 'CastError'){
@@ -67,7 +67,7 @@ function decodeLoginTypeJwt(token) {
 
 async function checkAuth(ctx, next) {
   console.log('ctx.url', ctx.url)
-  if(ctx.url!=='/api/login'&&ctx.url.indexOf('/api') > -1) {
+  if(ctx.url!=='/api/login'&&ctx.url!=='/api/user'&&ctx.url.indexOf('/api') > -1) {
     const getHelloToken = ctx.cookies.get('helloToken') || 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjbGllbnRVc2VyIjoibGFubGFuMiIsImNsaWVudFBhc3MiOiJsYW5sYW4ifQ.e9ZdIOH-4Km2aiBt4CoVPcnpP9_AMQKfxCGca0odtic'
     if(!getHelloToken) {
       ctx.send(4, '', '请登录')
@@ -79,7 +79,7 @@ async function checkAuth(ctx, next) {
       return
     }
     try{
-      const result = await userCtrl.userAuth({userName: clientUser, passWord: clientPass})
+      const result = await userCtrl.userAuth({ userName: clientUser, passWord: clientPass })
       if(!result) {
         ctx.send(2, '', 'Token无效请重新登录')
         return

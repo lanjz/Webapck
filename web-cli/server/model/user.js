@@ -72,7 +72,7 @@ class UserModel extends baseModel{
     return this.model.updateOne({ _id: id }, data);
   }
   findOneAndUpdate(id, data) {
-    return this.model.findOneAndUpdate({ id: id }, data, { new: true }).select(this.assectPath).exec();
+    return this.model.findOneAndUpdate({ _id: id }, data, { new: true }).select(this.assectPath).exec();
   }
 }
 export default UserModel

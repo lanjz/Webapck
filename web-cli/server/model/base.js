@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import dbModel from '../db/index'
 import { VALIDA_ERR_MSG } from '../utils/CONST'
 
-class baseModel{
+class baseModel {
   constructor() {
     this.name = this.getName()
     this.schema = new mongoose.Schema(this.getSchema())
@@ -15,11 +15,11 @@ class baseModel{
   /**
    * 获取collection的schema结构
    */
-  getSchema(){
+  getSchema() {
     console.log('Model Class need getSchema function', 'error');
   }
 
-  getName(){
+  getName() {
     console.log('Model Class need name', 'error');
   }
   save(data) {
@@ -31,11 +31,11 @@ class baseModel{
     return model.save()
   }
   del(id) {
-    console.log('Object(id)', Object(id))
-    return this.model.deleteOne({ id: Object(id) });
+    return this.model.deleteOne({ _id: Object(id) });
   }
   findOneAndUpdate(id, data) {
-    return this.model.findOneAndUpdate({ _id: id }, data, { new: true }).select(this.assectPath).exec();
+    return this.model.findOneAndUpdate({ _id: id }, data, { new: true })
+      .select(this.assectPath).exec();
   }
 }
 

@@ -27,6 +27,8 @@ module.exports = {
     'comma-dangle': 0,
     'linebreak-style': 0,
     'no-console': 0,
+    'keyword-spacing': 0,
+    'space-before-blocks': 0,
     'import/no-webpack-loader-syntax': 0,
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0

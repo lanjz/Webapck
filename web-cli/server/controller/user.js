@@ -3,7 +3,7 @@ import ModalUser from '../model/user'
 
 // import crypto from '../utils/crypto'
 
-const user  = new ModalUser()
+const user = new ModalUser()
 
 function userAuth({userName, passWord}) {
   return user.findOne({userName, passWord})
@@ -23,9 +23,9 @@ async function login(ctx, next) {
     return
   }
   try {
-    const result = await userAuth({userName, passWord})
+    const result = await userAuth({userName, passWord })
     if(!result) {
-      ctx.send(3,  '', '登录失败：账号或密码错误')
+      ctx.send(3, '', '登录失败：账号或密码错误')
     } else {
       const userTokenInfo = {
         clientUser: result.userName,
@@ -38,10 +38,10 @@ async function login(ctx, next) {
           path: '/'
         }
       )
-      ctx.send(1,  '', '登录成功')
+      ctx.send(1, '', '登录成功')
     }
   } catch (e) {
-    ctx.send(2,  '', hello.dealError(e))
+    ctx.send(2, '', hello.dealError(e))
   } finally {
     next()
   }
@@ -54,13 +54,13 @@ async function add(ctx, next) {
   try{
     const { errMsg, filterData } = hello.filterParams(ctx.request.body, user.getSchema())
     if(errMsg) {
-      ctx.send(2,  ctx.request.body, errMsg,)
+      ctx.send(2, ctx.request.body, errMsg,)
     } else {
       const result = await user.save(filterData)
-      ctx.send(1,  { id: result._id}, '')
+      ctx.send(1, { id: result._id }, '')
     }
   } catch (e) {
-    ctx.send(2,  '', hello.dealError(e, ctx.request.body.userName))
+    ctx.send(2, '', hello.dealError(e, ctx.request.body.userName))
   } finally {
     next()
   }
@@ -80,7 +80,7 @@ async function find(ctx, next) {
       count: result[1]
     }, '')
   } catch (e) {
-    ctx.send(2,  '', hello.dealError(e))
+    ctx.send(2, '', hello.dealError(e))
   } finally {
     next()
   }
@@ -92,13 +92,13 @@ async function find(ctx, next) {
 async function findById(ctx, next) {
   const { id } = ctx.params
   if(!id) {
-    ctx.send(2,  '', 'id不能为空')
+    ctx.send(2, '', 'id不能为空')
   }
   try{
     const result = await user.findById(id)
-    ctx.send(1,  result, '')
+    ctx.send(1, result, '')
   } catch (e) {
-    ctx.send(2,  '', hello.dealError(e, id))
+    ctx.send(2, '', hello.dealError(e, id))
   } finally {
     await next()
   }
@@ -110,13 +110,17 @@ async function findById(ctx, next) {
 async function deleteById(ctx, next) {
   const { id } = ctx.request.body
   if(!id) {
-    ctx.send(2,  '', 'id不能为空')
+    ctx.send(2, '', 'id不能为空')
   }
   try{
-    await user.del(id)
-    ctx.send(1,  '删除成功', '')
+    const result = await user.del(id)
+    if(result.n){
+      ctx.send(1, '', '删除成功')
+    } else {
+      ctx.send(1, '', '没有要删除的用户')
+    }
   } catch (e) {
-    ctx.send(2,  '', hello.dealError(e, id))
+    ctx.send(2, '', hello.dealError(e, id))
   } finally {
     await next()
   }
@@ -127,15 +131,18 @@ async function deleteById(ctx, next) {
  * */
 async function modify(ctx, next) {
   const { id } = ctx.request.body
-  if(!id) {
-    ctx.send(2,  '', 'id不能为空')
+  if(!id){
+    ctx.send(2, '', 'id不能为空')
   }
-  try{
+  try {
     const result = await user.findOneAndUpdate(id, ctx.request.body)
-    console.log('result', result)
-    ctx.send(1,  result, '')
+    if (!result) {
+      ctx.send(2, '', '没有要修改的用户')
+    } else {
+      ctx.send(1, result, '')
+    }
   } catch (e) {
-    ctx.send(2,  '', hello.dealError(e, id))
+    ctx.send(2, '', hello.dealError(e, id))
   } finally {
     await next()
   }

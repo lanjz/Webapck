@@ -1,10 +1,10 @@
-import baseModel, { definedValidate } from './base'
+import baseModel from './base'
 
 
 class noteCategoryModel extends baseModel{
   constructor() {
     super()
-    this.assectPath = '_id name parentId createTime updateTime'
+    this.assectPath = '_id name parentId'
   }
   getName() {
     return 'category'
@@ -20,22 +20,21 @@ class noteCategoryModel extends baseModel{
         required: true,
       },
       parentId: {
-        type: Number,
+        type: String,
         required: true,
-        default: 0
+        default: 'root'
       },
       category: {
         type: String,
-        required: true,
         default: 'notes'
       },
-      createTime: { type: Number},
+      createTime: { type: Number },
       updateTime: { type: Number, default: (new Date()).getTime() },
     }
   }
 
   list(userId, parentId) {
-    return this.model.find({userId, parentId, category: 'notes'}).select(this.assectPath).exec();  //显示id name email role
+    return this.model.find({ userId, parentId, category: 'notes' }).select(this.assectPath).exec()  // 显示id name email role
   }
 
 
