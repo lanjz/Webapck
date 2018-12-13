@@ -66,8 +66,13 @@ function decodeLoginTypeJwt(token) {
 }
 
 async function checkAuth(ctx, next) {
-  if(ctx.url.indexOf('/api') > -1) {
-    const getHelloToken = ctx.cookies.get('helloToken')
+  console.log('ctx.url', ctx.url)
+  if(ctx.url!=='/api/login'&&ctx.url.indexOf('/api') > -1) {
+    const getHelloToken = ctx.cookies.get('helloToken') || 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjbGllbnRVc2VyIjoibGFubGFuMiIsImNsaWVudFBhc3MiOiJsYW5sYW4ifQ.e9ZdIOH-4Km2aiBt4CoVPcnpP9_AMQKfxCGca0odtic'
+    if(!getHelloToken) {
+      ctx.send(4, '', '请登录')
+      return
+    }
     const { clientUser, clientPass } = decodeLoginTypeJwt(getHelloToken)
     if(!clientUser||!clientPass) {
       ctx.send(2, '', 'Token无效请重新登录')
@@ -79,7 +84,7 @@ async function checkAuth(ctx, next) {
         ctx.send(2, '', 'Token无效请重新登录')
         return
       }
-      ctx.state.userId = result._id
+      ctx.state.curUser = result
       await next()
     } catch(e) {
       ctx.send(2, '', dealError(e))

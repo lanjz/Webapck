@@ -1,20 +1,6 @@
-import baseModel from './base'
+import baseModel, { definedValidate } from './base'
 import validator from '../utils/validator'
 
-const VALIDA_ERR_MSG = '{PATH} = {VALUE} : Format error'
-
-/**
- * @param {Function} f 校验函数
- * @return <Object> mongoose.Schema.validate
- * */
-function definedValidate(f) {
-  return {
-    validator(v) {
-      return f(v)
-    },
-    message: VALIDA_ERR_MSG
-  }
-}
 
 class UserModel extends baseModel{
   constructor() {
@@ -71,7 +57,7 @@ class UserModel extends baseModel{
     return this.model.findOne({ _id: id }).select(this.assectPath).exec();
   }
   list() {
-    return this.model.find().select(this.assectPath).exec();  //显示id name email role
+    return this.model.find().select(this.assectPath).exec();
   }
   listWithPaging(start=0, limit=10) {
     console.log('134')
@@ -79,18 +65,14 @@ class UserModel extends baseModel{
     limit = parseInt(limit);
     return this.model.find().sort({ _id: -1 }).skip(start).limit(limit).select(this.assectPath).exec();
   }
-  del(id) {
-    return this.model.deleteOne({ _id: id });
-  }
   findOne(query) {
     return this.model.findOne(query)
   }
   updateOne(id, data) {
     return this.model.updateOne({ _id: id }, data);
   }
-  // 会有提示，所以暂时不用这个方法了
   findOneAndUpdate(id, data) {
-    return this.model.findOneAndUpdate({ _id: id }, data, { new: true }).select(this.assectPath).exec();
+    return this.model.findOneAndUpdate({ id: id }, data, { new: true }).select(this.assectPath).exec();
   }
 }
 export default UserModel

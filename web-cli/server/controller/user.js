@@ -1,5 +1,5 @@
 import hello from '../utils/hello'
-import ModalUser from '../modal/user'
+import ModalUser from '../model/user'
 
 // import crypto from '../utils/crypto'
 
@@ -132,6 +132,7 @@ async function modify(ctx, next) {
   }
   try{
     const result = await user.findOneAndUpdate(id, ctx.request.body)
+    console.log('result', result)
     ctx.send(1,  result, '')
   } catch (e) {
     ctx.send(2,  '', hello.dealError(e, id))
