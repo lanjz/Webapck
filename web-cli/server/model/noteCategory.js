@@ -1,4 +1,4 @@
-import baseModel from './base'
+import baseModel from './BaseModel'
 
 
 class noteCategoryModel extends baseModel{

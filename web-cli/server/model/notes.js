@@ -1,4 +1,4 @@
-import baseModel, { definedValidate } from './base'
+import baseModel, { definedValidate } from './BaseModel'
 import validator from '../utils/validator'
 
 class NotesModel extends baseModel{

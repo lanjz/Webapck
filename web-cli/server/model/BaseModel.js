@@ -22,6 +22,9 @@ class baseModel {
   getName() {
     console.log('Model Class need name', 'error');
   }
+  listCount() {
+    return this.model.countDocuments();
+  }
   save(data) {
     const model = new this.model(data)
     const error = model.validateSync()
@@ -30,15 +33,32 @@ class baseModel {
     }
     return model.save()
   }
-  del(id) {
-    return this.model.deleteOne({ _id: Object(id) });
+
+  findOne(query) {
+    return this.model.findOne(query)
+  }
+  updateOne(id, data) {
+    return this.model.updateOne({ _id: id }, data);
   }
   findOneAndUpdate(id, data) {
     return this.model.findOneAndUpdate({ _id: id }, data, { new: true })
       .select(this.assectPath).exec();
   }
+  list() {
+    return this.model.find().select(this.assectPath).exec()
+  }
+  listWithPaging(start=0, limit=0) {
+    start = parseInt(start);
+    limit = parseInt(limit);
+    return this.model.find().sort({ _id: -1 }).skip(start).limit(limit).select(this.assectPath).exec()
+  }
+  findById(id) {
+    return this.model.findOne({ _id: id }).select(this.assectPath).exec()
+  }
+  del(id) {
+    return this.model.deleteOne({ _id: Object(id) })
+  }
 }
-
 
 /**
  * @param {Function} f 校验函数

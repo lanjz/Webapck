@@ -1,4 +1,5 @@
 import hello from '../utils/hello'
+import BaseCrl from './BaseCtl'
 import ModalUser from '../model/user'
 
 // import crypto from '../utils/crypto'
@@ -9,48 +10,58 @@ function userAuth({userName, passWord}) {
   return user.findOne({userName, passWord})
 }
 
-/**
- * @POST：'/login' 登录验证
- * */
-async function login(ctx, next) {
-  const { userName, passWord } = ctx.request.body
-  if(!userName) {
-    ctx.send(2, '', '用户名不能为空')
-    return
+class UserCtl extends BaseCrl {
+  /**
+   * @POST：'/login' 登录验证
+   * */
+  getModel() {
+    return new ModalUser()
   }
-  if(!passWord) {
-    ctx.send(2, '', '密码不能为空')
-    return
+  userAuth({userName, passWord}) {
+    this.model.findOne({userName, passWord})
   }
-  try {
-    const result = await userAuth({userName, passWord })
-    if(!result) {
-      ctx.send(3, '', '登录失败：账号或密码错误')
-    } else {
-      const userTokenInfo = {
-        clientUser: result.userName,
-        clientPass: result.passWord
-      }
-      ctx.cookies.set(
-        'helloToken',
-        hello.encodeLoginTypeJwt(userTokenInfo),
-        {
-          path: '/'
-        }
-      )
-      ctx.send(1, '', '登录成功')
+  async login(ctx, next) {
+    const { userName, passWord } = ctx.request.body
+    if(!userName) {
+      ctx.send(2, '', '用户名不能为空')
+      return
     }
-  } catch (e) {
-    ctx.send(2, '', hello.dealError(e))
-  } finally {
-    next()
+    if(!passWord) {
+      ctx.send(2, '', '密码不能为空')
+      return
+    }
+    try {
+      const result = await this.userAuth({userName, passWord })
+      if(!result) {
+        ctx.send(3, '', '登录失败：账号或密码错误')
+      } else {
+        const userTokenInfo = {
+          clientUser: result.userName,
+          clientPass: result.passWord
+        }
+        ctx.cookies.set(
+          'helloToken',
+          hello.encodeLoginTypeJwt(userTokenInfo),
+          {
+            path: '/'
+          }
+        )
+        ctx.send(1, '', '登录成功')
+      }
+    } catch (e) {
+      ctx.send(2, '', hello.dealError(e))
+    } finally {
+      next()
+    }
   }
 }
+
+
 
 /**
  * @POST: '/user' 添加客户
  * */
-async function add(ctx, next) {
+/*async function add(ctx, next) {
   try{
     const { errMsg, filterData } = hello.filterParams(ctx.request.body, user.getSchema())
     if(errMsg) {
@@ -64,15 +75,15 @@ async function add(ctx, next) {
   } finally {
     next()
   }
-}
+}*/
 
 /**
  * @GET: '/user' 获取用户列表
  * */
-async function find(ctx, next) {
-  const { start, limit } = ctx.request.query
+/*async function find(ctx, next) {
+  const { start = 0, limit = 0 } = ctx.request.query
   // 如果没有提供start和limit则查找全部
-  const findFn = (!start && !limit) ? user.list() : user.listWithPaging(start, limit)
+  const findFn = user.listWithPaging(start, limit)
   try{
     const result = await Promise.all([findFn, user.listCount()])
     ctx.send(1,  {
@@ -84,11 +95,12 @@ async function find(ctx, next) {
   } finally {
     next()
   }
-}
+}*/
 
 /**
  * @GET: '/user:id' 获取某个用户
  * */
+/*
 async function findById(ctx, next) {
   const { id } = ctx.params
   if(!id) {
@@ -103,11 +115,12 @@ async function findById(ctx, next) {
     await next()
   }
 }
+*/
 
 /**
  * @DELETE: '/user' 删除用户
  * */
-async function deleteById(ctx, next) {
+/*async function deleteById(ctx, next) {
   const { id } = ctx.request.body
   if(!id) {
     ctx.send(2, '', 'id不能为空')
@@ -124,11 +137,12 @@ async function deleteById(ctx, next) {
   } finally {
     await next()
   }
-}
+}*/
 
 /**
  * @PUT: '/user' 修改用户
  * */
+/*
 async function modify(ctx, next) {
   const { id } = ctx.request.body
   if(!id){
@@ -147,13 +161,6 @@ async function modify(ctx, next) {
     await next()
   }
 }
+*/
 
-export default {
-  add,
-  find,
-  findById,
-  modify,
-  deleteById,
-  login,
-  userAuth
-}
+export default new UserCtl()
