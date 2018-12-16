@@ -23,7 +23,7 @@ router.post('/book', bookCtl.add)
 router.get('/catalog', catalogCtl.find)
 router.delete('/catalog', catalogCtl.deleteById)
 router.put('/catalog', catalogCtl.modify)
-router.post('/catalog', catalogCtl.beforeAdd)
+router.post('/catalog', catalogCtl.add)
 
 router.get('/qa', async (ctx, next) => {
   ctx.body = 'Hello World2222!'

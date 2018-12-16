@@ -48,8 +48,8 @@ class baseModel {
     return this.model.findOneAndUpdate({ _id: id, ...query }, data, { new: true })
       .select(this.assectPath).exec();
   }
-  list() {
-    return this.model.find().select(this.assectPath).exec()
+  list(query = {}) {
+    return this.model.find(query).select(this.assectPath).exec()
   }
   listWithPaging(start = 0, limit = 0, query = {}) {
     start = parseInt(start);
