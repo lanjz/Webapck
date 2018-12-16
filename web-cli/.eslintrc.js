@@ -28,6 +28,8 @@ module.exports = {
     'linebreak-style': 0,
     'no-console': 0,
     'keyword-spacing': 0,
+    'no-underscore-dangle': 0,
+    'class-methods-use-this': 0,
     'space-before-blocks': 0,
     'import/no-webpack-loader-syntax': 0,
     // allow debugger during development

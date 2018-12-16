@@ -2,13 +2,14 @@ import baseModel, { definedValidate } from './BaseModel'
 import validator from '../utils/validator'
 
 
-class bookModel extends baseModel{
+class BookModel extends baseModel{
   constructor() {
     super()
-    this.assectPath = '_id name'
+    this.assectPath = ''
+    // this.assectPath = '_id name isPrivate'
   }
   getName() {
-    return 'category'
+    return 'books'
   }
   getSchema() {
     return {
@@ -30,8 +31,7 @@ class bookModel extends baseModel{
       updateTime: { type: Number, default: (new Date()).getTime() },
     }
   }
-
-
 }
-export default bookModel
+
+export default new BookModel()
 

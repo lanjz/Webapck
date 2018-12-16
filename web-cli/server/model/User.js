@@ -5,23 +5,24 @@ import validator from '../utils/validator'
 class UserModel extends baseModel{
   constructor() {
     super()
-    this.assectPath = '_id userName email sex createTime updateTime'
+    this.assectPath = '_id username email sex createTime updateTime'
+    this.findByEmail = this.findByEmail.bind(this)
   }
   getName() {
-    return 'user'
+    return 'users'
   }
   getSchema() {
     return {
-      userName: {
+      username: {
         type: String,
-        unique:  true,
+        unique: true,
         required: true,
-        validate: definedValidate(validator.userName)
+        validate: definedValidate(validator.username)
       },
-      passWord: {
+      password: {
         type: String,
         required: true,
-        validate: definedValidate(validator.passWord)
+        validate: definedValidate(validator.password)
       },
       email: {
         type: String,
@@ -36,15 +37,14 @@ class UserModel extends baseModel{
       avatar: {
         type: String,
       },
-      createTime: { type: Number},
+      createTime: { type: Number },
       updateTime: { type: Number, default: (new Date()).getTime() },
     }
   }
 
-  findByEmail(email) {return this.model.findOne({ email }).select(this.assectPath).exec()}
-
-
-
+  findByEmail(email) {
+    return this.model.findOne({ email }).select(this.assectPath).exec()
+  }
 }
 export default UserModel
 

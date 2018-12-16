@@ -5,13 +5,13 @@
  * */
 
 function numBoolean(val) {
-  return (val === 1 || val ===0)
+  return (val * 1 === 1 || val * 1 === 0)
 }
-function passWord(val) {
+function password(val) {
   return val
 }
 
-function userName(val) {
+function username(val) {
   return val
 }
 function email(val) {
@@ -24,8 +24,9 @@ function isPrivate(val) {
   return numBoolean(val)
 }
 export default {
-  passWord,
-  userName,
+  password,
+  username,
   email,
-  sex
+  sex,
+  isPrivate
 }

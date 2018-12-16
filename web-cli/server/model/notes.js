@@ -51,7 +51,6 @@ class NotesModel extends baseModel{
     return this.model.find().select(this.assectPath).exec();  //显示id name email role
   }
   listWithPaging(start=0, limit=10) {
-    console.log('134')
     start = parseInt(start);
     limit = parseInt(limit);
     return this.model.find().sort({ _id: -1 }).skip(start).limit(limit).select(this.assectPath).exec();

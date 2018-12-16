@@ -9,12 +9,12 @@ import userCtrl from '../controller/User'
  * */
 
 function dealError(e, tart) {
-  console.log('e2', e)
+  console.log('e', e)
   let errMsg = e
   if(e.code === 11000) {
     errMsg = `${tart}已经存在`
   } else if(e.name === 'CastError'){
-    errMsg = `${tart}不存在`
+    errMsg = e.stringValue ? `${e.stringValue}不存在` : `${tart}不存在`
   }
   return errMsg
 }
@@ -66,9 +66,6 @@ function decodeLoginTypeJwt(token) {
 }
 
 async function checkAuth(ctx, next) {
-  console.log('ctx.url', ctx.url)
-  await next()
-  return
   if(ctx.url!=='/api/login'&&ctx.url!=='/api/user'&&ctx.url.indexOf('/api') > -1) {
     const getHelloToken = ctx.cookies.get('helloToken') || 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjbGllbnRVc2VyIjoibGFubGFuMiIsImNsaWVudFBhc3MiOiJsYW5sYW4ifQ.e9ZdIOH-4Km2aiBt4CoVPcnpP9_AMQKfxCGca0odtic'
     if(!getHelloToken) {
@@ -76,18 +73,17 @@ async function checkAuth(ctx, next) {
       return
     }
     const { clientUser, clientPass } = decodeLoginTypeJwt(getHelloToken)
-    if(!clientUser||!clientPass) {
+    if(!clientUser || !clientPass) {
       ctx.send(2, '', 'token无效请重新登录')
       return
     }
     try{
-      const result = await userCtrl.userAuth({ userName: clientUser, passWord: clientPass })
+      const result = await userCtrl.userAuth({ username: clientUser, password: clientPass })
       if(!result) {
         ctx.send(2, result, `${clientUser}无效请重新登录`)
         return
       }
       ctx.state.curUser = result
-      console.log('ctx', ctx.state)
       await next()
     } catch(e) {
       ctx.send(2, '', dealError(e))
@@ -98,12 +94,11 @@ async function checkAuth(ctx, next) {
 }
 
 
-
 export default {
   dealError,
   filterParams,
   errorHandle,
   encodeLoginTypeJwt,
   decodeLoginTypeJwt,
-  checkAuth
+  checkAuth,
 }
