@@ -4,6 +4,7 @@ class BaseCtl {
   constructor() {
     this.alias = this.getAlias()
     this.Model = this.getModel()
+
     this.add = this.add.bind(this)
     this.findById = this.findById.bind(this)
     this.find = this.find.bind(this)
@@ -32,7 +33,7 @@ class BaseCtl {
         ctx.send(2, ctx.request.body, errMsg)
       } else {
         const result = await this.Model.save(filterData)
-        ctx.send(2, { id: result._id }, '')
+        ctx.send(1, { id: result._id }, '')
       }
     } catch (e) {
       ctx.send(2, '', hello.dealError(e, ctx.request.body.username))

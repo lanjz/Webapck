@@ -5,9 +5,17 @@ import { VALIDA_ERR_MSG } from '../utils/CONST'
 class baseModel {
   constructor() {
     this.name = this.getName()
+    this.filterFields = this.getFilterFields()
     this.schema = new mongoose.Schema(this.getSchema())
     this.schema.pre('save', function (next){
       if(!this.createTime) this.createTime = (new Date()).getTime()
+      next()
+    })
+    const _this = this
+    this.schema.pre(/updateOne|findOneAndUpdate/, function (next){
+      const getUpdate = this.getUpdate()
+      const getFields = _this.getValidateFields(getUpdate)
+      this.setUpdate({$set: getFields})
       next()
     })
     this.model = dbModel(this.name, this.schema)
@@ -25,6 +33,20 @@ class baseModel {
 
   getName() {
     console.log('Model Class need name', 'error');
+  }
+  /**
+   * 操作数据库时，需要过滤的字段，防止误修改
+   * */
+  getFilterFields() {
+    return []
+  }
+  getValidateFields(fields) {
+    this.filterFields.forEach((item) => {
+      if(fields[item]) {
+        delete fields[item]
+      }
+    })
+    return fields
   }
   listCount(query) {
     return this.model.countDocuments(query);

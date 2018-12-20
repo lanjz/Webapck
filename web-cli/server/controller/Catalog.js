@@ -4,6 +4,10 @@ import hello from '../utils/hello'
 import bookCtl from './Book'
 
 class CatalogCtl extends BaseCtl {
+  constructor() {
+    super()
+    this.findAllCatalog = []
+  }
   getAlias() {
     return '目录'
   }
@@ -13,6 +17,16 @@ class CatalogCtl extends BaseCtl {
   async beforeAdd(ctx) {
     const getParams = { ...ctx.request.body, ...this.dbQuery(ctx) }
     const { bookId, parentId, name } = getParams
+    if(!bookId) {
+      return Promise.resolve({ err: `bookId不能为空` })
+
+    }
+    if(!parentId) {
+      return Promise.resolve({ err: `parentId不能为空` })
+    }
+    if(!name) {
+      return Promise.resolve({ err: `name不能为空` })
+    }
     const { _id } = ctx.state.curUser
     return new Promise(async (resolve, reject) => {
       try{
@@ -80,6 +94,65 @@ class CatalogCtl extends BaseCtl {
     }finally {
       await next()
     }
+  }
+  /**
+   * 根据ID查找所有有关联的类别
+   * @Params {String} id
+   * @Return {Promise}
+  * */
+  async findAllCatalogs(ctx, next, id) {
+    return new Promise(async (resolve) => {
+      const dbQuery = this.dbQuery(ctx)
+      const result = await this.Model.list({ parentId: id, ...dbQuery })
+      const promiseList = []
+      if(result&&result.length) {
+        result.forEach((item, index) => {
+          this.findAllCatalog.push(item._id)
+          promiseList.push(this.findAllCatalogs(ctx, next, item._id))
+        })
+        await Promise.all(promiseList)
+        resolve(resolve)
+      } else {
+        resolve(true)
+      }
+    })
+  }
+  async deleteById(ctx, next) {
+    const { id } = ctx.request.body
+    const dbQuery = this.dbQuery(ctx)
+    if(!id) {
+      ctx.send(2, '', 'id不能为空')
+      return
+    }
+    try{
+      this.findAllCatalog = []
+      this.findAllCatalog.push()
+      await this.findAllCatalogs(ctx, next, id)
+      const result = await this.Model.delMany(this.findAllCatalog, dbQuery)
+      if(result.n){
+        ctx.send(1, result, this.findAllCatalog.join()+'已经删除')
+      } else {
+        ctx.send(2, '', `没有要删除的${this.alias}`)
+      }
+    } catch (e) {
+      ctx.send(2, '', hello.dealError(e, id))
+    }finally {
+      this.findAllCatalog = []
+      await next()
+    }
+
+ /*   try{
+      const result = await this.Model.del(id, dbQuery)
+      if(result.n){
+        ctx.send(1, '', '删除成功')
+      } else {
+        ctx.send(2, '', `没有要删除的${this.alias}`)
+      }
+    } catch (e) {
+      ctx.send(2, '', hello.dealError(e, id))
+    } finally {
+      await next()
+    }*/
   }
 }
 

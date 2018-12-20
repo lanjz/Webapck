@@ -8,6 +8,9 @@ class catalogModel extends baseModel{
   getName() {
     return 'catalogs'
   }
+  getFilterFields() {
+    return ['hasChild']
+  }
   getSchema() {
     return {
       userId: {
