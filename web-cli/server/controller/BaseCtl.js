@@ -28,7 +28,7 @@ class BaseCtl {
   async add(ctx, next) {
     const getParams = { ...ctx.request.body, ...this.dbQuery(ctx) }
     try{
-      const { errMsg, filterData } = hello.filterParams(getParams, this.Model.getSchema())
+      const { errMsg, filterData } = await hello.filterParams(getParams, this.Model.getSchema())
       if(errMsg) {
         ctx.send(2, ctx.request.body, errMsg)
       } else {

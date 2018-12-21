@@ -1,5 +1,5 @@
 import * as jwt from 'jwt-simple'
-import validator from './validator'
+import validator from '../model/validator'
 import userCtrl from '../controller/User'
 
 /**
@@ -27,16 +27,25 @@ function dealError(e, tart) {
 function filterParams(params, model) {
   const errMsg = []
   const filterData = {}
-  Object.keys(model).forEach((item, index) => {
-    if(model[item].required&&!params[item]) {
-      errMsg.push(`${item}不能为空`)
-    } else if(model[item]['validate']&&!validator[item](params[item])) {
-      errMsg.push(`${item}格式不正确`)
-    } else {
-      filterData[item] = params[item]
+  return new Promise((resolve, reject) => {
+    try{
+      Object.keys(model).forEach((item, index) => {
+        const { required, validate } = model[item]
+        if(required&&!params[item]) {
+          errMsg.push(`${item}不能为空`)
+        } else if(validate) {
+          if(!validate.validator(params[item])) {
+            errMsg.push(`${item}格式不正确`)
+          }
+        } else {
+          filterData[item] = params[item]
+        }
+      })
+      resolve({ errMsg: errMsg.join(), filterData })
+    } catch (e) {
+      resolve({ errMsg: e.message, filterData })
     }
   })
-  return { errMsg: errMsg.join(), filterData }
 }
 
 function errorHandle(ctx, next){

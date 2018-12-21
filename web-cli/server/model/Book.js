@@ -1,5 +1,5 @@
 import baseModel, { definedValidate } from './BaseModel'
-import validator from '../utils/validator'
+import validator from './validator'
 
 
 class BookModel extends baseModel{
@@ -10,6 +10,9 @@ class BookModel extends baseModel{
   }
   getName() {
     return 'books'
+  }
+  getFilterFields() {
+    return ['userId']
   }
   getSchema() {
     return {
@@ -25,10 +28,14 @@ class BookModel extends baseModel{
         type: Number,
         required: true,
         default: 1,
-        validate: definedValidate(validator.isPrivate)
+        validate: definedValidate(validator.numBoolean)
       },
-      createTime: { type: Number },
-      updateTime: { type: Number, default: (new Date()).getTime() },
+      schemata: {
+        type: Object,
+        default: {},
+        validate: definedValidate(validator.bookSchema)
+      },
+      ...this.baseModel()
     }
   }
 }

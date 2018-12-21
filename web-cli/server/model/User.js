@@ -1,5 +1,5 @@
 import baseModel, { definedValidate } from './BaseModel'
-import validator from '../utils/validator'
+import validator from './validator'
 
 
 class UserModel extends baseModel{
@@ -10,6 +10,9 @@ class UserModel extends baseModel{
   }
   getName() {
     return 'users'
+  }
+  getFilterFields() {
+    return ['username']
   }
   getSchema() {
     return {
@@ -37,8 +40,7 @@ class UserModel extends baseModel{
       avatar: {
         type: String,
       },
-      createTime: { type: Number },
-      updateTime: { type: Number, default: (new Date()).getTime() },
+      ...this.baseModel(),
     }
   }
 

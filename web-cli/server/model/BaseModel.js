@@ -5,7 +5,7 @@ import { VALIDA_ERR_MSG } from '../utils/CONST'
 class baseModel {
   constructor() {
     this.name = this.getName()
-    this.filterFields = this.getFilterFields()
+    this.filterFields = [ ...this.getFilterFields(), 'createTime' , 'updateTime' ]
     this.schema = new mongoose.Schema(this.getSchema())
     this.schema.pre('save', function (next){
       if(!this.createTime) this.createTime = (new Date()).getTime()
@@ -22,6 +22,12 @@ class baseModel {
     this.baseSchema = {
       createTime: { type: Number },
       updateTime: { type: Number, default: (new Date()).getTime() },
+    }
+  }
+  baseModel() {
+    return {
+      createTime: { type: Number },
+      updateTime: { type: Number, default: (new Date()).getTime() }
     }
   }
   /**
@@ -46,6 +52,7 @@ class baseModel {
         delete fields[item]
       }
     })
+    fields.updateTime = (new Date()).getTime()
     return fields
   }
   listCount(query) {
@@ -103,7 +110,13 @@ export function definedValidate(f) {
     validator(v) {
       return f(v)
     },
-    message: VALIDA_ERR_MSG
+    message: function (props) {
+      console.log('props', props)
+      if(props.reason&&props.reason.message){
+        return props.reason.message
+      }
+      return `${props.path} = ${props.value} : Format error`
+    }
   }
 }
 
