@@ -13,11 +13,12 @@ class BookCtl extends BaseCtl {
     const getParams = { ...ctx.request.body, ...this.dbQuery(ctx) }
     try{
       const { errMsg, filterData } = await hello.filterParams(getParams, this.Model.getSchema())
+      console.log('filterData', JSON.stringify(filterData))
       if(errMsg) {
         ctx.send(2, ctx.request.body, errMsg)
       } else {
         const { name, userId } = getParams
-        const findBooks = await this.Model.findOne({name, userId})
+        const findBooks = await this.Model.findOne({ name, userId })
         if(findBooks) {
           ctx.send(2, '', `${name}已存在`)
         } else {

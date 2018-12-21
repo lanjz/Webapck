@@ -59,6 +59,7 @@ class baseModel {
     return this.model.countDocuments(query);
   }
   save(data) {
+    console.log('data', data)
     const model = new this.model(data)
     const error = model.validateSync()
     if (error) {
@@ -110,9 +111,9 @@ export function definedValidate(f) {
     validator(v) {
       return f(v)
     },
-    message: function (props) {
+    message(props) {
       console.log('props', props)
-      if(props.reason&&props.reason.message){
+      if(props.reason && props.reason.message){
         return props.reason.message
       }
       return `${props.path} = ${props.value} : Format error`

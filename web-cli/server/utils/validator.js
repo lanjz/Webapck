@@ -26,13 +26,13 @@ function email(val) {
 function isUniqueInArr(arr, name) {
   const isValid = Object.prototype.toString.call(arr) === '[object Array]'
   let err = ''
-  if(!isValid||!arr.length) {
+  if(!isValid || !arr.length) {
     err = 'options必需是数组且至少有一个选项'
   }
   const map = new Map()
   for(let i = 0; i < arr.length; i++) {
     if(map.get(arr[i][name])) {
-      err = `不唯一`
+      err = 'id或name不唯一'
       break
     } else {
       map.set(arr[i][name], true)

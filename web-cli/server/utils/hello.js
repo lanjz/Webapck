@@ -1,5 +1,4 @@
 import * as jwt from 'jwt-simple'
-import validator from '../model/validator'
 import userCtrl from '../controller/User'
 
 /**
@@ -25,17 +24,22 @@ function dealError(e, tart) {
  * @return { Object } filterData 返回过滤后的参数
  * */
 function filterParams(params, model) {
+  const deepCopyParams = JSON.parse(JSON.stringify(params))
   const errMsg = []
   const filterData = {}
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     try{
-      Object.keys(model).forEach((item, index) => {
+      Object.keys(model).forEach((item) => {
         const { required, validate } = model[item]
-        if(required&&!params[item]) {
+        if(required && !deepCopyParams[item]) {
           errMsg.push(`${item}不能为空`)
-        } else if(validate) {
-          if(!validate.validator(params[item])) {
+        } else if(validate){
+          const result = validate.validator(deepCopyParams[item])
+          if(!result) {
             errMsg.push(`${item}格式不正确`)
+            filterData[item] = params[item]
+          } else {
+            filterData[item] = result
           }
         } else {
           filterData[item] = params[item]
