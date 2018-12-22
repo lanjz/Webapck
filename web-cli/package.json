@@ -12,7 +12,8 @@
     "dev": "cross-env DEV=1 MOCK=1 node server/app.js",
     "server": "cross-env MOCK=1 ts-node ./server/app.ts",
     "watch-server": "nodemon --watch server/* -e ts,tsx --exec ts-node ./server/app.ts",
-    "startTs": "tsc && node --inspect dist/app.js"
+    "startTs": "tsc && node --inspect dist/app.js",
+    "inspect": "node --inspect ./server/app.ts"
   },
   "dependencies": {
     "@babel/core": "^7.1.6",

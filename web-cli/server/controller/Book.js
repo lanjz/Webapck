@@ -1,6 +1,6 @@
 import BaseCtl from './BaseCtl'
 import bookModel from '../model/Book'
-import hello from "../utils/hello";
+import hello from '../utils/hello';
 
 class BookCtl extends BaseCtl {
   getAlias() {

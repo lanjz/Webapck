@@ -237,6 +237,135 @@ function bookSchema(schema) {
   }
 }
 
+/**
+ * article.content.type=input
+ * */
+function validInputFormat(con) {
+
+  const res = { err: '', data: con }
+  const str = con.trim()
+  const result = str < 15
+  if(!result){
+    res.err = '不能超过15位'
+  }
+  return res
+}
+function inputConValid(con, schema) {
+  const res = { err: '', data: con }
+  if(schema.required && !con){
+    res.err = `${schema.name}必填`
+    return res
+  }
+  const { err, data } = validInputFormat(con)
+  if(err) {
+    res.err = `${schema.name}${err}`
+    return res
+  }
+  return { err: '', data }
+}
+/**
+ * article.content.type=radio
+ * */
+function radioConValid(con, schema) {
+  const res = { err: '', data: con }
+  if(schema.required && !con){
+    res.err = `${schema.name}必填`
+    return res
+  }
+  if(!schema.options && !schema.options.length) {
+    res.err = `未找到${schema.name}的options选项`
+    return res
+  }
+  const findCon = schema.options.some(item => (item.id === con))
+  if(!findCon) {
+    res.err = `${schema.name}的options没找到${con}`
+    return res
+  }
+  return res
+}
+/**
+ * article.content.type=select
+ * */
+function selectConValid(con, schema) {
+  const res = { err: '', data: con }
+  if(schema.required && (!con || !con.length)){
+    res.err = `${schema.name}必填`
+    return res
+  }
+  if(!schema.options && !schema.options.length) {
+    res.err = `未找到${schema.name}的options选项`
+    return res
+  }
+  con.every((item) => {
+    const itemRes = schema.options.some(inItem => (inItem.id === itemRes))
+    if (itemRes) {
+      return true
+    }
+    res.err = `${schema.name}的options没找到${item}`
+    return false
+  })
+  if(res.err){
+    return res
+  }
+  return res
+}
+/**
+ * article.content.type=date
+ * */
+function dateConValid(con, schema) {
+  const res = { err: '', data: con }
+  if(schema.required && !con){
+    res.err = `${schema.name}必填`
+    return res
+  }
+  if(!valid.isNumber(con)) {
+    res.err = `${schema.name}是无效的时间戳`
+    return res
+  }
+  return res
+}
+/**
+ * article.content.type=textarea
+ * */
+function textConValid(con, schema) {
+  const res = { err: '', data: con }
+  if(schema.required && !con){
+    res.err = `${schema.name}必填`
+    return res
+  }
+  return res
+}
+
+const contentValidator = {
+  input: inputConValid,
+  textarea: textConValid,
+  radio: radioConValid,
+  select: selectConValid,
+  date: dateConValid
+}
+/**
+ * 验证Article.content字段
+ * @param <Object> val
+ * @return <Object>
+ * */
+function content(con) {
+  console.log('con', JSON.stringify(con))
+  const { schemata } = con
+  const schemaKeys = Object.keys(schemata)
+  const obj = {}
+  schemaKeys.every((item) => {
+    if(con[item]) {
+      const { err, data } = contentValidator[item.type](con[item], schemata[item])
+      if(err) {
+        throw new Error(err)
+      }
+      obj[item] = data
+    }
+    return true
+  })
+  return obj
+}
+
 export default {
   numBoolean,
   password,
@@ -244,4 +373,5 @@ export default {
   sex,
   email,
   bookSchema,
+  content
 }

@@ -1,10 +1,10 @@
 import * as Router from 'koa-router'
-import hello from './utils/hello.js'
 import userCtl from './controller/User.js'
 import catalogCtl from './controller/Catalog.js'
 import bookCtl from './controller/Book.js'
+import articleCtl from './controller/Article.js'
 // userCtl.find()
-const router = new Router({prefix: '/api'})
+const router = new Router({ prefix: '/api' })
 
 router.post('/login', userCtl.login)
 
@@ -24,6 +24,11 @@ router.get('/catalog', catalogCtl.find)
 router.delete('/catalog', catalogCtl.deleteById)
 router.put('/catalog', catalogCtl.modify)
 router.post('/catalog', catalogCtl.add)
+
+router.get('/article', articleCtl.find)
+router.delete('/article', articleCtl.deleteById)
+router.put('/article', articleCtl.modify)
+router.post('/article', articleCtl.add)
 
 router.get('/qa', async (ctx, next) => {
   ctx.body = 'Hello World2222!'
