@@ -64,7 +64,7 @@ class CatalogCtl extends BaseCtl {
         return
       }
       const parentCatalog = result[1]
-      const { errMsg, filterData } = hello.filterParams(getParams, this.Model.getSchema())
+      const { errMsg, filterData } = await hello.filterParams(getParams, this.Model.getSchema())
       if(errMsg) {
         ctx.send(2, ctx.request.body, errMsg)
       } else {
@@ -74,8 +74,8 @@ class CatalogCtl extends BaseCtl {
             .findOneAndUpdate(parentCatalog._id, { hasChild: 1 }, this.dbQuery(ctx))
         }
         const saveCatalog = this.Model.save(filterData)
-        await Promise.all([saveCatalog, updateParentCatalog])
-        ctx.send(1, { id: result[0]._id }, '')
+        const saveResult = await Promise.all([saveCatalog, updateParentCatalog])
+        ctx.send(1, { id: saveResult[0]._id }, '')
       }
     } catch (e) {
       ctx.send(2, e, hello.dealError(e))

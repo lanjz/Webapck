@@ -1,5 +1,4 @@
-import baseModel, { definedValidate } from './BaseModel'
-import validator from './validator'
+import baseModel from './BaseModel'
 
 class ArticleModel extends baseModel{
   constructor() {
@@ -17,8 +16,7 @@ class ArticleModel extends baseModel{
       },
       content: {
         type: Object,
-        required: true,
-        validate: definedValidate(validator.content)
+        required: true
       },
       ...this.baseModel()
     }

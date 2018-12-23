@@ -41,12 +41,47 @@ function isUniqueInArr(arr, name) {
   return err
 }
 
-
+function isTypeNumber(data) {
+  const strType = Object.prototype.toString.call(data)
+  if(strType === '[object Number]'){
+    return { err: null, data }
+  } else if(strType === '[object String]' && isNaN(Number(data))) {
+    return { err: null, data }
+  }
+  return { err: new TypeError(`${data} is not Number`), data }
+}
+function isStringType(data) {
+  const strType = Object.prototype.toString.call(data)
+  if(strType === '[object String]'){
+    return { err: null, data }
+  } else if(strType === '[object Number]') {
+    return { err: null, data: String(data) }
+  }
+  return { err: new TypeError(`${data} is not string`), data }
+}
+function isArrayType(data) {
+  const strType = Object.prototype.toString.call(data)
+  if(strType === '[object Array]'){
+    return { err: null, data }
+  }
+  return { err: new TypeError(`${data} is not Array`), data }
+}
+function isObjectType(data) {
+  const strType = Object.prototype.toString.call(data)
+  if(strType === '[object Object]'){
+    return { err: null, data }
+  }
+  return { err: new TypeError(`${data} is not Array`), data }
+}
 export default {
   isUniqueInArr,
   email,
   numBoolean,
   isNoTrim,
   isw,
-  isNumber
+  isNumber,
+  isStringType,
+  isTypeNumber,
+  isArrayType,
+  isObjectType
 }

@@ -113,7 +113,7 @@ function radioValid(val = {}) {
   if(!err && data.default) {
     const isValidDefault = val.options.find(item => (item.id === data.default))
     if(!isValidDefault) {
-      err = 'default的值不在options中'
+      err = `${val.name}default的值不在options中`
     }
   }
   return {
@@ -241,8 +241,12 @@ function bookSchema(schema) {
  * article.content.type=input
  * */
 function validInputFormat(con) {
-
   const res = { err: '', data: con }
+  const isValid = Object.prototype.toString.call(con) === '[object String]'
+  if(!isValid) {
+    res.err = `${con}不是string类型`
+    return res
+  }
   const str = con.trim()
   const result = str < 15
   if(!result){
@@ -278,7 +282,10 @@ function radioConValid(con, schema) {
   }
   const findCon = schema.options.some(item => (item.id === con))
   if(!findCon) {
-    res.err = `${schema.name}的options没找到${con}`
+    const options = {
+      options: schema.options
+    }
+    res.err = `${schema.name}的options${JSON.stringify(options)}没找到${con}`
     return res
   }
   return res
@@ -296,12 +303,20 @@ function selectConValid(con, schema) {
     res.err = `未找到${schema.name}的options选项`
     return res
   }
+  const isValid = Object.prototype.toString.call(con) === '[object Array]'
+  if(!isValid) {
+    res.err = `${schema.name}的类型应为Array`
+    return res
+  }
   con.every((item) => {
-    const itemRes = schema.options.some(inItem => (inItem.id === itemRes))
+    const itemRes = schema.options.some(inItem => (inItem.id === item))
     if (itemRes) {
       return true
     }
-    res.err = `${schema.name}的options没找到${item}`
+    const options = {
+      options: schema.options
+    }
+    res.err = `${schema.name}的options${JSON.stringify(options)}没找到${item}`
     return false
   })
   if(res.err){
@@ -348,14 +363,13 @@ const contentValidator = {
  * @param <Object> val
  * @return <Object>
  * */
-function content(con) {
+function content(con, schemata = {}) {
   console.log('con', JSON.stringify(con))
-  const { schemata } = con
   const schemaKeys = Object.keys(schemata)
   const obj = {}
   schemaKeys.every((item) => {
     if(con[item]) {
-      const { err, data } = contentValidator[item.type](con[item], schemata[item])
+      const { err, data } = contentValidator[schemata[item].type](con[item], schemata[item])
       if(err) {
         throw new Error(err)
       }
