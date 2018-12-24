@@ -1,5 +1,5 @@
 function isNoTrim(val) {
-  return val&&val.trim()
+  return val && val.trim()
 }
 function isw(val) {
   const reg = (/\W/g).test(val)

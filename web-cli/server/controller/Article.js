@@ -10,11 +10,11 @@ class ArticleCtl extends BaseCtl {
   constructor() {
     super()
     this.contentValidator = {
-      input: inputConValid,
-      textarea: textConValid,
-      radio: radioConValid,
-      select: selectConValid,
-      date: dateConValid
+      input: this.inputConValid,
+      date: this.dateConValid,
+      textarea: this.textConValid,
+      radio: this.radioConValid,
+      select: this.selectConValid
     }
   }
   getAlias() {
@@ -22,6 +22,15 @@ class ArticleCtl extends BaseCtl {
   }
   getModel() {
     return contentModel
+  }
+  inputConValid(con, schema) {
+    return this.validType(con, schema, validator.isStringType())
+  }
+  textConValid(con, schema) {
+    return this.validType(con, schema, validator.isStringType())
+  }
+  dateConValid(con, schema) {
+    return this.validType(con, schema, validator.isTypeNumber())
   }
   selectConValid(con, schema) {
     const res = { err: null, data: con }
@@ -88,7 +97,8 @@ class ArticleCtl extends BaseCtl {
     const obj = {}
     schemaKeys.every((item) => {
       if(con[item]) {
-        const { err, data } = contentValidator[schemata[item].type](con[item], schemata[item])
+        const tempFn = this.contentValidator[schemata[item].type]
+        const { err, data } = tempFn(con[item], schemata[item])
         if(err) {
           throw new Error(err)
         }
@@ -100,9 +110,9 @@ class ArticleCtl extends BaseCtl {
   }
   async filterCon(con, getSchemata) {
     let filterData = ''
-    return new Promise(async(resolve) => {
+    return new Promise(async (resolve) => {
       try{
-        filterData = await modelValidtor.content(con, getSchemata)
+        filterData = await this.content(con, getSchemata)
         resolve({ err: '', data: filterData })
       } catch (e) {
         resolve({ err: e.message, data: filterData })
@@ -126,11 +136,7 @@ class ArticleCtl extends BaseCtl {
         ctx.send(2, '', '未找到对应的Book')
         return
       }
-      const findCatalogParams = {
-        bookId,
-        _id: catalogId,
-        ...this.dbQuery(ctx)
-      }
+      const findCatalogParams = { bookId, _id: catalogId, ...this.dbQuery(ctx)}
       const findCatalog = await catalogCtl.Model.findOne(findCatalogParams)
       if(!findCatalog) {
         ctx.send(2, '', '未找到对应的目录')
