@@ -33,7 +33,6 @@ class BookModel extends baseModel{
       schemata: {
         type: Object,
         default: {},
-        validate: definedValidate(validator.bookSchema)
       },
       ...this.baseModel()
     }

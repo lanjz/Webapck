@@ -24,21 +24,24 @@ function email(val) {
  * @return <String> err
  * */
 function isUniqueInArr(arr, name) {
+  const res = { err: null, data: ''}
   const isValid = Object.prototype.toString.call(arr) === '[object Array]'
-  let err = ''
   if(!isValid || !arr.length) {
-    err = 'options必需是数组且至少有一个选项'
+    res.err = new RangeError('必需是数组且至少有一个选项')
+    return res
   }
   const map = new Map()
-  for(let i = 0; i < arr.length; i++) {
-    if(map.get(arr[i][name])) {
-      err = 'id或name不唯一'
-      break
-    } else {
-      map.set(arr[i][name], true)
+  arr.every((item) => {
+    console.log('item', item)
+    console.log('res11', map.get(item[name]))
+    if(map.get(item[name])) {
+      res.err = new RangeError('id或name不唯一')
+      return false
     }
-  }
-  return err
+    map.set(item[name], true)
+    return true
+  })
+  return res
 }
 
 function isTypeNumber(data) {
