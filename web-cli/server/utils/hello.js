@@ -45,9 +45,13 @@ function filterParams(params, model) {
           filterData[item] = params[item]
         }
       })
-      resolve({ errMsg: errMsg.join(), filterData })
+      if(errMsg.length) {
+        resolve({ err: new Error(errMsg.join()), data: filterData })
+      } else {
+        resolve({ err: null, data: filterData })
+      }
     } catch (e) {
-      resolve({ errMsg: e.message, filterData })
+      resolve({ err: e, data: filterData })
     }
   })
 }

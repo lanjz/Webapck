@@ -1,6 +1,5 @@
 import BaseCtl from './BaseCtl'
 import bookModel from '../model/Book'
-import hello from '../utils/hello'
 import validator from '../utils/validator'
 
 class BookCtl extends BaseCtl {
@@ -116,7 +115,7 @@ class BookCtl extends BaseCtl {
       }
       const isValidDefault = schema.options.find(item => (item.id === schema.default))
       if(!isValidDefault) {
-        res.err = new RangeError(`default的值不在options中`)
+        res.err = new RangeError('default的值不在options中')
         return res
       }
     }
@@ -157,9 +156,10 @@ class BookCtl extends BaseCtl {
         res.err = validType.err
         return res
       }
-      const isValidDefault = schema.default.every(item => (schema.options.find(inItem => inItem.id === item)))
+      const isValidDefault = schema.default
+        .every(item => (schema.options.find(inItem => inItem.id === item)))
       if(!isValidDefault) {
-        res.err = new RangeError(`default的值不在options中`)
+        res.err = new RangeError('default的值不在options中')
         return res
       }
     }
@@ -179,7 +179,7 @@ class BookCtl extends BaseCtl {
       const tempFn = this.contentValidator[schema[item].type]
       const { err, data } = tempFn(schema[item])
       if(err) {
-        res.err = new Error(`${item}:　${err.message}`)
+        res.err = new Error(`${item}:${err.message}`)
         return false
       }
       obj[item] = data
@@ -187,40 +187,29 @@ class BookCtl extends BaseCtl {
     })
     return res
   }
-  async add(ctx, next) {
-    const getParams = { ...ctx.request.body, ...this.dbQuery(ctx) }
-    try{
-      const { schemata = {} } = getParams
-      const isObjResult = validator.isObjectType(schemata)
-      if(isObjResult.err) {
-        ctx.send(2, ctx.request.body, `schemata:${isObjResult.err.message}`)
-        return
-      }
-      const filterSchemata = this.filterSchemata(schemata)
-      if(filterSchemata.err) {
-        ctx.send(2, ctx.request.body, filterSchemata.err.message)
-        return
-      }
-      getParams.schemata = filterSchemata
-      const { errMsg, filterData } = await hello.filterParams(getParams, this.Model.getSchema())
-      if(errMsg) {
-        ctx.send(2, ctx.request.body, errMsg)
-      } else {
-        const { name, userId } = getParams
-        const findBooks = await this.Model.findOne({ name, userId })
-        if(findBooks) {
-          ctx.send(2, '', `${name}已存在`)
-        } else {
-          const result = await this.Model.save(filterData)
-          ctx.send(1, { id: result._id }, '')
-        }
-
-      }
-    } catch (e) {
-      ctx.send(2, '', hello.dealError(e, ctx.request.body.username))
-    }finally {
-      await next()
+  async filterParams(arg){
+    const res = { err: null, data: '' }
+    const getParams = JSON.parse(JSON.stringify(arg))
+    const { schemata = {} } = getParams
+    const isObjResult = validator.isObjectType(schemata)
+    if(isObjResult.err) {
+      res.err = isObjResult.err
+      return res
     }
+    const filterSchemata = this.filterSchemata(schemata)
+    if(filterSchemata.err) {
+      res.err = filterSchemata.err
+      return res
+    }
+    getParams.schemata = filterSchemata
+    res.data = getParams
+    const { name, userId } = getParams
+    const findBooks = await this.Model.findOne({ name, userId })
+    if(findBooks) {
+      res.err = new Error(`${name}已存在`)
+      return res
+    }
+    return res
   }
 }
 const bookCtl = new BookCtl()

@@ -4,7 +4,6 @@ class BaseCtl {
   constructor() {
     this.alias = this.getAlias()
     this.Model = this.getModel()
-
     this.add = this.add.bind(this)
     this.findById = this.findById.bind(this)
     this.find = this.find.bind(this)
@@ -25,14 +24,24 @@ class BaseCtl {
     }
     return {}
   }
+  filterParams(params) {
+    const res = { err: null, data: '' }
+    res.data = params
+    return res
+  }
   async add(ctx, next) {
-    const getParams = { ...ctx.request.body, ...this.dbQuery(ctx) }
     try{
-      const { errMsg, filterData } = await hello.filterParams(getParams, this.Model.getSchema())
-      if(errMsg) {
-        ctx.send(2, ctx.request.body, errMsg)
+      const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
+      const { err, data: getParams } = await this.filterParams(merge, ctx)
+      if(err) {
+        ctx.send(2, ctx.request.body, err.message)
+        return
+      }
+      const helloRes = await hello.filterParams(getParams, this.Model.getSchema())
+      if(helloRes.err) {
+        ctx.send(2, ctx.request.body, helloRes.err.message)
       } else {
-        const result = await this.Model.save(filterData)
+        const result = await this.Model.save(helloRes.data)
         ctx.send(1, { id: result._id }, '')
       }
     } catch (e) {
@@ -118,8 +127,14 @@ class BaseCtl {
       ctx.send(2, '', 'id不能为空')
     }
     try {
+      const { err, data } = await this.filterParams(ctx.request.body)
+      if(err) {
+        ctx.send(2, ctx.request.body, err.message)
+        return
+      }
+      const getParams = data
       const dbQuery = this.dbQuery(ctx)
-      const result = await this.Model.findOneAndUpdate(id, ctx.request.body, dbQuery)
+      const result = await this.Model.findOneAndUpdate(id, getParams, dbQuery)
       if (!result) {
         ctx.send(2, '', `没有要修改的${this.alias}`)
       } else {

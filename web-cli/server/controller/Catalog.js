@@ -64,16 +64,16 @@ class CatalogCtl extends BaseCtl {
         return
       }
       const parentCatalog = result[1]
-      const { errMsg, filterData } = await hello.filterParams(getParams, this.Model.getSchema())
-      if(errMsg) {
-        ctx.send(2, ctx.request.body, errMsg)
+      const filterData = await hello.filterParams(getParams, this.Model.getSchema())
+      if(filterData.err) {
+        ctx.send(2, ctx.request.body, filterData.err.message)
       } else {
         let updateParentCatalog = Promise.resolve(parentCatalog)
         if(parentCatalog !== 'root' && !parentCatalog.hasChild){
           updateParentCatalog = this.Model
             .findOneAndUpdate(parentCatalog._id, { hasChild: 1 }, this.dbQuery(ctx))
         }
-        const saveCatalog = this.Model.save(filterData)
+        const saveCatalog = this.Model.save(filterData.data)
         const saveResult = await Promise.all([saveCatalog, updateParentCatalog])
         ctx.send(1, { id: saveResult[0]._id }, '')
       }
