@@ -15,6 +15,7 @@ class ArticleCtl extends BaseCtl {
       input: this.stringConValid,
       date: this.dateConValid,
       textarea: this.stringConValid,
+      markdown: this.stringConValid,
       radio: this.radioConValid,
       select: this.selectConValid
     }

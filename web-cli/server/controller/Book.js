@@ -11,6 +11,7 @@ class BookCtl extends BaseCtl {
     this.selectConValid = this.selectConValid.bind(this)
     this.contentValidator = {
       input: this.inputConValid,
+      markdown: this.inputConValid,
       date: this.dateConValid,
       textarea: this.inputConValid,
       radio: this.radioConValid,
@@ -176,6 +177,9 @@ class BookCtl extends BaseCtl {
     const obj = {}
     schemaKeys.every((item) => {
       const tempFn = this.contentValidator[schema[item].type]
+      if(tempFn) {
+        return true
+      }
       const { err, data } = tempFn(schema[item])
       if(err) {
         res.err = new Error(`${item}:${err.message}`)
