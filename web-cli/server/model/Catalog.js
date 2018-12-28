@@ -8,7 +8,7 @@ class catalogModel extends baseModel{
   getName() {
     return 'catalogs'
   }
-  getFilterFields() {
+  banUpdateFields() {
     return ['hasChild']
   }
   getSchema() {

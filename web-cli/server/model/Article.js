@@ -8,6 +8,9 @@ class ArticleModel extends baseModel{
   getName() {
     return 'articles'
   }
+  banUpdateFields() {
+    return ['userId']
+  }
   getSchema() {
     return {
       userId: {

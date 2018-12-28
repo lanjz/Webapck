@@ -5,7 +5,7 @@ import { VALIDA_ERR_MSG } from '../utils/CONST'
 class baseModel {
   constructor() {
     this.name = this.getName()
-    this.filterFields = [ ...this.getFilterFields(), 'createTime' , 'updateTime' ]
+    this.filterFields = [...this.banUpdateFields(), 'createTime', 'updateTime']
     this.schema = new mongoose.Schema(this.getSchema())
     this.schema.pre('save', function (next){
       if(!this.createTime) this.createTime = (new Date()).getTime()
@@ -15,10 +15,10 @@ class baseModel {
     this.schema.pre(/updateOne|findOneAndUpdate/, function (next){
       const getUpdate = this.getUpdate()
       const getFields = _this.getValidateFields(getUpdate)
-      this.setUpdate({$set: getFields})
+      this.setUpdate({ $set: getFields })
       next()
     })
-    this.model = dbModel(this.name, this.schema)
+    this.Model = dbModel(this.name, this.schema)
     this.baseSchema = {
       createTime: { type: Number },
       updateTime: { type: Number, default: (new Date()).getTime() },
@@ -41,9 +41,9 @@ class baseModel {
     console.log('Model Class need name', 'error');
   }
   /**
-   * 操作数据库时，需要过滤的字段，防止误修改
+   * 修改数据库时，需要过滤的字段，防止误修改
    * */
-  getFilterFields() {
+  banUpdateFields() {
     return []
   }
   getValidateFields(fields) {
@@ -56,11 +56,10 @@ class baseModel {
     return fields
   }
   listCount(query) {
-    return this.model.countDocuments(query);
+    return this.Model.countDocuments(query);
   }
   save(data) {
-    console.log('data', data)
-    const model = new this.model(data)
+    const model = new this.Model(data)
     const error = model.validateSync()
     if (error) {
       return Promise.reject(error.message)
@@ -69,22 +68,22 @@ class baseModel {
   }
 
   findOne(query) {
-    return this.model.findOne(query)
+    return this.Model.findOne(query)
   }
   updateOne(id, data) {
-    return this.model.updateOne({ _id: id }, data);
+    return this.Model.updateOne({ _id: id }, data);
   }
   findOneAndUpdate(id, data, query = {}) {
     return this.model.findOneAndUpdate({ _id: id, ...query }, data, { new: true })
       .select(this.assectPath).exec();
   }
   list(query = {}) {
-    return this.model.find(query).select(this.assectPath).exec()
+    return this.Model.find(query).select(this.assectPath).exec()
   }
   listWithPaging(start = 0, limit = 0, query = {}) {
     start = parseInt(start);
     limit = parseInt(limit);
-    return this.model.find(query)
+    return this.Model.find(query)
       .sort({ _id: -1 })
       .skip(start)
       .limit(limit)
@@ -92,13 +91,13 @@ class baseModel {
       .exec()
   }
   findById(id, query) {
-    return this.model.findOne({ _id: id, ...query }).select(this.assectPath).exec()
+    return this.Model.findOne({ _id: id, ...query }).select(this.assectPath).exec()
   }
   del(id, query) {
-    return this.model.deleteOne({ _id: Object(id), ...query })
+    return this.Model.deleteOne({ _id: Object(id), ...query })
   }
   delMany(ids, query) {
-    return this.model.deleteMany({ _id: { $in: ids }, ...query })
+    return this.Model.deleteMany({ _id: { $in: ids }, ...query })
   }
 }
 

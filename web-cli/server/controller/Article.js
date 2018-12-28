@@ -8,7 +8,6 @@ class ArticleCtl extends BaseCtl {
   constructor() {
     super()
     this.stringConValid = this.stringConValid.bind(this)
-    this.textConValid = this.stringConValid.bind(this)
     this.dateConValid = this.dateConValid.bind(this)
     this.radioConValid = this.radioConValid.bind(this)
     this.selectConValid = this.selectConValid.bind(this)
@@ -56,7 +55,6 @@ class ArticleCtl extends BaseCtl {
   }
   selectConValid(con, schema) {
     const res = { err: null, data: con }
-    console.log('this', this)
     const { err } = this.validType(con, schema, validator.isArrayType)
     if(err) {
       res.err = err
@@ -74,9 +72,9 @@ class ArticleCtl extends BaseCtl {
       res.err = `未找到${schema.name}的options选项`
       return res
     }
-    const isValid = Object.prototype.toString.call(con) === '[object Array]'
-    if(!isValid) {
-      res.err = `${schema.name}的类型应为Array`
+    const isArrayValid = validator.isArrayType(con)
+    if(!isArrayValid.err) {
+      res.err = `${schema.name}${isArrayValid.err}`
       return res
     }
     con.every((item) => {

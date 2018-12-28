@@ -14,21 +14,20 @@ class CatalogCtl extends BaseCtl {
   getModel() {
     return new Catalog()
   }
-  async beforeAdd(ctx) {
-    const getParams = { ...ctx.request.body, ...this.dbQuery(ctx) }
+  async filterParams(arg, ctx) {
+    const getParams = JSON.parse(JSON.stringify(arg))
     const { bookId, parentId, name } = getParams
     if(!bookId) {
-      return Promise.resolve({ err: `bookId不能为空` })
-
+      return Promise.resolve({ err: new Error('bookId不能为空') })
     }
     if(!parentId) {
-      return Promise.resolve({ err: `parentId不能为空` })
+      return Promise.resolve({ err: new Error('parentId不能为空') })
     }
     if(!name) {
-      return Promise.resolve({ err: `name不能为空` })
+      return Promise.resolve({ err: new Error('name不能为空') })
     }
     const { _id } = ctx.state.curUser
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
       try{
         const findBook = bookCtl.findOneByQuery({ _id: bookId, userId: _id }) // 查询是否在本子
         const findParentCatalog = parentId === 'root' ? // 查询是否存在父级目录
@@ -49,25 +48,27 @@ class CatalogCtl extends BaseCtl {
           resolve({ err: `当前目录已经存在'${name}'` })
           return
         }
-        resolve({ err: '', result })
+        resolve({ err: null, data: result })
       } catch (e) {
-        reject(e)
+        resolve({ err: e, data: '' })
       }
     })
   }
   async add(ctx, next) {
-    const getParams = { ...ctx.request.body, ...this.dbQuery(ctx) }
+    const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
     try{
-      const { err, result } = await this.beforeAdd(ctx)
+      // data包含了所存Book的结果、父级目录的结果、当前是否存在目录的结果
+      const { err, data } = await this.filterParams(merge, ctx)
       if(err) {
-        ctx.send(2, '', err)
+        ctx.send(2, '', err.message)
         return
       }
-      const parentCatalog = result[1]
-      const filterData = await hello.filterParams(getParams, this.Model.getSchema())
+      const parentCatalog = data[1]
+      const filterData = await hello.filterParams(merge, this.Model.getSchema())
       if(filterData.err) {
-        ctx.send(2, ctx.request.body, filterData.err.message)
+        ctx.send(2, ctx.request.body, filterData.err)
       } else {
+        // 如果是根目录，就不需要更新父级目录的hasChild属性，直接返回Promise.resolve
         let updateParentCatalog = Promise.resolve(parentCatalog)
         if(parentCatalog !== 'root' && !parentCatalog.hasChild){
           updateParentCatalog = this.Model
@@ -140,19 +141,6 @@ class CatalogCtl extends BaseCtl {
       this.findAllCatalog = []
       await next()
     }
-
- /*   try{
-      const result = await this.Model.del(id, dbQuery)
-      if(result.n){
-        ctx.send(1, '', '删除成功')
-      } else {
-        ctx.send(2, '', `没有要删除的${this.alias}`)
-      }
-    } catch (e) {
-      ctx.send(2, '', hello.dealError(e, id))
-    } finally {
-      await next()
-    }*/
   }
 }
 

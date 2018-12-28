@@ -35,7 +35,6 @@ class BookCtl extends BaseCtl {
       res.err = validType.err
       return res
     }
-    console.log('name', name)
     if(name.trim().length > 10) {
       res.err = new Error('name长度不能起来10位')
       return res

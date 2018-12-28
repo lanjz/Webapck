@@ -11,7 +11,7 @@ class BookModel extends baseModel{
   getName() {
     return 'books'
   }
-  getFilterFields() {
+  banUpdateFields() {
     return ['userId']
   }
   getSchema() {

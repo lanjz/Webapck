@@ -11,7 +11,7 @@ class UserModel extends baseModel{
   getName() {
     return 'users'
   }
-  getFilterFields() {
+  banUpdateFields() {
     return ['username']
   }
   getSchema() {
@@ -45,7 +45,7 @@ class UserModel extends baseModel{
   }
 
   findByEmail(email) {
-    return this.model.findOne({ email }).select(this.assectPath).exec()
+    return this.Model.findOne({ email }).select(this.assectPath).exec()
   }
 }
 export default UserModel
