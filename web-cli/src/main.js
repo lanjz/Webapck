@@ -2,9 +2,6 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import userIView from './components/iView/index.js'
-
-Vue.use(userIView)
 
 /* eslint-disable no-new */
 new Vue({

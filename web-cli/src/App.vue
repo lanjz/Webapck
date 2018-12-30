@@ -1,38 +1,32 @@
 <template>
-    <div class="app">
-        <Layout>
-            <Header>
-                <app-head></app-head>
-            </Header>
-            <Layout>
-                <Sider hide-trigger :style="{background: '#fff'}">
-                </Sider>
-                <Layout class="main-layout">
-                    <Content class="content">
-                        <router-view></router-view>
-                    </Content>
-                </Layout>
-            </Layout>
-        </Layout>
+    <div class="app flex direction-column">
+      <Header/>
+      <Layout/>
+      <Footer/>
     </div>
 
 </template>
 
 <script>
-  import 'iview/dist/styles/iview.css'
-  import AppHead from './components/AppHead'
   import './assets/styles/global.less'
   import './assets/styles/app.less'
+
+  import Header from './components/layout/Header.vue'
+  import Footer from './components/layout/Footer.vue'
+  import Layout from './components/layout/Layout.vue'
+
   export default {
     name: 'app',
     components: {
-      AppHead
+      Header,
+      Footer,
+      Layout
     }
   }
 </script>
-<style scoped lang="less">
-    .ivu-layout-has-sider{
-        background: @bg-color;
+<style lang="less">
+  @import "//at.alicdn.com/t/font_992689_1g7drdrq7aw.css";
+  /*      background: @bg-color;
     }
     .ivu-layout-header{
         background: #fff;
@@ -48,5 +42,5 @@
         padding: @padding-size*3;
         background: #fff;
         position: relative;
-    }
+    }*!*/
 </style>

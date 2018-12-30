@@ -3,6 +3,7 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
+console.log('path.resolve(__dirname, \'../\')', path.resolve(__dirname, '../'))
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: './src/main.js',

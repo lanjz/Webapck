@@ -3,8 +3,7 @@ const path = require('path')
 const webpack = require('webpack');
 const webpackCommon = require('./webpack.common')
 const cwd = process.cwd()
-
-
+console.log('cwd', cwd)
 module.exports = merge(webpackCommon, {
   mode: 'development',
   devtool: 'inline-source-map',
