@@ -25,8 +25,14 @@ body{
 .flex.direction-column{
   flex-direction: column;
 }
+.flex.direction-row{
+  flex-direction: row;
+}
 .flex.justify-content-end{
   justify-content: flex-end
+}
+.flex.justify-content-start{
+  justify-content: flex-start;
 }
 .flex.justify-content-center{
   justify-content: center;
@@ -60,4 +66,10 @@ body{
   border: solid 1px @primary-color;
   background: @primary-color;
   color: #fff;
+}
+
+.line-ellipsis{
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
 }
