@@ -22,6 +22,10 @@ class UserModel extends baseModel{
         required: true,
         validate: definedValidate(validator.username)
       },
+      nickname: {
+        type: String,
+        required: true
+      },
       password: {
         type: String,
         required: true,
