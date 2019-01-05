@@ -12,6 +12,9 @@
     components: {
       BookLayout,
       articles
+    },
+    mounted() {
+      this.$toast('我是弹出消息1')
     }
   }
 </script>
