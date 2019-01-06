@@ -3,16 +3,7 @@ const HOST_CONFIG = {
   PRO: 'http://dataview.myscrm.cn/api',
 }
 
-function ret(response) {
-  return {
-    retCode: 0,
-    errMsg: '',
-    data:{},
-    ...response
-  }
-}
-
+export default {}
 export {
-  HOST_CONFIG,
-  ret
+  HOST_CONFIG
 }
