@@ -35,13 +35,12 @@
     </div>
     <div class="catalog-layout">
       <CatalogsTree></CatalogsTree>
-      <CatalogsTree></CatalogsTree>
     </div>
     <ArticleBrief></ArticleBrief>
   </div>
 </template>
 <script>
-  import CatalogsTree from './CatalogsTree.vue'
+  import CatalogsTree from '../../components/tree/Tree.vue'
   import ArticleBrief from './ArticleBrief.vue'
   export default {
     components: {

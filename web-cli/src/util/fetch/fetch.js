@@ -1,9 +1,7 @@
 import axios from 'axios'
 import { HOST_CONFIG as hostConfig } from './fetchConifg'
 
-// 模拟环境变量
-const process = {}
-
+const { MOCK } = process.env
 function dealRetCode(response) {
   const res = { err: null, data: response.data }
   return res
@@ -15,7 +13,7 @@ function fetchData(options) {
     res.err = new Error('没有请求地址')
     return res
   }
-  if (process.Mock) {
+  if (MOCK) {
     url = `http://67.209.187.22:3000/mock/15${url}`
   } else {
     const env = process.DEV
@@ -26,7 +24,7 @@ function fetchData(options) {
   if (options.method.toLowerCase() === 'get') {
     options.params = options.data
   }
-/*  if (options.method.toLowerCase() === 'post') {
+  /* if(options.method.toLowerCase() === 'post') {
     options.headers = { 'Content-Type': 'multipart/form-data' }
     const formData = new FormData();
     const forDataKeys = Object.keys(options.data)
@@ -34,12 +32,13 @@ function fetchData(options) {
       formData.append(value, options.data[value]);
     })
     options.data = formData
-  }*/
+  } */
   return axios(options)
 }
 
 const doFetchData = function (options) {
   const res = { err: null, data: '' }
+  console.log('options', options)
   return new Promise((resolve) => {
     fetchData(options)
       .then((response) => {
@@ -59,9 +58,7 @@ const doFetchData = function (options) {
 }
 
 
-export default {
-  doFetchData
-}
+export default doFetchData
 
 export {
   fetchData

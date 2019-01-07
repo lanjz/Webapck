@@ -1,8 +1,9 @@
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
+  // 解决：Adjacent JSX elements must be wrapped in an enclosing tag
+  // parser: 'babel-eslint',
   parserOptions: {
-    sourceType: 'module'
+    parser: 'babel-eslint',
   },
   env: {
     browser: true,
@@ -13,7 +14,8 @@ module.exports = {
     __static: true
   },
   plugins: [
-    'html'
+    'html',
+    'vue'
   ],
   rules: {
     'global-require': 0,

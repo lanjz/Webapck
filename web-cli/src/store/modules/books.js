@@ -1,4 +1,4 @@
-import fetch from '../../util/fetch'
+import fetch from '../../util/fetch/fetch.js'
 import * as MUTATIONS from '../const/mutaions'
 import * as ACTIONS from '../const/actions'
 
@@ -33,6 +33,7 @@ const actions = {
     }
     return result
   },
+  /* eslint-disable no-unused-vars */
   async [ACTIONS.BOOK_LIST_POST]({ commit }, book) {
     const result = await fetch({
       url: '/api/book',
