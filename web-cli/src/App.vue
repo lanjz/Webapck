@@ -10,7 +10,6 @@
 <script>
   import './assets/styles/global.less'
   import './assets/styles/app.less'
-
   import Header from './components/layout/Header.vue'
   import Footer from './components/layout/Footer.vue'
   import Layout from './components/layout/Layout.vue'
@@ -25,7 +24,7 @@
   }
 </script>
 <style lang="less">
-  @import "//at.alicdn.com/t/font_992689_1g7drdrq7aw.css";
+  /*@import "//at.alicdn.com/t/font_992689_pswgkexoa3.css";*/
   /*      background: @bg-color;
     }
     .ivu-layout-header{

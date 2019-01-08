@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.1.6",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/polyfill": "^7.0.0",
     "@types/koa": "^2.0.47",
     "@types/koa-router": "^7.0.35",

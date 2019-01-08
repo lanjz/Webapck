@@ -4,15 +4,34 @@ import * as ACTIONS from '../const/actions'
 
 const state = {
   catalogs: {},
+  curCatalog: {},
+  treeNode: [], // 记录当前选择的node链
 }
 
 const mutations = {
   [MUTATIONS.CATALOGS_SAVE](state, { parentId, data }) {
-    console.log(parentId, data)
-    state.catalogs[parentId] = data
+    state.catalogs = {
+      ...state.catalogs,
+      ...{ [parentId]: data }
+    }
+  },
+  [MUTATIONS.CATALOGS_CUR_SAVE](state, { data = {}, treeNode = [] }) {
+    state.curCatalog = { ...data }
+    state.treeNode = [ ...treeNode ]
   }
 }
-
+const getters = {
+  getCurTree: state => {
+    const arr = []
+    let curData = state.curCatalog
+    while (curData.parentId !== 'root') {
+      arr.push(curData)
+      curData = state.catalogs[curData.parentId]
+    }
+    arr.push(curData)
+    return arr
+  }
+}
 const actions = {
   async [ACTIONS.CATALOGS_GET]({ commit }, params) {
     const result = await fetch({
@@ -53,6 +72,7 @@ const actions = {
 }
 export default {
   state,
+  getters,
   mutations,
   actions
 }

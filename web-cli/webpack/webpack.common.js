@@ -120,7 +120,7 @@ module.exports = {
       },
       {
         test: /\.(vue|js|jsx)$/,
-        loader: 'eslint-loader',
+        // loader: 'eslint-loader',
         exclude: /node_modules/,
         enforce: 'pre'
       }

@@ -34,18 +34,43 @@
       </div>
     </div>
     <div class="catalog-layout">
+      {{treeNode}}{{curTreeTotalIndex}}
       <TreeItem parentId="root"></TreeItem>
     </div>
     <ArticleBrief></ArticleBrief>
   </div>
 </template>
 <script>
+  import { mapState } from 'vuex'
   import TreeItem from '../../components/tree/TreeItem.vue'
+  // import TreeItem from '../../components/tree/testTree.vue'
   import ArticleBrief from './ArticleBrief.vue'
   export default {
     components: {
       TreeItem,
       ArticleBrief
+    },
+    computed: {
+      ...mapState({
+        treeNode: state => state.catalogs.treeNode
+      }),
+      curTreeTotalIndex() {
+        console.log('this.treeNode', this.treeNode)
+        if(!this.treeNode.length) {
+          return 0
+        }
+        if(this.treeNode.length > 1) {
+          return this.treeNode.reduce((item1, item2) => (item1.showIndex + item2.showIndex + 2))
+        }
+        return this.treeNode[0].showIndex + 1
+      }
+    },
+    watch:{
+  /*    treeNode: function (val) {
+        console.log('val', val)
+        const abc = val.reduce((item1, item2) => ( item2.showIndex || 0 + item1.showIndex || 0 + 2))
+        console.log('anc', abc)
+      }*/
     }
   }
 </script>
@@ -131,7 +156,7 @@
   }
   .catalog-layout{
     border-right:solid 1px #eee;
-    padding: 15px 25px;
+    padding: 15px 0;
     overflow: auto;
   }
 </style>
