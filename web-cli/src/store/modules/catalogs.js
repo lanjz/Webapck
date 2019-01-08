@@ -7,21 +7,21 @@ const state = {
 }
 
 const mutations = {
-  [MUTATIONS.CATALOGS_SAVE](state, parentId, data) {
+  [MUTATIONS.CATALOGS_SAVE](state, { parentId, data }) {
+    console.log(parentId, data)
     state.catalogs[parentId] = data
   }
 }
 
 const actions = {
-  async [ACTIONS.CATALOGS_GET]({ commit }, parentId) {
-    console.log('fetch', fetch)
+  async [ACTIONS.CATALOGS_GET]({ commit }, params) {
     const result = await fetch({
       url: '/api/catalogs',
-      data: parentId
+      data: params
     })
     const { err, data } = result
     if(!err) {
-      commit(MUTATIONS.CATALOGS_SAVE, parentId, data)
+      commit(MUTATIONS.CATALOGS_SAVE, { parentId: params.parentId, data: data.list })
     }
     return result
   },

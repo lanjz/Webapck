@@ -34,17 +34,17 @@
       </div>
     </div>
     <div class="catalog-layout">
-      <CatalogsTree></CatalogsTree>
+      <TreeItem parentId="root"></TreeItem>
     </div>
     <ArticleBrief></ArticleBrief>
   </div>
 </template>
 <script>
-  import CatalogsTree from '../../components/tree/Tree.vue'
+  import TreeItem from '../../components/tree/TreeItem.vue'
   import ArticleBrief from './ArticleBrief.vue'
   export default {
     components: {
-      CatalogsTree,
+      TreeItem,
       ArticleBrief
     }
   }

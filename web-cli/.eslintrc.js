@@ -14,8 +14,7 @@ module.exports = {
     __static: true
   },
   plugins: [
-    'html',
-    'vue'
+    'html'
   ],
   rules: {
     'global-require': 0,
