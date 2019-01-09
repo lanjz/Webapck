@@ -41,7 +41,7 @@
 </template>
 <script>
   import { mapState } from 'vuex'
-  import TreeItem from '../../components/tree/TreeItem.vue'
+  import TreeItem from '../../components/tree/index.vue'
   // import TreeItem from '../../components/tree/testTree.vue'
   import ArticleBrief from './ArticleBrief.vue'
   export default {

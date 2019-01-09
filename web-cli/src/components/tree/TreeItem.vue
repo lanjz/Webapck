@@ -1,144 +1,153 @@
 <template>
-  <div class="catalogs-layout">
-    <div
-      v-if="catalogs[parentId]"
-      v-for="(item, index) in catalogs[parentId]"
-      :key="index"
-    >
-      <div
-        class="flex align-items-center catalogs-item-layout"
-        @click="chooseCatalog(item, index)"
-        :class="{'act': curCatalog['_id'] === item['_id']}"
-      >
-        <div class="iconfont">
-          <svg class="icon icon-close" aria-hidden="true">
-            <use xlink:href="#icon-wenjian2"></use>
-          </svg>
-          <svg class="icon  icon-open" aria-hidden="true">
-            <use xlink:href="#icon-wenjian-"></use>
-          </svg>
-        </div>
-        <div class="catalogs-name line-ellipsis">
-          {{item.name}}
-        </div>
-      </div>
-      <TreeItem :parentId="item['_id']" :treeNode="getTreeNode(item, index)" v-if="item.hasChild"></TreeItem>
+  <div
+    class="flex align-items-center catalogs-item-layout"
+    @click.left="chooseCatalog(item, index)"
+    @click.right.stop.prevent="(e) => showOperateMenu(e, item, index)"
+    :class="{'act': curCatalog['_id'] === item['_id']}"
+    v-click-outside="closeMenu"
+  >
+    <div class="iconfont">
+      <svg class="icon icon-close" aria-hidden="true">
+        <use xlink:href="#icon-wenjian2"></use>
+      </svg>
+      <svg class="icon  icon-open" aria-hidden="true">
+        <use xlink:href="#icon-wenjian-"></use>
+      </svg>
+    </div>
+    <div class="catalogs-name line-ellipsis">
+      {{item.name}}
+    </div>
+    <div class="catalog-operate-layout" :style="operateMenuStyle" v-if="operateMenuStyle.left !== -1">
+      <div class="catalog-operate-item">新建</div>
+      <div class="catalog-operate-item">删除</div>
     </div>
   </div>
 </template>
 <script>
-  import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
-  import * as MUTATIONS from '../../store/const/mutaions'
-  import * as ACTIONS from '../../store/const/actions'
   export default {
     name: 'TreeItem',
     props: {
-      parentId: {
-        type: String,
+      curCatalog: {
+        type: Object,
+        default: function () {
+          return {}
+        }
+      },
+      item: {
+        type: Object,
         require: true
       },
-      treeNode: {
-        type: Array,
-        default: function () {
-          return []
-        }
+      index: {
+        type: Number,
+        require: true
+      },
+    },
+    data() {
+      return {
+        operateMenuStyle: { left: -1, top: '50%'}
       }
     },
-    computed: {
-      ...mapState({
-        catalogs: state => state.catalogs.catalogs,
-        curCatalog: state => state.catalogs.curCatalog,
-      }),
-    },
     methods: {
-      ...mapMutations([
-        MUTATIONS.CATALOGS_CUR_SAVE
-      ]),
-      ...mapActions([
-        ACTIONS.CATALOGS_GET
-      ]),
-      async getDate(){
-        await this[ACTIONS.CATALOGS_GET]({ parentId: this.parentId })
-      },
-      init() {
-        this.getDate()
-      },
       chooseCatalog(data, index) {
-        this[ MUTATIONS.CATALOGS_CUR_SAVE]({
-          data,
-          treeNode: this.getTreeNode(data, index)
-        })
+        this.$emit('emitChooseCatalog', data, index)
       },
-      getTreeNode(data, index) {
-        return [ ...this.treeNode, { ...data, showIndex: index } ]
+      showOperateMenu(e) {
+        console.log('e', e)
+        const { clientX, clientY } = e
+        this.operateMenuStyle = {
+          top: `${clientY}px`,
+          left: `${clientX}px`
+        }
+      },
+      closeMenu() {
+        this.operateMenuStyle.left = -1
       }
     },
     mounted() {
-      console.log('this', this.$store.state)
-      this.init()
+      document.addEventListener('click', (e) => {
+        console.log('this.$el', this.$el)
+        console.log('e.target', e.target)
+        !this.$el.contains(e.target)
+      })
     }
   }
 </script>
 <style lang="less" scoped>
-  .catalogs-layout{
+  .iconfont{
+    font-size: 25px;
+    margin-right: 5px;
+    position: relative;
+    z-index: 1;
+  }
+  .catalogs-item-layout{
     cursor:pointer;
-    .iconfont{
-      font-size: 25px;
-      margin-right: 5px;
-      position: relative;
-      z-index: 1;
+    padding: 10px 25px;
+    position: relative;
+    transition: .3s;
+    .icon-open{
+      display: none;
     }
-    .catalogs-layout{
-      padding-left: 20px;
+    .icon-close{
+      display: block;
     }
-    .catalogs-item-layout{
-      padding: 2px 25px;
-      position: relative;
-      transition: .3s;
-      .icon-open{
-        display: none;
-      }
-      .icon-close{
-        display: block;
-      }
+  }
+  .catalogs-item-layout:after{
+    content: '';
+    background: transparent;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    left: -100%;
+    transition: .3s;
+  }
+  .catalogs-item-layout:hover{
+    background: @border-color
+  }
+  .catalogs-item-layout:hover:after{
+    background: @border-color;
+  }
+  .catalogs-item-layout.act{
+    background: @bg-second-color;
+    color: #fff;
+    .icon-open{
+      display: block;
     }
-    .catalogs-item-layout:after{
-      content: '';
-      background: transparent;
-      position: absolute;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      left: -100%;
-      transition: .3s;
+    .icon-close{
+      display: none;
     }
-    .catalogs-item-layout.act{
-      background: @bg-second-color;
-      color: #fff;
-      .icon-open{
-        display: block;
-      }
-      .icon-close{
-        display: none;
-      }
-    }
-    .catalogs-item-layout.act:hover{
-      background: inherit;
-    }
-    .catalogs-item-layout.act:after{
-      background: inherit;
-    }
-    .catalogs-item-layout:hover{
-      background: @border-color
-    }
-    .catalogs-item-layout:hover:after{
-      background: @border-color;
-    }
+  }
+  .catalogs-item-layout.act:hover{
+    background: @bg-second-color;
+  }
+  .catalogs-item-layout.act:hover:after{
+    background: @bg-second-color;
+  }
+  .catalogs-item-layout.act:after{
+    background: @bg-second-color;
   }
   .catalogs-name{
     position: relative;
     z-index: 1;
     max-width: 150px;
+  }
+  // 右键类型菜单
+  .catalog-operate-layout{
+    position: fixed;
+    background: rgba(0,0,0,0.8);
+    left: 50%;
+    top: 50%;
+    color: #fff;
+    z-index: 999;
+    border-radius: 5px;
+    overflow: hidden;
+    .catalog-operate-item{
+      width: 150px;
+      padding: 10px 20px;
+    }
+    .catalog-operate-item:not(:last-child){
+      border-bottom: solid 1px @border-color;
+    }
   }
 
 </style>
