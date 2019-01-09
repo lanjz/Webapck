@@ -14,12 +14,17 @@
         <use xlink:href="#icon-wenjian-"></use>
       </svg>
     </div>
-    <div class="catalogs-name line-ellipsis">
-      {{item.name}}
-    </div>
+    <div v-if="!renameCatalog" class="catalogs-name line-ellipsis">{{item.name}}</div>
+    <input :value="item.name"
+           class="edit-catalogs-input line-ellipsis"
+           @focus="e => focusEditCatalog(e)"
+           autofocus="true"
+           @blur="renameCatalog=false"
+           v-else />
     <div class="catalog-operate-layout" :style="operateMenuStyle" v-if="operateMenuStyle.left !== -1">
       <div class="catalog-operate-item">新建</div>
       <div class="catalog-operate-item">删除</div>
+      <div class="catalog-operate-item" @click="rename">重命名</div>
     </div>
   </div>
 </template>
@@ -44,6 +49,7 @@
     },
     data() {
       return {
+        renameCatalog: false,
         operateMenuStyle: { left: -1, top: '50%'}
       }
     },
@@ -52,7 +58,6 @@
         this.$emit('emitChooseCatalog', data, index)
       },
       showOperateMenu(e) {
-        console.log('e', e)
         const { clientX, clientY } = e
         this.operateMenuStyle = {
           top: `${clientY}px`,
@@ -61,12 +66,18 @@
       },
       closeMenu() {
         this.operateMenuStyle.left = -1
+      },
+      rename() {
+        this.closeMenu()
+        this.renameCatalog = true
+      },
+      focusEditCatalog(e) {
+        console.log(e)
+        e.currentTarget.select();
       }
     },
     mounted() {
       document.addEventListener('click', (e) => {
-        console.log('this.$el', this.$el)
-        console.log('e.target', e.target)
         !this.$el.contains(e.target)
       })
     }
@@ -81,7 +92,7 @@
   }
   .catalogs-item-layout{
     cursor:pointer;
-    padding: 10px 25px;
+    padding: 7px 25px;
     position: relative;
     transition: .3s;
     .icon-open{
@@ -130,6 +141,18 @@
     position: relative;
     z-index: 1;
     max-width: 150px;
+  }
+  .edit-catalogs-input{
+    position: relative;
+    z-index: 1;
+    max-width: 150px;
+    background: transparent;
+    vertical-align: bottom;
+    border: none;
+    color: inherit;
+    font-size: inherit;
+    height: 28px;
+    padding: 0 10px;
   }
   // 右键类型菜单
   .catalog-operate-layout{
