@@ -26,7 +26,7 @@
     <div class="catalog-operate-layout" :style="operateMenuStyle" v-if="operateMenuStyle.left !== -1">
       <div class="catalog-operate-item" @click="todoCreateTemDir">新建文件夹</div>
       <div class="catalog-operate-item" @click="todoRename">重命名</div>
-      <div class="catalog-operate-item">删除{{isNewDir}}</div>
+      <div class="catalog-operate-item">删除</div>
     </div>
   </div>
 </template>
@@ -62,14 +62,6 @@
         renameValue: ''
       }
     },
-    watch: {
-      isNewDir: function (val) {
-        console.log('this.item', val)
-        if(val) {
-          this.todoRename()
-        }
-      }
-    },
     methods: {
       chooseCatalog(data, index) {
         this.$emit('emitChooseCatalog', data, index)
@@ -99,10 +91,14 @@
         }
       },
       todoCreateTemDir() {
+        this.closeMenu()
         this.$emit('emitDoCreateTemDir', this.item)
       }
     },
     mounted() {
+      if(this.isNewDir) {
+        this.todoRename()
+      }
       document.addEventListener('click', (e) => {
         !this.$el.contains(e.target)
       })
