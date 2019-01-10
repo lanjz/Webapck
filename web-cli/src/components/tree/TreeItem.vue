@@ -86,8 +86,12 @@
        * */
       doRename() {
         this.renameCatalog = false
+        if(this.isNewDir){
+          this.$emit('emitSubmitCatalogName', this.renameValue, this.item)
+          return
+        }
         if(this.renameValue && this.renameValue !== this.item.name) {
-          this.$emit('emitModifyCatalogName', this.renameValue, this.item)
+          this.$emit('emitSubmitCatalogName', this.renameValue, this.item)
         }
       },
       todoCreateTemDir() {
@@ -96,6 +100,7 @@
       }
     },
     mounted() {
+      // 如果就新建文件夹则直接执行todoRename函数
       if(this.isNewDir) {
         this.todoRename()
       }

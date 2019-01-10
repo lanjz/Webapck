@@ -1,12 +1,12 @@
 <template>
   <div class="catalogs-layout">
-    <div v-if="isNewDir === item['_id']">
+    <div v-if="isNewDir" :abc="isNewDir">
       <TreeItem
         :item="newDir"
         :curCatalog="curCatalog"
         :isNewDir="isNewDir"
         @emitChooseCatalog="chooseCatalog"
-        @emitModifyCatalogName="modifyCatalogName"
+        @emitSubmitCatalogName="submitCatalogName"
         @emitDoCreateTemDir="doCreateTemDir"
       ></TreeItem>
     </div>
@@ -20,10 +20,15 @@
         :index="index"
         :curCatalog="curCatalog"
         @emitChooseCatalog="chooseCatalog"
-        @emitModifyCatalogName="modifyCatalogName"
+        @emitSubmitCatalogName="submitCatalogName"
         @emitDoCreateTemDir="doCreateTemDir"
       ></TreeItem>
-      <Tree :parentId="item['_id']" :treeNode="getTreeNode(item, index)" :isNewDir="createNewDir" v-if="createNewDir||item.hasChild"></Tree>
+      <Tree
+        :parentId="item['_id']"
+        :treeNode="getTreeNode(item, index)"
+        :isNewDir="isNewCondition(item)"
+        v-if="(newDir.parentId === item['_id'])||item.hasChild">
+      </Tree>
     </div>
   </div>
 </template>
@@ -46,9 +51,9 @@
         }
       },
       isNewDir: {
-        type: String,
+        type: Boolean,
         default: function () {
-          return ''
+          return false
         }
       }
     },
@@ -58,7 +63,6 @@
     data() {
       return {
         operateMenuStyle: { left: -1, top: '50%'},
-        createNewDir: '',
         newDir: {
           parentId: '',
           name: '新建文件夹',
@@ -80,15 +84,20 @@
       ]),
       ...mapActions([
         ACTIONS.CATALOGS_GET,
-        ACTIONS.CATALOGS_PUT
+        ACTIONS.CATALOGS_PUT,
+        ACTIONS.CATALOGS_POST
       ]),
       async getDate(){
         await this[ACTIONS.CATALOGS_GET]({ parentId: this.parentId })
       },
       init() {
-        if(!this.createNewDir) {
+        console.log('isNewDir', this.isNewDir, this.parentId)
+        if(!this.isNewDir) {
           this.getDate()
         }
+      },
+      isNewCondition(item) {
+        return this.newDir.parentId === item['_id']
       },
       chooseCatalog(data, index) {
         this[ MUTATIONS.CATALOGS_CUR_SAVE]({
@@ -106,29 +115,40 @@
           left: `${offsetX}px`
         }
       },
-      async modifyCatalogName(name, item) {
-        const { _id, isNew } = item
-        let result = null
-        if(isNew) {
-          result = await this[ACTIONS.CATALOGS_PUT]({
-            id: _id,
-            name,
-          })
-        } else {
-          result = await this[ACTIONS.CATALOGS_POST]({
-            parentId: this.parentId,
-            name,
-          })
+      submitCatalogName(name, item) {
+        const { isNew } = item
+        if(!isNew) {
+          this.modifyCatalogName(name, item)
+          return
         }
+        this.addCatalog(name, item)
+      },
+      async modifyCatalogName(name, item) {
+        const { _id } = item
+        const result = await this[ACTIONS.CATALOGS_PUT]({
+          id: _id,
+          name,
+        })
+        if(!result.err) {
+          this.getDate()
+        }
+
+      },
+      async addCatalog(name, item) {
+        const { parentId } = item
+        const result = await this[ACTIONS.CATALOGS_POST]({
+          parentId,
+          name
+        })
+        this.newDir.parentId = ''
+        console.log('this.newDir.parentId', this.newDir.parentId)
         if(!result.err) {
           this.getDate()
         }
       },
       // 创建新的文件夹存入store
       doCreateTemDir({ _id }) {
-        this.parentId = _id
-        this.createNewDir = id
-        // this[MUTATIONS.CATALOGS_TEMPLATE_CREATE](_id)
+        this.newDir.parentId = _id
       }
     },
     mounted() {
