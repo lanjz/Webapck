@@ -18,6 +18,25 @@ const mutations = {
   [MUTATIONS.CATALOGS_CUR_SAVE](state, { data = {}, treeNode = [] }) {
     state.curCatalog = { ...data }
     state.treeNode = [ ...treeNode ]
+  },
+  /**
+   * 创建临时的目录
+   * @param <String> parentId
+   * */
+  [MUTATIONS.CATALOGS_TEMPLATE_CREATE](state, id) {
+    const newDir = {
+      name: '新建文件夹',
+      isNew: true,
+      parentId: id
+    }
+    // 将临时目录插入到目标文件夹最前面，并更新state
+    const getCatalog = state.catalogs[id] ? state.catalogs[id] : []
+    const addCatalog = [ newDir, ...getCatalog ]
+    state.catalogs = {
+      ...state.catalogs,
+      ...{ [id]: addCatalog }
+    }
+    console.log('state', state)
   }
 }
 const getters = {
@@ -55,7 +74,7 @@ const actions = {
   },
   async [ACTIONS.CATALOGS_DELETE]({ commit }, data) {
     const result = await fetch({
-      url: '/api/catalogs',
+      url: '/api/catalog',
       method: 'delete',
       data
     })
@@ -63,8 +82,8 @@ const actions = {
   },
   async [ACTIONS.CATALOGS_PUT]({ commit }, data) {
     const result = await fetch({
-      url: '/api/catalogs',
-      method: 'put',
+      url: '/api/catalog',
+      method: 'PUT',
       data
     })
     return result
