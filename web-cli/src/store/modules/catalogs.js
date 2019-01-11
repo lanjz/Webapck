@@ -5,7 +5,7 @@ import * as ACTIONS from '../const/actions'
 const state = {
   catalogs: {},
   curCatalog: {},
-  treeNode: [], // 记录当前选择的node链
+  treeChain: [], // 记录当前选择的node链
 }
 
 const mutations = {
@@ -15,9 +15,9 @@ const mutations = {
       ...{ [parentId]: data }
     }
   },
-  [MUTATIONS.CATALOGS_CUR_SAVE](state, { data = {}, treeNode = [] }) {
+  [MUTATIONS.CATALOGS_CUR_SAVE](state, { data = {}, treeChain = [] }) {
     state.curCatalog = { ...data }
-    state.treeNode = [ ...treeNode ]
+    state.treeChain = [ ...treeChain ]
   },
   /**
    * 创建临时的目录

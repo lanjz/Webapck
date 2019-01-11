@@ -5,6 +5,7 @@
       v-for="(item, index) in catalogs['root']"
       :key="index"
       :curNode="item"
+      :treeChain="[item['_id']]"
     ></TreeItem>
   </div>
 </template>

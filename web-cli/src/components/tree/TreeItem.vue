@@ -4,7 +4,11 @@
       class="flex align-items-center catalogs-item-layout"
       @click.left="chooseCatalog"
       @click.right.stop.prevent="(e) => showOperateMenu(e)"
-      :class="{'act': actCatalog['_id'] === curNode['_id']}"
+      :class="{
+        'act': actCatalog['_id'] === curNode['_id'],
+        'in-chain': curNode['hasChild']&&treeChainList.indexOf(curNode['_id']) > -1,
+        'has-child': curNode['hasChild']
+      }"
       v-click-outside="closeMenu"
     >
       <div class="iconfont">
@@ -23,7 +27,7 @@
         v-focus:select
 
       />
-      <div v-else class="catalogs-name line-ellipsis">{{curNode.name}}</div>
+      <div v-else class="catalogs-name line-ellipsis">{{treeChain}}--{{curNode._id}}</div>
       <div class="catalog-operate-layout" :style="operateMenuStyle" v-if="operateMenuStyle.left !== -1">
         <div class="catalog-operate-item" @click="doCreateTemDir">新建文件夹</div>
         <div class="catalog-operate-item" @click="todoRename">重命名</div>
@@ -33,15 +37,15 @@
     <TreeItem
       v-if="newDir.parentId === curNode['_id']"
       :curNode="newDir"
-      @emitSubmitCatalogName="submitCatalogName"
+      @emitExitNewDir="exitNewDir"
       :isNewDir="newDir.parentId === curNode['_id']"
     ></TreeItem>
     <TreeItem
       v-if="catalogs[curNode['_id']]"
       v-for="(item, index) in catalogs[curNode['_id']]"
       :key="index"
-      @emitSubmitCatalogName="submitCatalogName"
       :curNode="item"
+      :treeChain="[...treeChain, item['_id']]"
     ></TreeItem>
   </div>
 </template>
@@ -62,6 +66,12 @@
         default: function () {
           return false
         }
+      },
+      treeChain: {
+        type: Array,
+        default: function () {
+          return []
+        }
       }
     },
     data() {
@@ -81,6 +91,7 @@
       ...mapState({
         catalogs: state => state.catalogs.catalogs,
         actCatalog: state => state.catalogs.curCatalog,
+        treeChainList: state => state.catalogs.treeChain
       }),
     },
     methods: {
@@ -94,7 +105,11 @@
         ACTIONS.CATALOGS_POST
       ]),
       chooseCatalog() {
-        this[MUTATIONS.CATALOGS_CUR_SAVE]({ data: this.curNode })
+        this[MUTATIONS.CATALOGS_CUR_SAVE](
+          { data: this.curNode,
+            treeChain: [ ...this.treeChain]
+          }
+        )
       },
       showOperateMenu(e) {
         const { clientX, clientY } = e
@@ -117,11 +132,11 @@
       doRename() {
         this.renameCatalog = false
         if(this.isNewDir){
-          this.$emit('emitSubmitCatalogName', this.renameValue, this.curNode)
+          this.addCatalog(this.renameValue, this.curNode.parentId)
           return
         }
         if(this.renameValue && this.renameValue !== this.curNode.name) {
-          this.$emit('emitSubmitCatalogName', this.renameValue, this.curNode)
+          this.modifyCatalogName(this.renameValue, this.curNode)
         }
       },
       submitCatalogName(name, item) {
@@ -133,33 +148,35 @@
         this.addCatalog(name, item)
       },
       async modifyCatalogName(name, item) {
-        const { _id } = item
+        const { _id, parentId } = item
         const result = await this[ACTIONS.CATALOGS_PUT]({
           id: _id,
           name,
         })
         if(!result.err) {
-          this.getDate()
+          this.getDate(parentId)
         }
       },
-      async addCatalog(name, item) {
-        const { parentId } = item
+      async addCatalog(name, parentId) {
         const result = await this[ACTIONS.CATALOGS_POST]({
           parentId,
           name
         })
-        this.newDir.parentId = ''
+        this.$emit('emitExitNewDir')
         if(!result.err) {
           // 新建完成后根据当前文件id获取目录，但是没更新当前文件状态，hasChild没有变化
-          this.getDate()
+          this.getDate(parentId)
         }
+      },
+      exitNewDir() {
+        this.newDir.parentId = ''
       },
       doCreateTemDir() {
         this.closeMenu()
         this.newDir.parentId = this.curNode['_id']
       },
-      async getDate(){
-        await this[ACTIONS.CATALOGS_GET]({ parentId: this.curNode['_id'] })
+      async getDate(id){
+        await this[ACTIONS.CATALOGS_GET]({ parentId: id || this.curNode['_id'] })
       },
       init() {
         // 如果就新建文件夹则直接执行todoRename函数
@@ -211,6 +228,26 @@
     height: 100%;
     left: -100%;
     transition: .3s;
+  }
+  // 有子文件夹且未打开
+  .catalogs-item-layout.has-child:before{
+    content: '';
+    position: absolute;
+    border-left: solid 6px @bg-second-color;
+    border-top: solid 5px transparent;
+    border-bottom: solid 5px transparent;
+    width: 0;
+    height: 0;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-6px);
+  }
+  // 月子目录且打开状态
+  .catalogs-item-layout.has-child.in-chain:before{
+    transform: translateY(-6px) rotate(90deg);
+  }
+  .catalogs-item-layout.act.has-child:before{
+    border-left: solid 6px #fff;
   }
   .catalogs-item-layout:hover{
     background: @border-color

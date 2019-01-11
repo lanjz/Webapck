@@ -34,6 +34,7 @@
       </div>
     </div>
     <div class="catalog-layout">
+      {{treeChain}}
       <TreeItem parentId="root"></TreeItem>
     </div>
     <ArticleBrief></ArticleBrief>
@@ -51,15 +52,8 @@
     },
     computed: {
       ...mapState({
-        treeNode: state => state.catalogs.treeNode
+        treeChain: state => state.catalogs.treeChain
       }),
-      curTreeTotalIndex() {
-        let count = 0
-        this.treeNode.forEach((item) => {
-          count = count + item.showIndex + 1
-        })
-        return count
-      }
     }
   }
 </script>
