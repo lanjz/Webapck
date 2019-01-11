@@ -41,14 +41,14 @@ const mutations = {
 }
 const getters = {
   getCurTree: state => {
-    const arr = []
+/*    const arr = []
     let curData = state.curCatalog
     while (curData.parentId !== 'root') {
       arr.push(curData)
       curData = state.catalogs[curData.parentId]
     }
     arr.push(curData)
-    return arr
+    return arr*/
   }
 }
 const actions = {
@@ -66,7 +66,7 @@ const actions = {
   /* eslint-disable no-unused-vars */
   async [ACTIONS.CATALOGS_POST]({ commit }, data) {
     const result = await fetch({
-      url: '/api/catalogs',
+      url: '/api/catalog',
       method: 'post',
       data
     })
