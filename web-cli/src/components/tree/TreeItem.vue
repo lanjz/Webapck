@@ -6,10 +6,9 @@
       @click.right.stop.prevent="(e) => showOperateMenu(e)"
       :class="{
         'act': actCatalog['_id'] === curNode['_id'],
-        'in-chain': curNode['hasChild']&&treeChainList.indexOf(curNode['_id']) > -1,
+        'in-chain': isOpen||(isOpen&&curNode['hasChild']&&treeChainList.indexOf(curNode['_id']) > -1),
         'has-child': curNode['hasChild']
       }"
-      v-click-outside="closeMenu"
     >
       <div class="iconfont">
         <svg class="icon icon-close" aria-hidden="true">
@@ -27,8 +26,9 @@
         v-focus:select
 
       />
-      <div v-else class="catalogs-name line-ellipsis">{{treeChain}}--{{curNode._id}}</div>
-      <div class="catalog-operate-layout" :style="operateMenuStyle" v-if="operateMenuStyle.left !== -1">
+      <div v-else class="catalogs-name line-ellipsis">{{curNode.name}}</div>
+      <div class="operate-triangle-btn" @click.left.stop="(e) => showOperateMenu(e)"></div>
+      <div class="catalog-operate-layout" v-click-outside="closeMenu" :style="operateMenuStyle" v-if="operateMenuStyle.left !== -1">
         <div class="catalog-operate-item" @click="doCreateTemDir">新建文件夹</div>
         <div class="catalog-operate-item" @click="todoRename">重命名</div>
         <div class="catalog-operate-item">删除</div>
@@ -41,6 +41,7 @@
       :isNewDir="newDir.parentId === curNode['_id']"
     ></TreeItem>
     <TreeItem
+      v-show="isOpen"
       v-if="catalogs[curNode['_id']]"
       v-for="(item, index) in catalogs[curNode['_id']]"
       :key="index"
@@ -84,7 +85,8 @@
           name: '新建文件夹',
           show: false,
           isNew: true
-        }
+        },
+        isOpen: false
       }
     },
     computed: {
@@ -105,6 +107,7 @@
         ACTIONS.CATALOGS_POST
       ]),
       chooseCatalog() {
+        this.isOpen = !this.isOpen
         this[MUTATIONS.CATALOGS_CUR_SAVE](
           { data: this.curNode,
             treeChain: [ ...this.treeChain]
@@ -163,12 +166,9 @@
           name
         })
         this.$emit('emitExitNewDir')
-        if(!result.err) {
-          // 新建完成后根据当前文件id获取目录，但是没更新当前文件状态，hasChild没有变化
-          this.getDate(parentId)
-        }
       },
       exitNewDir() {
+        this.getDate(this.curNode.parentId)
         this.newDir.parentId = ''
       },
       doCreateTemDir() {
@@ -205,7 +205,6 @@
     font-size: 25px;
     margin-right: 2px;
     position: relative;
-    z-index: 1;
   }
   .catalogs-item-layout{
     cursor:pointer;
@@ -229,6 +228,18 @@
     left: -100%;
     transition: .3s;
   }
+  .operate-triangle-btn{
+    display: none;
+    position: absolute;
+    border-left: solid 6px #d4d4d4;
+    border-top: solid 5px transparent;
+    border-bottom: solid 5px transparent;
+    width: 0;
+    height: 0;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-4px) rotate(90deg);
+  }
   // 有子文件夹且未打开
   .catalogs-item-layout.has-child:before{
     content: '';
@@ -251,6 +262,9 @@
   }
   .catalogs-item-layout:hover{
     background: @border-color
+  }
+  .catalogs-item-layout:hover .operate-triangle-btn{
+    display: block;
   }
   .catalogs-item-layout:hover:after{
     background: @border-color;
@@ -276,7 +290,6 @@
   }
   .catalogs-name{
     position: relative;
-    z-index: 1;
     max-width: 150px;
     padding: 0 5px;
   }
