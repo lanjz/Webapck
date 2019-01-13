@@ -34,6 +34,9 @@ body{
 .flex.direction-row{
   flex-direction: row;
 }
+.flex.wrap{
+  flex-wrap: wrap;
+}
 .flex.justify-content-end{
   justify-content: flex-end
 }
@@ -79,3 +82,75 @@ body{
   text-overflow:ellipsis;
   white-space: nowrap;
 }
+
+/*我的表单*/
+.form-layout{  position: relative;  }
+.form-group:not(:first-child){
+  margin-top: 18px;
+}
+.form-label-layout{
+  text-align: right;
+  width: 100px;
+  padding: 5px 10px;
+}
+.from-select, .form-input{
+  width: 200px;
+  height: 30px;
+  border-radius: 4px;
+  border: solid 1px @form-color;
+}
+.formBtnBox{
+  width: 150px;
+  float: right;
+  position: absolute;
+  right: 0;
+  height: 100%;
+  top: 0;
+  z-index: 2;
+}
+.formBtnBox .btn{
+  position: absolute;
+  top: 50%;
+  margin-top: -15px;
+  right: 30px;
+}
+.formBox{  margin-right: 150px;  color: #69717d;  }
+.formBoxUnit{  width: 25%;  float: left;  }
+.formBoxUnit .inputLabel{
+  text-align: right;
+  width: 100px;
+  float: left;
+  padding-top: 11px;
+}
+.formOutBox .inputBox{  margin-left: 105px;  padding: 7px;  }
+.formOutBox .inputStyle{padding: 0 4px}
+.formOutBox .inputBox .inputStyle{
+  border-radius: 3px;
+  width: 100%;
+  resize: none;
+  border: solid 1px #ced7e5;
+}
+.formOutBox .inputBox input[type=text].inputStyle,
+.formOutBox .inputBox select.inputStyle{
+  min-height: 30px;
+}
+.formOutBox .inputBox textarea.inputStyle{
+  min-height: 60px;
+}
+/*用于checkBox和radio*/
+.formOutBox .checkboxRadio{  display: inline-block;  height: 30px;  line-height: 30px;  }
+.formOutBox  .checkboxRadioStyle{
+  position: relative;
+  top: 1px;
+  margin-right: 20px;
+}
+/*有背景色的表单*/
+.bgForm{  background: #eee;  border-top: solid 1px #e6e6e6;  }
+.bgForm .formBox {margin-right:0}
+.bgForm .formBoxUnit{
+  border-bottom: solid 1px #e6e6e6;
+  padding: 0 1px;
+  width: 100%;
+  float: none;
+}
+.bgForm .inputBox{  background: #fff;  }
