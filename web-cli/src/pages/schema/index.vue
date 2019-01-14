@@ -4,11 +4,28 @@
       <div>自定义字段</div>
     </div>
     <div class="flex flex-1 direction-column">
-      <div class="schema-title">
-        测试测试测试
-      </div>
       <div class="schema-content">
-        <EditSchema></EditSchema>
+        <table class="table-layout">
+          <thead>
+          <tr>
+            <th><div class="th-p">别名</div></th>
+            <th><div class="th-p">类型</div></th>
+            <th><div class="th-p">默认值</div></th>
+            <th><div class="th-p">选项</div></th>
+            <th><div class="th-p"></div></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><div class="td-p">别名</div></td>
+            <td><div class="td-p">类型</div></td>
+            <td><div class="td-p">默认值</div></td>
+            <td><div class="td-p">选项</div></td>
+            <td><div class="td-p"><span>编辑</span><span>删除</span></div></td>
+          </tr>
+          </tbody>
+        </table>
+        <!--<EditSchema></EditSchema>-->
       </div>
     </div>
   </div>

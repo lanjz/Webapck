@@ -136,3 +136,50 @@ div.disable-btn{
 .router-link-active{
   text-decoration: underline !important;
 }
+
+// 表格
+.table-layout {
+  width: 100%;
+  background: #fff;
+  border-collapse:collapse;  /*重叠的border合度为一条线*/
+  /*控制cellpadding-单元格间距-单元边沿与单元内容之间的空间*/
+  margin: 0;
+  padding: 0;
+}
+.table-layout td, .table-layout th {
+  text-align: left;
+  border: solid 1px #cccccc;
+  padding:0; /*控制cellpadding-单元格间距*/
+}
+.table-layout th {  background: #f3f3f3;  }
+.table-layout th .th-p{
+  color: #666;
+  font-weight: bold;
+  word-break: keep-all;   /*th里的内容强制不换行，即最小宽度为字段宽度*/
+}
+
+.table-layout td.firstTd {
+  width: 50px;
+  text-align: center;
+}
+.table-layout td {
+  white-space: normal;
+  word-break: break-all;
+  /*background-clip: padding-box;*/
+}
+.table-layout .td-p,
+.table-layout .th-p{
+  padding: 10px;
+  margin: 0;
+}
+.table-layout tr:nth-child(even){  background: #fafafa;  }
+.table-layout .tableCheckBox{position: relative;top: 1px}
+/*保持单行，超出显示省略号*/
+.tableEllipsis{table-layout: fixed}
+
+.tableEllipsis .td-p,
+.tableEllipsis .th-p{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

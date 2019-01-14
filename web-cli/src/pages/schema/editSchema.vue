@@ -1,8 +1,5 @@
 <template>
   <div class="flex">
-    <div class="">
-      <div>自定义字段</div>
-    </div>
     <div class="flex flex-1 direction-column">
       <div class="schema-title">
         测试测试测试
