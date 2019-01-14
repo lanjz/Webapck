@@ -9,7 +9,7 @@
 <script>
   import BookLayout from './bookSlider.vue'
   import articles from './article.vue'
-  import schema from '../schema.vue'
+  import schema from '../schema/index.vue'
   export default {
     components: {
       BookLayout,
