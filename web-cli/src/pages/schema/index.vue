@@ -1,9 +1,31 @@
 <template>
-  <div class="flex">
-    <div class="">
-      <div>自定义字段</div>
+  <div class="flex flex-1">
+    <div class="catalogs-layout">
+      <div class="flex align-items-center catalogs-item-layout">
+        <div class="iconfont">
+          <svg class="icon icon-close" aria-hidden="true">
+            <use xlink:href="#icon-wenjian2"></use>
+          </svg>
+        </div>
+        <div class="catalogs-name line-ellipsis">偶的看来</div>
+      </div>
+      <div class="flex align-items-center catalogs-item-layout act">
+        <div class="iconfont">
+          <svg class="icon icon-close" aria-hidden="true">
+            <use xlink:href="#icon-wenjian2"></use>
+          </svg>
+        </div>
+        <div class="catalogs-name line-ellipsis">偶的看来</div>
+      </div>
     </div>
     <div class="flex flex-1 direction-column">
+      <div class="schema-title flex justify-content-space-between">
+        <div>测试测试测试</div>
+        <div class="schema-operate">
+          <span class="btn">编辑</span>
+          <span class="btn warn">删除</span>
+        </div>
+      </div>
       <div class="schema-content">
         <table class="table-layout">
           <thead>
@@ -80,5 +102,24 @@
   }
   .form-content{
     max-width: 500px;
+  }
+  .catalogs-layout{
+    width: 200px;
+    border-right: solid 1px @border-color;
+  }
+  .catalogs-item-layout{
+    padding: 5px 20px;
+  }
+  .iconfont{
+    font-size: 25px;
+    margin-right: 2px;
+    position: relative;
+  }
+  .catalogs-item-layout.act{
+    background: @bg-second-color;
+    color: #fff;
+  }
+  .schema-operate{
+    font-size: 15px;
   }
 </style>
