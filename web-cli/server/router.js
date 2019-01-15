@@ -2,6 +2,7 @@ import * as Router from 'koa-router'
 import userCtl from './controller/User.js'
 import catalogCtl from './controller/Catalog.js'
 import bookCtl from './controller/Book.js'
+import schematasCtl from './controller/SchematasCtl.js'
 import articleCtl from './controller/Article.js'
 // userCtl.find()
 const router = new Router({ prefix: '/api' })
@@ -20,6 +21,12 @@ router.get('/book/:id', bookCtl.findById)
 router.delete('/book', bookCtl.deleteById)
 router.put('/book', bookCtl.modify)
 router.post('/book', bookCtl.add)
+
+router.get('/schematas', schematasCtl.find)
+router.get('/schematas/:id', schematasCtl.findById)
+router.delete('/schematas', schematasCtl.deleteById)
+router.put('/schematas', schematasCtl.modify)
+router.post('/schematas', schematasCtl.add)
 
 router.get('/catalogs', catalogCtl.find)
 router.get('/catalog/:id', catalogCtl.findById)
