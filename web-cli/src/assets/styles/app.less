@@ -140,6 +140,10 @@ div.disable-btn{
   text-decoration: underline !important;
 }
 
+.panel-bg{
+  background: #fff;
+  padding: 7px;
+}
 // 表格
 .table-layout {
   width: 100%;
@@ -147,17 +151,15 @@ div.disable-btn{
   border-collapse:collapse;  /*重叠的border合度为一条线*/
   /*控制cellpadding-单元格间距-单元边沿与单元内容之间的空间*/
   margin: 0;
-  padding: 0;
+  padding: 0 ;
 }
 .table-layout td, .table-layout th {
   text-align: left;
-  border: solid 1px #cccccc;
   padding:0; /*控制cellpadding-单元格间距*/
 }
-.table-layout th {  background: #f3f3f3;  }
+.table-layout th {  background: @bg-second-color;  }
 .table-layout th .th-p{
-  color: #666;
-  font-weight: bold;
+  color: #fff;
   word-break: keep-all;   /*th里的内容强制不换行，即最小宽度为字段宽度*/
 }
 

@@ -27,26 +27,43 @@
         </div>
       </div>
       <div class="schema-content">
-        <table class="table-layout">
-          <thead>
-          <tr>
-            <th><div class="th-p">别名</div></th>
-            <th><div class="th-p">类型</div></th>
-            <th><div class="th-p">默认值</div></th>
-            <th><div class="th-p">选项</div></th>
-            <th><div class="th-p"></div></th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr>
-            <td><div class="td-p">别名</div></td>
-            <td><div class="td-p">类型</div></td>
-            <td><div class="td-p">默认值</div></td>
-            <td><div class="td-p">选项</div></td>
-            <td><div class="td-p"><span>编辑</span><span>删除</span></div></td>
-          </tr>
-          </tbody>
-        </table>
+        <div class="panel-bg">
+          <table class="table-layout">
+            <thead>
+            <tr>
+              <th><div class="th-p">别名</div></th>
+              <th><div class="th-p">类型</div></th>
+              <th><div class="th-p">默认值</div></th>
+              <th><div class="th-p">选项</div></th>
+              <th><div class="th-p"></div></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td><div class="td-p">别名</div></td>
+              <td><div class="td-p">类型</div></td>
+              <td><div class="td-p">默认值</div></td>
+              <td><div class="td-p">选项</div></td>
+              <td><div class="td-p"><span>编辑</span><span>删除</span></div></td>
+            </tr>
+            <tr>
+              <td><div class="td-p">别名</div></td>
+              <td><div class="td-p">类型</div></td>
+              <td><div class="td-p">默认值</div></td>
+              <td><div class="td-p">选项</div></td>
+              <td><div class="td-p"><span>编辑</span><span>删除</span></div></td>
+            </tr>
+            <tr>
+              <td><div class="td-p">别名</div></td>
+              <td><div class="td-p">类型</div></td>
+              <td><div class="td-p">默认值</div></td>
+              <td><div class="td-p">选项</div></td>
+              <td><div class="td-p"><span>编辑</span><span>删除</span></div></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
         <!--<EditSchema></EditSchema>-->
       </div>
     </div>
@@ -80,6 +97,7 @@
 
   .schema-content {
     padding: 15px;
+    background: @bg-panel-color;
   }
 
   .add-options-item {
