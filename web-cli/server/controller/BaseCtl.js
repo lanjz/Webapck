@@ -125,6 +125,7 @@ class BaseCtl {
     const { id } = ctx.request.body
     if(!id){
       ctx.send(2, '', 'id不能为空')
+      return
     }
     try {
       const { err, data } = await this.filterParams(ctx.request.body)

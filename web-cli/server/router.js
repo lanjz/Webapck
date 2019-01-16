@@ -23,10 +23,12 @@ router.put('/book', bookCtl.modify)
 router.post('/book', bookCtl.add)
 
 router.get('/schematas', schematasCtl.find)
-router.get('/schematas/:id', schematasCtl.findById)
-router.delete('/schematas', schematasCtl.deleteById)
-router.put('/schematas', schematasCtl.modify)
-router.post('/schematas', schematasCtl.add)
+router.get('/schemata/:id', schematasCtl.findById)
+router.delete('/schemata', schematasCtl.deleteById)
+// 只能修改name字段
+router.put('/schemata', schematasCtl.modify)
+router.post('/schemata', schematasCtl.add)
+router.post('/schemataField', schematasCtl.addField)
 
 router.get('/catalogs', catalogCtl.find)
 router.get('/catalog/:id', catalogCtl.findById)

@@ -1,3 +1,4 @@
+import hello from '../utils/hello'
 import BaseCtl from './BaseCtl'
 import schematasModel from '../model/Schematas'
 import validator from '../utils/validator'
@@ -171,12 +172,12 @@ class SchematasCtl extends BaseCtl {
     }
     return res
   }
-  filterSchemata(schema) {
+  filterSchemata(fields) {
     const res = { err: null, data: '' }
     const arr = []
-    schema.every((item) => {
+    fields.every((item) => {
       const tempFn = this.contentValidator[item.type]
-      if(tempFn) {
+      if(!tempFn) {
         return true
       }
       const { err, data } = tempFn(item)
@@ -191,20 +192,22 @@ class SchematasCtl extends BaseCtl {
     return res
   }
   async filterParams(arg){
+    console.log('arg', arg)
     const res = { err: null, data: '' }
     const getParams = JSON.parse(JSON.stringify(arg))
-    const { schemata = [] }  = getParams
-    const isObjResult = validator.isArrayType(schemata)
+    const { fields = [] }  = getParams
+    const isObjResult = validator.isArrayType(fields)
     if(isObjResult.err) {
       res.err = isObjResult.err
       return res
     }
-    const filterSchemata = this.filterSchemata(schemata)
+    const filterSchemata = this.filterSchemata(fields)
     if(filterSchemata.err) {
       res.err = filterSchemata.err
       return res
     }
-    getParams.schemata = filterSchemata.data
+    getParams.fields = filterSchemata.data
+    console.log('getParams', getParams)
     res.data = getParams
     const { name, userId } = getParams
     const findSchema = await this.Model.findOne({ name, userId })
@@ -213,6 +216,50 @@ class SchematasCtl extends BaseCtl {
       return res
     }
     return res
+  }
+  // 验证并过滤提交的字段
+  filterField(arg) {
+    const res = { err: null, data: ''}
+    const { schemataId, type } = arg
+    if(!schemataId) {
+      res.err = new Error('schemataId不能为空')
+      return res
+    }
+    const tempFn = this.contentValidator[type]
+    if(!tempFn) {
+      res.err = new Error(`不支持${type}类型`)
+      return res
+    }
+    const { err, data } = tempFn(arg)
+    if(err) {
+      res.err = new Error(`${item}:${err.message}`)
+      return false
+    }
+    res.data = data
+    return res
+  }
+  // 添加字段
+  async addField(ctx, next) {
+    try{
+      const { schemataId } = arg
+      if(!schemataId) {
+        ctx.send(2, '',  'schemataId不能为空')
+        return
+      }
+      const merge = { ...ctx.equest.body, ...this.dbQuery(ctx) }
+      const { err, data: getParams } = await this.filterField(merge, ctx)
+      if(err) {
+        ctx.send(2, '', hello.dealError(err))
+      }
+      getParams.id = hello.createObjectId()
+      const findSchema = await this.Model.findById(schemataId)
+      if(!findSchema) {
+        ctx.send(2, '',  `${schemataId}不存在`)
+      }
+      // const result = await this.Model.addField(schemataId, getParams, dbQuery)
+    } catch (e) {
+      console.log('e', e)
+    }
   }
 }
 const schematasCtl = new SchematasCtl()

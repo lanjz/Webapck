@@ -74,7 +74,7 @@ class baseModel {
     return this.Model.updateOne({ _id: id }, data);
   }
   findOneAndUpdate(id, data, query = {}) {
-    return this.model.findOneAndUpdate({ _id: id, ...query }, data, { new: true })
+    return this.Model.findOneAndUpdate({ _id: id, ...query }, data, { new: true })
       .select(this.assectPath).exec();
   }
   list(query = {}) {

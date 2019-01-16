@@ -11,7 +11,7 @@ class BookModel extends baseModel{
     return 'schematas'
   }
   banUpdateFields() {
-    return ['userId']
+    return ['userId', 'fields']
   }
   getSchema() {
     return {
@@ -23,9 +23,9 @@ class BookModel extends baseModel{
         type: String,
         required: true,
       },
-      schemata: {
-        type: Object,
-        default: {},
+      fields: {
+        type: Array,
+        default: [],
       },
       ...this.baseModel()
     }

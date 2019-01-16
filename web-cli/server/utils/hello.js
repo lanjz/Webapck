@@ -1,4 +1,5 @@
 import * as jwt from 'jwt-simple'
+import * as mongoose from 'mongoose'
 import userCtrl from '../controller/User'
 
 /**
@@ -110,6 +111,10 @@ async function checkAuth(ctx, next) {
   }
 }
 
+function createObjectId() {
+  return mongoose.Types.ObjectId()
+}
+
 
 export default {
   dealError,
@@ -118,4 +123,5 @@ export default {
   encodeLoginTypeJwt,
   decodeLoginTypeJwt,
   checkAuth,
+  createObjectId
 }
