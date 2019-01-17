@@ -111,7 +111,7 @@ class SchematasCtl extends BaseCtl {
     if(schema.default) {
       const validType = validator.isStringType(schema.default)
       if(validType.err) {
-        res.err = validType.err
+        res.err = new TypeError(`default: ${validType.err.message}`)
         return res
       }
       const isValidDefault = schema.options.find(item => (item.id === schema.default))
@@ -166,7 +166,7 @@ class SchematasCtl extends BaseCtl {
     }
     res.data = {
       name: schema.name,
-      default: schema.default,
+      default: schema.default.join(','),
       type: schema.type.trim(),
       options: schema.options
     }
@@ -182,7 +182,7 @@ class SchematasCtl extends BaseCtl {
       }
       const { err, data } = tempFn(item)
       if(err) {
-        res.err = new Error(`${item}:${err.message}`)
+        res.err = new Error(`${err.message}`)
         return false
       }
       arr.push(data)
@@ -192,7 +192,6 @@ class SchematasCtl extends BaseCtl {
     return res
   }
   async filterParams(arg){
-    console.log('arg', arg)
     const res = { err: null, data: '' }
     const getParams = JSON.parse(JSON.stringify(arg))
     const { fields = [] }  = getParams
@@ -207,7 +206,6 @@ class SchematasCtl extends BaseCtl {
       return res
     }
     getParams.fields = filterSchemata.data
-    console.log('getParams', getParams)
     res.data = getParams
     const { name, userId } = getParams
     const findSchema = await this.Model.findOne({ name, userId })

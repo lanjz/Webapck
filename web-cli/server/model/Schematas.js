@@ -1,3 +1,4 @@
+import * as mongoose from 'mongoose';
 import baseModel  from './BaseModel'
 
 
@@ -23,10 +24,24 @@ class BookModel extends baseModel{
         type: String,
         required: true,
       },
-      fields: {
-        type: Array,
-        default: [],
-      },
+      fields: [
+        {
+          name: {
+            type: String,
+            required: true,
+          },
+          type: {
+            type: String,
+            required: true,
+          },
+          default: {
+            type: String
+          },
+          options: {
+            type: Array
+          }
+        }
+      ],
       ...this.baseModel()
     }
   }
