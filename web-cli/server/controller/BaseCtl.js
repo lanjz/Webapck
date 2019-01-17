@@ -128,7 +128,8 @@ class BaseCtl {
       return
     }
     try {
-      const { err, data } = await this.filterParams(ctx.request.body)
+      const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
+      const { err, data } = await this.filterParams(merge)
       if(err) {
         ctx.send(2, ctx.request.body, err.message)
         return

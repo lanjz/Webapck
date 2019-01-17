@@ -45,6 +45,22 @@ class BookModel extends baseModel{
       ...this.baseModel()
     }
   }
+  // 向某个schema中添加字段
+  addField({ id, userId }, field) {
+    return this.Model.update(
+      { _id: id, userId },
+      {
+        $push: {
+          fields: field
+        }
+    })
+  }
+  // 向某个schema中添加字段
+  modifyField(query, projection) {
+    return this.Model.update(
+      query,
+      projection)
+  }
 }
 
 export default new BookModel()

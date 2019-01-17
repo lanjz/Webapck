@@ -25,10 +25,10 @@ router.post('/book', bookCtl.add)
 router.get('/schematas', schematasCtl.find)
 router.get('/schemata/:id', schematasCtl.findById)
 router.delete('/schemata', schematasCtl.deleteById)
-// 只能修改name字段
 router.put('/schemata', schematasCtl.modify)
 router.post('/schemata', schematasCtl.add)
 router.post('/schemataField', schematasCtl.addField)
+router.put('/schemataField', schematasCtl.modifyField)
 
 router.get('/catalogs', catalogCtl.find)
 router.get('/catalog/:id', catalogCtl.findById)

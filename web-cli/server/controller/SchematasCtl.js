@@ -18,7 +18,8 @@ class SchematasCtl extends BaseCtl {
       radio: this.radioConValid,
       select: this.selectConValid
     }
-    this.add = this.add.bind(this)
+    this.addField = this.addField.bind(this)
+    this.modifyField = this.modifyField.bind(this)
   }
   getAlias() {
     return '字段'
@@ -99,12 +100,12 @@ class SchematasCtl extends BaseCtl {
     }
     const isUniqueId = validator.isUniqueInArr(schema.options, 'id')
     if(isUniqueId.err) {
-      res.err = new RangeError(`options${isUniqueId.err.message}`)
+      res.err = new RangeError(`options：${isUniqueId.err.message}`)
       return res
     }
     const isUniqueName = validator.isUniqueInArr(schema.options, 'name')
     if(isUniqueName.err) {
-      res.err = new RangeError(`options${isUniqueName.err.message}`)
+      res.err = new RangeError(`options：${isUniqueName.err.message}`)
       return res
     }
     schema.options = schema.options.map(item => ({ name: item.name, id: item.id }))
@@ -200,7 +201,13 @@ class SchematasCtl extends BaseCtl {
       res.err = isObjResult.err
       return res
     }
+    const isUniqueName = validator.isUniqueInArr(fields, 'name', false)
+    if(isUniqueName.err) {
+      res.err = new RangeError(`options:${isUniqueName.err.message}`)
+      return res
+    }
     const filterSchemata = this.filterSchemata(fields)
+    
     if(filterSchemata.err) {
       res.err = filterSchemata.err
       return res
@@ -218,11 +225,7 @@ class SchematasCtl extends BaseCtl {
   // 验证并过滤提交的字段
   filterField(arg) {
     const res = { err: null, data: ''}
-    const { schemataId, type } = arg
-    if(!schemataId) {
-      res.err = new Error('schemataId不能为空')
-      return res
-    }
+    const { type } = arg
     const tempFn = this.contentValidator[type]
     if(!tempFn) {
       res.err = new Error(`不支持${type}类型`)
@@ -230,33 +233,148 @@ class SchematasCtl extends BaseCtl {
     }
     const { err, data } = tempFn(arg)
     if(err) {
-      res.err = new Error(`${item}:${err.message}`)
-      return false
+      res.err = err
+      return res
     }
     res.data = data
+    return res
+  }
+  /**
+   * arr1中key是否包含在arr2中
+   * @param <Array> arr1
+   * @param <Array> arr2
+   * @return <Object>
+   * */
+  valitArrInArr(arr1, arr2, key) {
+    const res = { err: null, data: arr2}
+    arr1.every(item => {
+      const find = arr2.find(item2 => item2[key] === item[key])
+      if(find) {
+        return true
+      }
+      res.err = new Error(`${item.id}丢失`)
+    })
     return res
   }
   // 添加字段
   async addField(ctx, next) {
     try{
-      const { schemataId } = arg
+      const { schemataId, field } = ctx.request.body
       if(!schemataId) {
         ctx.send(2, '',  'schemataId不能为空')
         return
       }
-      const merge = { ...ctx.equest.body, ...this.dbQuery(ctx) }
-      const { err, data: getParams } = await this.filterField(merge, ctx)
-      if(err) {
-        ctx.send(2, '', hello.dealError(err))
+      if(!field) {
+        ctx.send(2, '',  'field不能为空')
+        return
       }
-      getParams.id = hello.createObjectId()
+      const isValid = validator.isObjectType(field)
+      if(isValid.err) {
+        ctx.send(2, '', 'field not a object')
+        return
+      }
+      const { err, data: getParams } = await this.filterField(field, ctx)
+      if(err) {
+        ctx.send(2, '', hello.dealError(err.message))
+        return
+      }
       const findSchema = await this.Model.findById(schemataId)
       if(!findSchema) {
         ctx.send(2, '',  `${schemataId}不存在`)
+        return
       }
-      // const result = await this.Model.addField(schemataId, getParams, dbQuery)
+      console.log('schemataId', schemataId)
+      console.log('this.dbQuery(ctx)', this.dbQuery(ctx))
+      const findFieldInSchematas = await this.Model.findOne({
+        _id: schemataId,
+        fields: { $elemMatch:　{ name: getParams.name }},
+        ...this.dbQuery(ctx)
+      })
+      console.log('findFieldInSchematas', findFieldInSchematas)
+      if(findFieldInSchematas) {
+        ctx.send(2, '',  `${getParams.name}已存在`)
+        return
+      }
+      const result = await this.Model.addField({id: schemataId, ...this.dbQuery(ctx) }, getParams )
+      console.log('result', result)
+      ctx.send(1, result, '')
     } catch (e) {
-      console.log('e', e)
+      ctx.send(2, '', hello.dealError(e, ctx.request.body))
+    }finally {
+      await next()
+    }
+  }
+  async modifyField(ctx, next) {
+    try{
+      const { schemataId, field } = ctx.request.body
+      if(!schemataId) {
+        ctx.send(2, '',  'schemataId不能为空')
+        return
+      }
+      if(!field) {
+        ctx.send(2, '',  'field不能为空')
+        return
+      }
+      if(!field['_id']) {
+        ctx.send(2, '',  'fieldId is request')
+        return
+      }
+      const isValid = validator.isObjectType(field)
+      if(isValid.err) {
+        ctx.send(2, '', 'field not a object')
+        return
+      }
+      const { err, data: getParams } = await this.filterField(field, ctx)
+      if(err) {
+        ctx.send(2, '', hello.dealError(err.message))
+        return
+      }
+      const findSchema = await this.Model.findById(schemataId)
+      if(!findSchema) {
+        ctx.send(2, '',  `${schemataId}不存在`)
+        return
+      }
+      const findFieldInSchematas = await this.Model.findOne(
+        {
+          _id: schemataId,
+          fields: { $elemMatch:　{ _id: field._id }},
+          ...this.dbQuery(ctx)
+        },
+        {"fields.$":1}
+      )
+      console.log('findFieldInSchematas', findFieldInSchematas)
+      if(!findFieldInSchematas.fields&&findFieldInSchematas.fields.length) {
+        ctx.send(2, '',  `${field._id}不存在`)
+        return
+      }
+      const getFieldItem = findFieldInSchematas.fields[0]
+      console.log('getFieldItem', getFieldItem)
+      console.log('getParams', getParams)
+      if(getFieldItem.type !== getParams.type) {
+        ctx.send(2, '',  `type不可修改`)
+        return
+      }
+      const validOptions = this.valitArrInArr(getFieldItem.options, getParams.options, 'id')
+      if(validOptions.err) {
+        ctx.send(2, '',  validOptions.err.message)
+        return
+      }
+      const result = await this.Model.modifyField(
+        {id: schemataId,
+          "fields._id": field._id,
+          ...this.dbQuery(ctx)
+        }, {
+        $set: {
+          "fields.$.name": field.name,
+          "fields.$.options": field.options,
+          "fields.$.default": field.default,
+        }
+      })
+      ctx.send(1, result, '')
+    }catch(e) {
+      ctx.send(2, '', hello.dealError(e.message, ctx.request.body))
+    }finally {
+      await next()
     }
   }
 }

@@ -67,8 +67,8 @@ class baseModel {
     return model.save()
   }
 
-  findOne(query) {
-    return this.Model.findOne(query)
+  findOne(query, projection = null) {
+    return this.Model.findOne(query, projection)
   }
   updateOne(id, data) {
     return this.Model.updateOne({ _id: id }, data);
