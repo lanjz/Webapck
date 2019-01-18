@@ -24,15 +24,18 @@ class BaseCtl {
     }
     return {}
   }
-  filterParams(params) {
-    const res = { err: null, data: '' }
-    res.data = params
+  todoPreAdd(params) {
+    const res = { err: null, data: params }
+    return res
+  }
+  todoPreModify(params) {
+    const res = { err: null, data: params }
     return res
   }
   async add(ctx, next) {
     try{
       const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
-      const { err, data: getParams } = await this.filterParams(merge, ctx)
+      const { err, data: getParams } = await this.todoPreAdd(merge, ctx)
       if(err) {
         ctx.send(2, ctx.request.body, err.message)
         return
@@ -129,14 +132,16 @@ class BaseCtl {
     }
     try {
       const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
-      const { err, data } = await this.filterParams(merge)
+      const { err, data } = await this.todoPreModify(merge)
       if(err) {
         ctx.send(2, ctx.request.body, err.message)
         return
       }
       const getParams = data
       const dbQuery = this.dbQuery(ctx)
+      console.log('getParams', getParams)
       const result = await this.Model.findOneAndUpdate(id, getParams, dbQuery)
+      console.log('result', result)
       if (!result) {
         ctx.send(2, '', `没有要修改的${this.alias}`)
       } else {

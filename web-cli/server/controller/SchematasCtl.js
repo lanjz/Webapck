@@ -6,6 +6,7 @@ import validator from '../utils/validator'
 class SchematasCtl extends BaseCtl {
   constructor() {
     super()
+    this.todoPreOperate = this.todoPreOperate.bind(this)
     this.inputConValid = this.inputConValid.bind(this)
     this.dateConValid = this.dateConValid.bind(this)
     this.radioConValid = this.radioConValid.bind(this)
@@ -193,7 +194,7 @@ class SchematasCtl extends BaseCtl {
     res.data = arr
     return res
   }
-  async filterParams(arg){
+  todoPreOperate(arg) {
     const res = { err: null, data: '' }
     const getParams = JSON.parse(JSON.stringify(arg))
     const { fields = [] }  = getParams
@@ -208,14 +209,24 @@ class SchematasCtl extends BaseCtl {
       return res
     }
     const filterSchemata = this.filterSchemata(fields)
-    
+  
     if(filterSchemata.err) {
       res.err = filterSchemata.err
       return res
     }
     getParams.fields = filterSchemata.data
     res.data = getParams
-    const { name, userId } = getParams
+    return res
+  }
+  todoPreModify(arg) {
+    return this.todoPreOperate(arg)
+  }
+  async todoPreAdd(arg){
+    const res = this.todoPreOperate(arg)
+    if(res.err) {
+      return res
+    }
+    const { name, userId } = res.data
     const findSchema = await this.Model.findOne({ name, userId })
     if(findSchema) {
       res.err = new Error(`${name}已存在`)
@@ -284,12 +295,12 @@ class SchematasCtl extends BaseCtl {
         ctx.send(2, '',  `${schemataId}不存在`)
         return
       }
-      const findFieldInSchematas = await this.Model.findOne({
+      const findFieldInSchema = await this.Model.findOne({
         _id: schemataId,
         fields: { $elemMatch:　{ name: getParams.name }},
         ...this.dbQuery(ctx)
       })
-      if(findFieldInSchematas) {
+      if(findFieldInSchema) {
         ctx.send(2, '',  `${getParams.name}已存在`)
         return
       }
@@ -429,6 +440,6 @@ class SchematasCtl extends BaseCtl {
     }
   }
 }
-const schematasCtl = new SchematasCtl()
+const schemaCtl = new SchematasCtl()
 
-export default schematasCtl
+export default schemaCtl

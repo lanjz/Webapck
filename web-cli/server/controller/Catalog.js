@@ -7,6 +7,7 @@ class CatalogCtl extends BaseCtl {
   constructor() {
     super()
     this.findAllCatalog = []
+    this.todoPreAdd = this.todoPreAdd.bind(this)
   }
   getAlias() {
     return '目录'
@@ -14,7 +15,10 @@ class CatalogCtl extends BaseCtl {
   getModel() {
     return new Catalog()
   }
-  async filterParams(arg, ctx) {
+  async todoPreModify(arg,) {
+    return this.todoPreAdd(arg)
+  }
+  async todoPreAdd(arg) {
     const getParams = JSON.parse(JSON.stringify(arg))
     const { bookId, parentId, name } = getParams
     if(!bookId) {
@@ -26,15 +30,15 @@ class CatalogCtl extends BaseCtl {
     if(!name) {
       return Promise.resolve({ err: new Error('name不能为空') })
     }
-    const { _id } = ctx.state.curUser
+    const { userId } = arg
     return new Promise(async (resolve) => {
       try{
-        const findBook = bookCtl.findOneByQuery({ _id: bookId, userId: _id }) // 查询是否在本子
+        const findBook = bookCtl.findOneByQuery({ _id: bookId, userId }) // 查询是否存在本子
         const findParentCatalog = parentId === 'root' ? // 查询是否存在父级目录
           Promise.resolve('root') :
-          this.findOneByQuery({ _id: parentId, userId: _id })
+          this.findOneByQuery({ _id: parentId, userId })
         // 查询当前目录下是否已经存要添加的目录
-        const findCatalog = this.findOneByQuery({ name, userId: _id, parentId })
+        const findCatalog = this.findOneByQuery({ name, userId, parentId })
         const result = await Promise.all([findBook, findParentCatalog, findCatalog])
         if(!result[0]){
           resolve({ err: `不存在id为${bookId}的本子` })
@@ -48,7 +52,7 @@ class CatalogCtl extends BaseCtl {
           resolve({ err: `当前目录已经存在'${name}'` })
           return
         }
-        resolve({ err: null, data: result })
+        resolve({ err: null, data: getParams })
       } catch (e) {
         resolve({ err: e, data: '' })
       }
@@ -58,7 +62,7 @@ class CatalogCtl extends BaseCtl {
     const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
     try{
       // data包含了所存Book的结果、父级目录的结果、当前是否存在目录的结果
-      const { err, data } = await this.filterParams(merge, ctx)
+      const { err, data } = await this.todoPreAdd(merge, ctx)
       if(err) {
         ctx.send(2, '', err.message)
         return
