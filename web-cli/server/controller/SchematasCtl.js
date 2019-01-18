@@ -10,6 +10,9 @@ class SchematasCtl extends BaseCtl {
     this.dateConValid = this.dateConValid.bind(this)
     this.radioConValid = this.radioConValid.bind(this)
     this.selectConValid = this.selectConValid.bind(this)
+    this.modifyField = this.modifyField.bind(this)
+    this.addField = this.addField.bind(this)
+    this.delField = this.delField.bind(this)
     this.contentValidator = {
       input: this.inputConValid,
       markdown: this.inputConValid,
@@ -18,8 +21,6 @@ class SchematasCtl extends BaseCtl {
       radio: this.radioConValid,
       select: this.selectConValid
     }
-    this.addField = this.addField.bind(this)
-    this.modifyField = this.modifyField.bind(this)
   }
   getAlias() {
     return '字段'
@@ -245,7 +246,7 @@ class SchematasCtl extends BaseCtl {
    * @param <Array> arr2
    * @return <Object>
    * */
-  valitArrInArr(arr1, arr2, key) {
+  validArrInArr(arr1, arr2, key) {
     const res = { err: null, data: arr2}
     arr1.every(item => {
       const find = arr2.find(item2 => item2[key] === item[key])
@@ -283,21 +284,30 @@ class SchematasCtl extends BaseCtl {
         ctx.send(2, '',  `${schemataId}不存在`)
         return
       }
-      console.log('schemataId', schemataId)
-      console.log('this.dbQuery(ctx)', this.dbQuery(ctx))
       const findFieldInSchematas = await this.Model.findOne({
         _id: schemataId,
         fields: { $elemMatch:　{ name: getParams.name }},
         ...this.dbQuery(ctx)
       })
-      console.log('findFieldInSchematas', findFieldInSchematas)
       if(findFieldInSchematas) {
         ctx.send(2, '',  `${getParams.name}已存在`)
         return
       }
-      const result = await this.Model.addField({id: schemataId, ...this.dbQuery(ctx) }, getParams )
-      console.log('result', result)
-      ctx.send(1, result, '')
+      const result = await this.Model.update(
+        {
+          _id: schemataId,
+          ...this.dbQuery(ctx)
+        },
+        {
+          $push: {
+            fields: getParams
+          }
+        }
+      )
+      if(!result.ok) {
+        ctx.send(2, result, '添加失败')
+      }
+      ctx.send(1, result, '添加成功')
     } catch (e) {
       ctx.send(2, '', hello.dealError(e, ctx.request.body))
     }finally {
@@ -312,7 +322,7 @@ class SchematasCtl extends BaseCtl {
         return
       }
       if(!field) {
-        ctx.send(2, '',  'field不能为空')
+        ctx.send(2, '',  '没有需要修改的字段')
         return
       }
       if(!field['_id']) {
@@ -334,7 +344,7 @@ class SchematasCtl extends BaseCtl {
         ctx.send(2, '',  `${schemataId}不存在`)
         return
       }
-      const findFieldInSchematas = await this.Model.findOne(
+      const findFieldInSchema = await this.Model.findOne(
         {
           _id: schemataId,
           fields: { $elemMatch:　{ _id: field._id }},
@@ -342,35 +352,76 @@ class SchematasCtl extends BaseCtl {
         },
         {"fields.$":1}
       )
-      console.log('findFieldInSchematas', findFieldInSchematas)
-      if(!findFieldInSchematas.fields&&findFieldInSchematas.fields.length) {
+      if(!findFieldInSchema) {
         ctx.send(2, '',  `${field._id}不存在`)
         return
       }
-      const getFieldItem = findFieldInSchematas.fields[0]
-      console.log('getFieldItem', getFieldItem)
-      console.log('getParams', getParams)
+      const getFieldItem = findFieldInSchema.fields[0]
       if(getFieldItem.type !== getParams.type) {
         ctx.send(2, '',  `type不可修改`)
         return
       }
-      const validOptions = this.valitArrInArr(getFieldItem.options, getParams.options, 'id')
+      const validOptions = this.validArrInArr(getFieldItem.options, getParams.options, 'id')
       if(validOptions.err) {
         ctx.send(2, '',  validOptions.err.message)
         return
       }
-      const result = await this.Model.modifyField(
-        {id: schemataId,
-          "fields._id": field._id,
+      const projection = {}
+      if(field.hasOwnProperty('default')) {
+        projection["fields.$.default"] = field['default']
+      }
+      if(field.hasOwnProperty('name')) {
+        projection["fields.$.name"] = field['name']
+      }
+      if(field.hasOwnProperty('options')) {
+        projection["fields.$.options"] = field['options']
+      }
+      const result = await this.Model.update(
+        {_id: schemataId,
+          "fields": {
+            $elemMatch: {_id: field._id}
+          },
           ...this.dbQuery(ctx)
         }, {
-        $set: {
-          "fields.$.name": field.name,
-          "fields.$.options": field.options,
-          "fields.$.default": field.default,
-        }
+        $set: projection
       })
-      ctx.send(1, result, '')
+      if(result && !result.ok) {
+        ctx.send(2, result, '没有需要修改的数据')
+        return
+      }
+      ctx.send(1, result, '修改成功')
+    }catch(e) {
+      ctx.send(2, '', hello.dealError(e.message, ctx.request.body))
+    }finally {
+      await next()
+    }
+  }
+  async delField(ctx, next) {
+    try{
+      const { schemataId, fieldId } = ctx.request.body
+      if(!schemataId) {
+        ctx.send(2, '',  'schemataId is request')
+        return
+      }
+      if(!fieldId) {
+        ctx.send(2, '',  'fieldId is request')
+        return
+      }
+      const result = await this.Model.update(
+        {
+          _id: schemataId,
+          ...this.dbQuery(ctx)
+        },
+        {
+          $pull: {
+            "fields": { _id: fieldId }
+          }
+        })
+      if(result && !result.ok) {
+        ctx.send(2, result, '没有需要删除的数据')
+        return
+      }
+      ctx.send(1, result, '删除成功')
     }catch(e) {
       ctx.send(2, '', hello.dealError(e.message, ctx.request.body))
     }finally {

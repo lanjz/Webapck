@@ -29,6 +29,7 @@ router.put('/schemata', schematasCtl.modify)
 router.post('/schemata', schematasCtl.add)
 router.post('/schemataField', schematasCtl.addField)
 router.put('/schemataField', schematasCtl.modifyField)
+router.delete('/schemataField', schematasCtl.delField)
 
 router.get('/catalogs', catalogCtl.find)
 router.get('/catalog/:id', catalogCtl.findById)
