@@ -21,6 +21,11 @@ class ArticleCtl extends BaseCtl {
       radio: this.radioConValid,
       select: this.selectConValid
     }
+    this.defaultSchema = {
+      is_markdown: {
+      
+      }
+    }
   }
   getAlias() {
     return '文章'
@@ -148,13 +153,20 @@ class ArticleCtl extends BaseCtl {
       res.err = new Error('catalogId不能为空')
       return res
     }
+    if(!schemaId) {
+      res.err = new Error('schemaId不能为空')
+      return res
+    }
     // 查看Book
     const findBook = bookCtl.Model.findById(bookId, this.dbQuery(ctx))
     // 查找catalog
     const findCatalogParams = { bookId, _id: catalogId, ...this.dbQuery(ctx) }
     const findCatalog = catalogCtl.Model.findOne(findCatalogParams)
     // 查看schema
-    const findSchema = schematasCtl.Model.findById(schemaId, this.dbQuery(ctx))
+    const isDefaultSchema = schemaId.indexOf('is_') && this.defaultSchema
+    const findSchema = isDefaultSchema ?
+      Promise.resolve(true) :
+      schematasCtl.Model.findById(schemaId, this.dbQuery(ctx))
     const response = await Promise.all([findBook, findCatalog, findSchema])
     if(!response[0]) {
       res.err = new Error('未找到对应的Book')
