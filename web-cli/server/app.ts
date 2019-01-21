@@ -1,7 +1,7 @@
 import * as Koa from 'koa'
 import middleware from './middleware/index'
 
-import  mon from './db/mon.js'
+import  mon from './db/test/mon.js'
 
 // const webpack = require('webpack')
 // const devMiddleware = require('./middleware/webpackConfig');
