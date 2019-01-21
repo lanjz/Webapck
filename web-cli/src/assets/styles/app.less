@@ -121,12 +121,15 @@ textarea.form-input{
 
 .btn{
   min-width: 100px;
-  padding: 5px 15px;
+  padding: 5px 10px;
   background: @bg-color;
   color: #fff;
   display: inline-block;
   border-radius: 2px;
   text-align: center;
+  font-size: 14px;
+  cursor: pointer
+
 }
 .btn.warn{
   background: @warn-color;
@@ -157,19 +160,23 @@ div.disable-btn{
   text-align: left;
   padding:0; /*控制cellpadding-单元格间距*/
 }
-.table-layout th {  background: @bg-second-color;  }
+.table-layout th {
+  background: @bg-second-color;
+  font-weight: normal;
+}
 .table-layout th .th-p{
   color: #fff;
   word-break: keep-all;   /*th里的内容强制不换行，即最小宽度为字段宽度*/
 }
-
-.table-layout td.firstTd {
-  width: 50px;
-  text-align: center;
+.table-layout th:last-child,
+.table-layout td:last-child{
+  text-align: right;
 }
+
 .table-layout td {
   white-space: normal;
   word-break: break-all;
+  font-size: 14px;
   /*background-clip: padding-box;*/
 }
 .table-layout .td-p,
@@ -187,4 +194,27 @@ div.disable-btn{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.table-layout{
+  .table-btn{
+    display: inline-block;
+    border-radius: 2px;
+    font-size: 13px;
+    color: #fff;
+    padding: 7px 12px;
+    background: @bg-second-color;
+    vertical-align: top;
+    line-height: 10px;
+    cursor: pointer;
+  }
+  .table-btn:not(:last-child){
+    margin-right: 15px;
+  }
+  .table-btn.warn{
+    background: @warn-color;
+  }
+}
+
+.bg-fff{
+  background: #fff;
 }

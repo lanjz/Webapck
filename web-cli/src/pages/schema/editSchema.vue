@@ -1,11 +1,8 @@
 <template>
   <div class="flex">
     <div class="flex flex-1 direction-column">
-      <div class="schema-title">
-        测试测试测试
-      </div>
-      <div class="schema-content">
-        {{schema}}
+      <div class="flex-1 form-bg bg-fff">
+        <!--{{schema}}-->
         <div class="form-layout">
           <div class="form-group flex">
             <div class="form-label-layout">
@@ -230,5 +227,8 @@
   }
   .form-content{
     max-width: 500px;
+  }
+  .form-bg{
+    padding:10px;
   }
 </style>

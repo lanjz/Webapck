@@ -26,8 +26,8 @@
           <span class="btn warn">删除</span>
         </div>
       </div>
-      <div class="schema-content">
-        <div class="panel-bg">
+      <div class="schema-content flex-1">
+        <div class="panel-bg" v-if="!showEditMark">
           <table class="table-layout">
             <thead>
             <tr>
@@ -35,7 +35,7 @@
               <th><div class="th-p">类型</div></th>
               <th><div class="th-p">默认值</div></th>
               <th><div class="th-p">选项</div></th>
-              <th><div class="th-p"></div></th>
+              <th style="width: 150px"><div class="th-p"></div></th>
             </tr>
             </thead>
             <tbody>
@@ -44,7 +44,10 @@
               <td><div class="td-p">类型</div></td>
               <td><div class="td-p">默认值</div></td>
               <td><div class="td-p">选项</div></td>
-              <td><div class="td-p"><span>编辑</span><span>删除</span></div></td>
+              <td><div class="td-p">
+                <span class="table-btn">编辑</span>
+                <span class="table-btn warn">删除</span>
+              </div></td>
             </tr>
             <tr>
               <td><div class="td-p">别名</div></td>
@@ -64,7 +67,10 @@
           </table>
         </div>
 
-        <!--<EditSchema></EditSchema>-->
+        <div class="panel-bg" v-if="showEditMark">
+          <EditSchema></EditSchema>
+        </div>
+
       </div>
     </div>
   </div>
@@ -77,6 +83,7 @@
     },
     data() {
       return {
+        showEditMark: true
       }
     },
     methods: {
