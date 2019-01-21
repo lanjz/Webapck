@@ -217,10 +217,10 @@ class SchematasCtl extends BaseCtl {
     res.data = getParams
     return res
   }
-  todoPreModify(arg) {
-    return this.todoPreOperate(arg)
+  todoPreModify(arg, ctx) {
+    return this.todoPreOperate(arg, ctx)
   }
-  async todoPreAdd(arg){
+  async todoPreAdd(arg, ctx){
     const res = this.todoPreOperate(arg)
     if(res.err) {
       return res

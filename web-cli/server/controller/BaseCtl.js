@@ -131,7 +131,7 @@ class BaseCtl {
     }
     try {
       const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
-      const { err, data } = await this.todoPreModify(merge)
+      const { err, data } = await this.todoPreModify(merge, ctx)
       if(err) {
         ctx.send(2, ctx.request.body, err.message)
         return

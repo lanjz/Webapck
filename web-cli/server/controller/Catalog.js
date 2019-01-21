@@ -14,10 +14,10 @@ class CatalogCtl extends BaseCtl {
   getModel() {
     return new Catalog()
   }
-  async todoPreModify(arg,) {
-    return this.todoPreAdd(arg)
+  async todoPreModify(arg, ctx) {
+    return this.todoPreAdd(arg, ctx)
   }
-  async todoPreAdd(arg) {
+  async todoPreAdd(arg, ctx) {
     const getParams = JSON.parse(JSON.stringify(arg))
     const { bookId, parentId, name } = getParams
     if(!bookId) {

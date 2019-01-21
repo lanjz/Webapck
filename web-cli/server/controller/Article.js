@@ -4,6 +4,7 @@ import bookCtl from './Book'
 import catalogCtl from './Catalog'
 import schematasCtl from './SchematasCtl'
 import validator from '../utils/validator'
+import hello from "../utils/hello";
 
 class ArticleCtl extends BaseCtl {
   constructor() {
@@ -132,6 +133,9 @@ class ArticleCtl extends BaseCtl {
       }
     })
   }
+  async todoPreModify(arg, ctx) {
+    return this.todoPreAdd(arg, ctx)
+  }
   async todoPreAdd(arg, ctx){
     const res = { err: null, data: '' }
     const getParams = JSON.parse(JSON.stringify(arg))
@@ -185,6 +189,26 @@ class ArticleCtl extends BaseCtl {
     getParams.content = data
     res.data = getParams
     return res
+  }
+  async findById(ctx, next) {
+    const { id } = ctx.params
+    if(!id) {
+      ctx.send(2, '', 'id不能为空')
+      return
+    }
+    try{
+      const dbQuery = this.dbQuery(ctx)
+      const result = await this.Model.findByIdLean(id, dbQuery)
+      if(result.schemaId) {
+        const findSchema = await schematasCtl.Model.findById(result.schemaId, this.dbQuery(ctx))
+        result.schema = findSchema
+      }
+      ctx.send(1, result, '')
+    } catch (e) {
+      ctx.send(2, '', hello.dealError(e, id))
+    } finally {
+      await next()
+    }
   }
 }
 const articleCtl = new ArticleCtl()

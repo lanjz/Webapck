@@ -99,8 +99,22 @@ class baseModel {
       .select(this.assectPath)
       .exec()
   }
+  listWithPagingLean(start = 0, limit = 0, query = {}) {
+    start = parseInt(start);
+    limit = parseInt(limit);
+    return this.Model.find(query)
+      .lean()
+      .sort({ _id: -1 })
+      .skip(start)
+      .limit(limit)
+      .select(this.assectPath)
+      .exec()
+  }
   findById(id, query) {
     return this.Model.findOne({ _id: id, ...query }).select(this.assectPath).exec()
+  }
+  findByIdLean(id, query) {
+    return this.Model.findOne({ _id: id, ...query }).lean().select(this.assectPath).exec()
   }
   del(id, query) {
     return this.Model.deleteOne({ _id: Object(id), ...query })
