@@ -9,7 +9,7 @@ import userCtrl from '../controller/User'
  * */
 
 function dealError(e, tart) {
-  console.log('e', e)
+  console.log('dealError', e)
   let errMsg = e.message
   if(e.code === 11000) {
     errMsg = `${tart}已经存在`

@@ -287,7 +287,7 @@ class SchematasCtl extends BaseCtl {
       }
       const { err, data: getParams } = await this.filterField(field, ctx)
       if(err) {
-        ctx.send(2, '', hello.dealError(err.message))
+        ctx.send(2, '', hello.dealError(err))
         return
       }
       const findSchema = await this.Model.findById(schemataId)
@@ -347,7 +347,7 @@ class SchematasCtl extends BaseCtl {
       }
       const { err, data: getParams } = await this.filterField(field, ctx)
       if(err) {
-        ctx.send(2, '', hello.dealError(err.message))
+        ctx.send(2, '', hello.dealError(err))
         return
       }
       const findSchema = await this.Model.findById(schemataId)
@@ -402,7 +402,7 @@ class SchematasCtl extends BaseCtl {
       }
       ctx.send(1, result, '修改成功')
     }catch(e) {
-      ctx.send(2, '', hello.dealError(e.message, ctx.request.body))
+      ctx.send(2, '', hello.dealError(e, ctx.request.body))
     }finally {
       await next()
     }
@@ -434,7 +434,7 @@ class SchematasCtl extends BaseCtl {
       }
       ctx.send(1, result, '删除成功')
     }catch(e) {
-      ctx.send(2, '', hello.dealError(e.message, ctx.request.body))
+      ctx.send(2, '', hello.dealError(e, ctx.request.body))
     }finally {
       await next()
     }
