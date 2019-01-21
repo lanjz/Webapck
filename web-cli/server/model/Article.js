@@ -1,16 +1,19 @@
 import baseModel from './BaseModel'
 
-class ArticleModel extends baseModel{
+class ArticleModel extends baseModel {
   constructor() {
     super()
-    this.assectPath = '_id userId bookId catalogId content createTime updateTime'
+    this.assectPath = '_id userId bookId catalogId name content createTime updateTime'
   }
+  
   getName() {
     return 'articles'
   }
+  
   banUpdateFields() {
     return ['userId']
   }
+  
   getSchema() {
     return {
       userId: {
@@ -25,13 +28,20 @@ class ArticleModel extends baseModel{
         type: String,
         required: true
       },
-      content: {
-        type: Object,
+      schemaId: {
+        type: String,
         required: true
       },
+      name: {
+        type: String,
+        required: true
+      },
+      content: Object,
       ...this.baseModel()
     }
   }
 }
+
 export default new ArticleModel()
+
 

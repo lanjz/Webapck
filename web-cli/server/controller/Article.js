@@ -2,6 +2,7 @@ import BaseCtl from './BaseCtl'
 import contentModel from '../model/Article'
 import bookCtl from './Book'
 import catalogCtl from './Catalog'
+import schematasCtl from './SchematasCtl'
 import validator from '../utils/validator'
 
 class ArticleCtl extends BaseCtl {
@@ -39,34 +40,25 @@ class ArticleCtl extends BaseCtl {
       res.err = err
       return res
     }
-    if(schema.required && !con){
-      res.err = `${schema.name}不能为空`
-      return res
-    }
     if(!schema.options && !schema.options.length) {
       res.err = `未找到${schema.name}的options选项`
       return res
     }
-    const itemRes = schema.options.some(inItem => (inItem.id === con))
-    if (!itemRes) {
-      res.err = new Error(`${schema.name}的options${JSON.stringify(schema.options)}没找到${con}`)
-      return res
+    if(con) {
+      const itemRes = schema.options.some(inItem => (inItem.id === con))
+      if (!itemRes) {
+        res.err = new Error(`${schema.name}的options${JSON.stringify(schema.options)}没找到${con}`)
+        return res
+      }
     }
+ 
     return res
   }
-  selectConValid(con, schema) {
+  selectConValid(con = [], schema) {
     const res = { err: null, data: con }
     const { err } = this.validType(con, schema, validator.isArrayType)
     if(err) {
       res.err = err
-      return res
-    }
-    if(!con.length) {
-      res.err = new RangeError(`${schema.name}为空数组`)
-      return res
-    }
-    if(schema.required && (!con || !con.length)){
-      res.err = `${schema.name}必填`
       return res
     }
     if(!schema.options && !schema.options.length) {
@@ -78,17 +70,19 @@ class ArticleCtl extends BaseCtl {
       res.err = `${schema.name}${isArrayValid.err}`
       return res
     }
-    con.every((item) => {
-      const itemRes = schema.options.some(inItem => (inItem.id === item))
-      if (itemRes) {
-        return true
-      }
-      const options = {
-        options: schema.options
-      }
-      res.err = new Error(`${schema.name}的options${JSON.stringify(options)}没找到${item}`)
-      return false
-    })
+    if(con && con.length) {
+      con.every((item) => {
+        const itemRes = schema.options.some(inItem => (inItem.id === item))
+        if (itemRes) {
+          return true
+        }
+        const options = {
+          options: schema.options
+        }
+        res.err = new Error(`${schema.name}的options${JSON.stringify(options)}没找到${item}`)
+        return false
+      })
+    }
     if(res.err){
       return res
     }
@@ -96,10 +90,6 @@ class ArticleCtl extends BaseCtl {
   }
   validType(con, schema, validFn) {
     const res = { err: null, data: con }
-    if(schema.required && !con){
-      res.err = new RangeError(`${schema.name}必填`)
-      return res
-    }
     const { err, data } = validFn(con)
     if (err) {
       res.err = err
@@ -113,19 +103,18 @@ class ArticleCtl extends BaseCtl {
    * @param <Object> con
    * @return <Object> {err, obj}
    * */
-  content(con, schemata = {}) {
-    const schemaKeys = Object.keys(schemata)
+  content(con, schemata = []) {
     const obj = {}
-    const res = { err: null, data: '' }
-    schemaKeys.every((item) => {
-      if(con[item]) {
-        const tempFn = this.contentValidator[schemata[item].type]
-        const { err, data } = tempFn(con[item], schemata[item])
+    const res = { err: null, data: con }
+    schemata.every((item) => {
+      if(con[item._id]) {
+        const tempFn = this.contentValidator[item.type]
+        const { err, data } = tempFn(con[item._id], item)
         if(err) {
           res.err = err
           return false
         }
-        obj[item] = data
+        obj[item._id] = data
       }
       return true
     })
@@ -133,7 +122,7 @@ class ArticleCtl extends BaseCtl {
     return res
   }
   async filterCon(con, getSchemata) {
-    let filterData = ''
+    let filterData = con
     return new Promise(async (resolve) => {
       try{
         filterData = await this.content(con, getSchemata)
@@ -143,10 +132,10 @@ class ArticleCtl extends BaseCtl {
       }
     })
   }
-  async filterParams(arg, ctx){
+  async todoPreAdd(arg, ctx){
     const res = { err: null, data: '' }
     const getParams = JSON.parse(JSON.stringify(arg))
-    const { bookId, catalogId } = getParams
+    const { bookId, catalogId, schemaId } = getParams
     if(!bookId) {
       res.err = new Error('bookId不能为空')
       return res
@@ -155,25 +144,31 @@ class ArticleCtl extends BaseCtl {
       res.err = new Error('catalogId不能为空')
       return res
     }
-    const findBook = await bookCtl.Model.findById(bookId, this.dbQuery(ctx))
-    if(!findBook) {
-      res.err = new Error('未找到对应的Book')
-      return res
-    }
+    // 查看Book
+    const findBook = bookCtl.Model.findById(bookId, this.dbQuery(ctx))
+    // 查找catalog
     const findCatalogParams = { bookId, _id: catalogId, ...this.dbQuery(ctx) }
-    const findCatalog = await catalogCtl.Model.findOne(findCatalogParams)
-    if(!findCatalog) {
-      res.err = new Error('未找到对应的目录')
+    const findCatalog = catalogCtl.Model.findOne(findCatalogParams)
+    // 查看schema
+    const findSchema = schematasCtl.Model.findById(schemaId, this.dbQuery(ctx))
+    const response = await Promise.all([findBook, findCatalog, findSchema])
+    if(!response[0]) {
+      res.err = new Error('未找到对应的Book')
+    } else if(!response[1]) {
+      res.err = new Error(`${response[0].name}下未找到对应的目录`)
+    } else if(!response[2]) {
+      res.err = new Error('未找到对应的Schema')
+    }
+    if(res.err) {
       return res
     }
-    const getSchemata = findBook.schemata || {}
-    if(!(Object.keys(getSchemata).length)) {
-      res.err = new Error('该Book没有schemata')
+  
+    if(!getParams.name) {
+      res.err = new Error('name不能为空')
       return res
     }
     if(!getParams.content) {
-      res.err = new Error('content不能为空')
-      return res
+      getParams.content = {}
     }
     const isObj = validator.isObjectType(getParams.content)
     if(isObj.err) {
@@ -181,6 +176,7 @@ class ArticleCtl extends BaseCtl {
       return res
     }
     const con = JSON.parse(JSON.stringify(getParams.content))
+    const getSchemata = response[2].fields
     const { err, data } = await this.filterCon(con, getSchemata)
     if(err) {
       res.err = err
