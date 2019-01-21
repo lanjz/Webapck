@@ -10,7 +10,7 @@ import userCtrl from '../controller/User'
 
 function dealError(e, tart) {
   console.log('e', e)
-  let errMsg = e
+  let errMsg = e.message
   if(e.code === 11000) {
     errMsg = `${tart}已经存在`
   } else if(e.name === 'CastError'){
@@ -115,6 +115,21 @@ function createObjectId() {
   return mongoose.Types.ObjectId()
 }
 
+function promiseToAwait(fn) {
+  const res = { err: null, data: '' }
+  return new Promise((resolve, reject) => {
+    fn
+      .then(res => {
+        res.data = res
+        resolve(res)
+      })
+      .catch(err => {
+        res.err = err
+        resolve(res)
+      })
+  })
+}
+
 
 export default {
   dealError,
@@ -123,5 +138,6 @@ export default {
   encodeLoginTypeJwt,
   decodeLoginTypeJwt,
   checkAuth,
-  createObjectId
+  createObjectId,
+  promiseToAwait
 }

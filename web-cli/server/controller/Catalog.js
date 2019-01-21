@@ -41,15 +41,15 @@ class CatalogCtl extends BaseCtl {
         const findCatalog = this.findOneByQuery({ name, userId, parentId })
         const result = await Promise.all([findBook, findParentCatalog, findCatalog])
         if(!result[0]){
-          resolve({ err: `不存在id为${bookId}的本子` })
+          resolve({ err: new Error(`不存在id为${bookId}的本子`) })
           return
         }
         if(!result[1]){
-          resolve({ err: `不存在parentId为${bookId}的目录` })
+          resolve({ err: new Error(`不存在parentId为${bookId}的目录`) })
           return
         }
         if(result[2]){
-          resolve({ err: `当前目录已经存在'${name}'` })
+          resolve({ err: new Error(`当前目录已经存在'${name}'`) })
           return
         }
         resolve({ err: null, data: getParams })
@@ -58,42 +58,35 @@ class CatalogCtl extends BaseCtl {
       }
     })
   }
-  async add(ctx, next) {
-    const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
-    try{
-      // data包含了所存Book的结果、父级目录的结果、当前是否存在目录的结果
-      const { err, data } = await this.todoPreAdd(merge, ctx)
-      if(err) {
-        ctx.send(2, '', err.message)
-        return
-      }
-      const parentCatalog = data[1]
-      const filterData = await hello.filterParams(merge, this.Model.getSchema())
-      if(filterData.err) {
-        ctx.send(2, ctx.request.body, filterData.err)
-      } else {
-        // 如果是根目录，就不需要更新父级目录的hasChild属性，直接返回Promise.resolve
-        let updateParentCatalog = Promise.resolve(parentCatalog)
-        if(parentCatalog !== 'root' && !parentCatalog.hasChild){
-          updateParentCatalog = this.Model
-            .findOneAndUpdate(parentCatalog._id, { hasChild: 1 }, this.dbQuery(ctx))
-        }
-        const saveCatalog = this.Model.save(filterData.data)
-        const saveResult = await Promise.all([saveCatalog, updateParentCatalog])
-        ctx.send(1, { id: saveResult[0]._id }, '')
-      }
-    } catch (e) {
-      ctx.send(2, e, hello.dealError(e))
-    }finally {
-      await next()
-    }
+  async isHasChild(parentId, bookId, dbQuery, index) {
+    const res = { }
+    const result = await this.Model.list({ parentId, bookId, ...dbQuery })
+    res.index = index
+    res.result = result
+    throw new Error('imy')
+    return res
   }
   async find(ctx, next) {
     const { parentId, bookId } = ctx.request.query
     const dbQuery = this.dbQuery(ctx)
     try{
-      const result = await this.Model.list({ parentId, bookId, ...dbQuery })
-      ctx.send(1, result, '')
+      const result = await this.Model.listLean({ parentId, bookId, ...dbQuery })
+      const findHasChild = []
+      result.forEach((item, index) => {
+        findHasChild.push(this.isHasChild(item._id, bookId, dbQuery, index))
+      })
+      console.log('result', result)
+      await Promise.all(findHasChild)
+        .then(res => {
+          result.forEach((item, index) => {
+            const { result: hasC } = res[index]
+            result[index]['hasChild'] = hasC && hasC.length ? 1 : 0
+          })
+          ctx.send(1, result, '')
+        })
+        .catch(err => {
+          throw err
+        })
     } catch (e) {
       ctx.send(2, '', hello.dealError(e))
     }finally {

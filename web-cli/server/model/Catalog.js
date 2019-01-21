@@ -29,10 +29,6 @@ class catalogModel extends baseModel{
         type: String,
         required: true,
       },
-      hasChild: {
-        type: Number,
-        default: 0
-      },
       ...this.baseSchema
     }
   }

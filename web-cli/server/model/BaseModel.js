@@ -85,6 +85,9 @@ class baseModel {
   list(query = {}) {
     return this.Model.find(query).select(this.assectPath).exec()
   }
+  listLean(query = {}) {
+    return this.Model.find(query).lean().select(this.assectPath).exec()
+  }
   listWithPaging(start = 0, limit = 0, query = {}) {
     start = parseInt(start);
     limit = parseInt(limit);

@@ -139,9 +139,7 @@ class BaseCtl {
       }
       const getParams = data
       const dbQuery = this.dbQuery(ctx)
-      console.log('getParams', getParams)
       const result = await this.Model.findOneAndUpdate(id, getParams, dbQuery)
-      console.log('result', result)
       if (!result) {
         ctx.send(2, '', `没有要修改的${this.alias}`)
       } else {
