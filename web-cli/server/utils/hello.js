@@ -62,7 +62,7 @@ function errorHandle(ctx, next){
     console.log('errorHandle', err)
     if (err.status === 401) {
       ctx.status = 401
-      ctx.send(2, 'err.originalError ? err.originalError.message : err.message')
+      ctx.send(2, `${err.originalError ? err.originalError.message : err.message}`)
     } else {
       throw err
     }

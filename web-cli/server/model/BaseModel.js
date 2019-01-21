@@ -119,7 +119,6 @@ export function definedValidate(f) {
       return f(v)
     },
     message(props) {
-      console.log('props', props)
       if(props.reason && props.reason.message){
         return props.reason.message
       }

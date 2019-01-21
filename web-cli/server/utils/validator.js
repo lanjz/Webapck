@@ -28,7 +28,6 @@ function isRequestInArr(arr, name, required = true) {
   const res = { err: null, data: ''}
   const isValid = Object.prototype.toString.call(arr) === '[object Array]'
   if(!isValid || (required&&!arr.length)) {
-    console.log('arr', arr)
     res.err = new RangeError('必需是数组且至少有一个选项')
     return res
   }

@@ -112,7 +112,6 @@ class BaseCtl {
     const dbQuery = this.dbQuery(ctx)
     try{
       const result = await this.Model.delMany(idsArr, dbQuery)
-      console.log('result', result)
       if(result.n) {
         ctx.send(1, '', `成功删除${result.n}条数据`)
       } else {

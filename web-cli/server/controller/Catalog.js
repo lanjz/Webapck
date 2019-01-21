@@ -63,7 +63,6 @@ class CatalogCtl extends BaseCtl {
     const result = await this.Model.list({ parentId, bookId, ...dbQuery })
     res.index = index
     res.result = result
-    throw new Error('imy')
     return res
   }
   async find(ctx, next) {
@@ -75,7 +74,6 @@ class CatalogCtl extends BaseCtl {
       result.forEach((item, index) => {
         findHasChild.push(this.isHasChild(item._id, bookId, dbQuery, index))
       })
-      console.log('result', result)
       await Promise.all(findHasChild)
         .then(res => {
           result.forEach((item, index) => {
