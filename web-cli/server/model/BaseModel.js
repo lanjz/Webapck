@@ -64,7 +64,6 @@ class baseModel {
     if (error) {
       return Promise.reject(error.message)
     }
-    console.log(',mod', model)
     // model.markModified('content')
     return model.save()
   }

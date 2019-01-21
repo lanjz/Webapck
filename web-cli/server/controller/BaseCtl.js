@@ -40,9 +40,7 @@ class BaseCtl {
         ctx.send(2, ctx.request.body, err.message)
         return
       }
-      console.log('getParamsgetParams', getParams)
       const helloRes = await hello.filterParams(getParams, this.Model.getSchema())
-      console.log('helloRes', helloRes)
       if(helloRes.err) {
         ctx.send(2, ctx.request.body, helloRes.err.message)
       } else {
