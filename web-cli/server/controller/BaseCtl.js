@@ -1,5 +1,16 @@
 import hello from '../utils/hello'
 
+function mkdirsSync( dirname ) {
+  if (fs.existsSync( dirname )) {
+    return true
+  } else {
+    if (mkdirsSync( path.dirname(dirname)) ) {
+      fs.mkdirSync( dirname )
+      return true
+    }
+  }
+}
+
 class BaseCtl {
   constructor() {
     this.alias = this.getAlias()
@@ -11,6 +22,7 @@ class BaseCtl {
     this.modify = this.modify.bind(this)
     this.deleteByIds = this.deleteByIds.bind(this)
     this.findOneByQuery = this.findOneByQuery.bind(this)
+    this.uploadImg = this.uploadImg.bind(this)
   }
   getAlias() {
     return '数据'
@@ -152,6 +164,54 @@ class BaseCtl {
   }
   async findOneByQuery(query) {
     return this.Model.findOne(query)
+  }
+  async uploadImg(ctx, next){
+    const serverFilePath = path.join( __dirname, 'static/image' )
+    console.log('ctx', ctx)
+    const busboy = new Busboy({ headers: ctx.req.headers })
+    const fileType = 'album' || 'common'
+    const filePath = path.join(serverFilePath, fileType)
+    const mkdirResult = mkdirsSync( filePath )
+    console.log('文件上传中...')
+    const result = {
+      success: false,
+      formData: {}
+    }
+    busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
+      let fileName = Math.random().toString(16).substr(2) + '.' + getSuffixName(filename)
+      let _uploadFilePath = path.join( filePath, fileName )
+      let saveTo = path.join(_uploadFilePath)
+  
+      // 文件保存到制定路径
+      file.pipe(fs.createWriteStream(saveTo))
+      // 文件写入事件结束
+      file.on('end', function() {
+        result.success = true
+        result.message = '文件上传成功'
+    
+        console.log('文件上传成功！')
+        resolve(result)
+      })
+    })
+    busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
+      console.log('表单字段数据 [' + fieldname + ']: value: ' + inspect(val));
+      result.formData[fieldname] = inspect(val);
+    });
+  
+    // 解析结束事件
+    busboy.on('finish', function( ) {
+      console.log('文件上结束')
+      ctx.send(1, '文件上结束', '')
+    })
+  
+    // 解析错误事件
+    busboy.on('error', function(err) {
+      console.log('文件上出错')
+      ctx.send(1, '文件上出错', '')
+    })
+  
+    ctx.req.pipe(busboy)
+    
   }
 }
 

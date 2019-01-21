@@ -4,6 +4,8 @@ import catalogCtl from './controller/Catalog.js'
 import bookCtl from './controller/Book.js'
 import schematasCtl from './controller/SchematasCtl.js'
 import articleCtl from './controller/Article.js'
+import BaseCtl from './controller/BaseCtl.js'
+const baseCtl = new BaseCtl()
 // userCtl.find()
 const router = new Router({ prefix: '/api' })
 
@@ -42,6 +44,8 @@ router.get('/article/:id', articleCtl.findById)
 router.delete('/article', articleCtl.deleteById)
 router.put('/article', articleCtl.modify)
 router.post('/article', articleCtl.add)
+
+router.post('/uploadImg', baseCtl.uploadImg)
 
 router.get('/qa', async (ctx, next) => {
   ctx.body = 'Hello World2222!'
