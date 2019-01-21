@@ -6,7 +6,6 @@ import validator from '../utils/validator'
 class SchematasCtl extends BaseCtl {
   constructor() {
     super()
-    this.todoPreOperate = this.todoPreOperate.bind(this)
     this.inputConValid = this.inputConValid.bind(this)
     this.dateConValid = this.dateConValid.bind(this)
     this.radioConValid = this.radioConValid.bind(this)

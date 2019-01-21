@@ -7,7 +7,6 @@ class CatalogCtl extends BaseCtl {
   constructor() {
     super()
     this.findAllCatalog = []
-    this.todoPreAdd = this.todoPreAdd.bind(this)
   }
   getAlias() {
     return '目录'
