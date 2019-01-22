@@ -2,7 +2,7 @@
   <div class="flex">
     <div class="flex flex-1 direction-column">
       <div class="flex-1 form-bg bg-fff">
-        <!--{{schema}}-->
+        {{schema}}
         <div class="form-layout">
           <div class="form-group flex">
             <div class="form-label-layout">
@@ -59,7 +59,9 @@
             </div>
           </div>
           <!--多行默认值-->
-          <div class="form-group flex" v-if="schema.type === 'textarea'">
+          <div class="form-group flex"
+               v-if="schema.type === 'textarea' || schema.type === 'markdown'"
+          >
             <div class="form-label-layout">
               默认值：
             </div>
@@ -104,8 +106,9 @@
               </div>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group submit-layout">
             <div class="btn" @click="todoSaveSchema">提交</div>
+            <div class="btn second-btn" @click="todoCloseEdit">返回</div>
           </div>
         </div>
       </div>
@@ -113,20 +116,33 @@
   </div>
 </template>
 <script>
+  import { mapState, mapGetter, mapMutations, mapActions } from 'vuex'
+  import * as MUTATIONS from '../../store/const/mutaions'
+  import * as ACTIONS from '../../store/const/actions'
+  const initSchema = {
+    type: 'input',
+    name: '',
+    options: [],
+    default: '',
+    arrDefault: [],
+  }
   export default {
+    props: {
+      curSchema: {
+        type: Object,
+        default: function () {
+          return {}
+        }
+      }
+    },
     data() {
       return {
-        schema: {
-          type: 'input',
-          name: '',
-          options: [],
-          default: '',
-          arrDefault: [],
-        },
+        schema: { ...initSchema },
         optionsIdAsc: 0,
         typeList: [
           {alias: '单行文本', name: 'input', type: 'String'},
           {alias: '多行文本', name: 'textarea', type: 'String'},
+          {alias: 'markdown', name: 'markdown', type: 'markdown'},
           {alias: '单选', name: 'radio', type: 'String'},
           {alias: '多选', name: 'select', type: 'Array'},
           {alias: '日期', name: 'time', type: 'String'},
@@ -136,6 +152,10 @@
       }
     },
     methods: {
+      ...mapActions([
+        ACTIONS.SCHEMA_FIELD_POST,
+        ACTIONS.SCHEMA_FIELD_PUT
+      ]),
       doClearSchemaDefault() {
         this.schema.default = ''
         this.schema.arrDefault = []
@@ -168,6 +188,7 @@
         switch (this.schema.type) {
           case 'input':
           case 'textarea':
+          case 'markdown':
           case 'time':
           case 'radio':
             if(this.schema.default && validType !== '[object String]') {
@@ -187,9 +208,36 @@
         this.doSaveSchema()
       },
       async doSaveSchema() {
+        if(this.schema.type === 'select') {
+          this.schema.default = this.schema.arrDefault
+        }
+        let result  = null
+        if(this.schema._id) {
+          result = await this[ACTIONS.SCHEMA_FIELD_PUT]({
+            schemataId: this.schema._id,
+            fields: this.schema
+          })
+        } else {
+          result = await this[ACTIONS.SCHEMA_FIELD_POST](this.schema)
+        }
+        if(result.err) return
+
         console.log('this.schema', this.schema)
+      },
+      todoCloseEdit() {
+        this.$emit('emitCloseEdit')
       }
+    },
+    mounted() {
+      if(this.curSchema._id) {
+        this.schema = { ...this.curSchema }
+      }
+    },
+    beforeDestroy() {
+      console.log('beforeDestroy')
+      this.schema = initSchema
     }
+
   }
 </script>
 <style lang="less">
@@ -230,5 +278,9 @@
   }
   .form-bg{
     padding:10px;
+  }
+  .submit-layout{
+    text-align: right;
+    width: 350px;
   }
 </style>

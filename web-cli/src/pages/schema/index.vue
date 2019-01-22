@@ -1,34 +1,30 @@
 <template>
   <div class="flex flex-1">
     <div class="catalogs-layout">
-      <div class="flex align-items-center catalogs-item-layout">
+      <div
+        class="flex align-items-center catalogs-item-layout"
+        v-for="(item, index) in schemaListArr"
+        :class="{'act': actSchema === item._id}"
+      >
         <div class="iconfont">
           <svg class="icon icon-close" aria-hidden="true">
             <use xlink:href="#icon-wenjian2"></use>
           </svg>
         </div>
-        <div class="catalogs-name line-ellipsis">偶的看来</div>
-      </div>
-      <div class="flex align-items-center catalogs-item-layout act">
-        <div class="iconfont">
-          <svg class="icon icon-close" aria-hidden="true">
-            <use xlink:href="#icon-wenjian2"></use>
-          </svg>
-        </div>
-        <div class="catalogs-name line-ellipsis">偶的看来</div>
+        <div class="catalogs-name line-ellipsis">{{item.name}}</div>
       </div>
     </div>
     <div class="flex flex-1 direction-column">
       <div class="schema-title flex justify-content-space-between">
-        <div>测试测试测试</div>
-        <div class="schema-operate">
-          <span class="btn">编辑</span>
+        <div>{{actSchemaObj.name}}</div>
+        <div class="schema-operate" v-if="actSchema">
+          <span class="btn" v-if="!curSchema" @click="doShowEdit(null)">添加</span>
           <span class="btn warn">删除</span>
         </div>
       </div>
-      <div class="schema-content flex-1">
-        <div class="panel-bg" v-if="!showEditMark">
-          <table class="table-layout">
+      <div class="schema-content flex-1 flex">
+        <div class="panel-bg flex-1 flex" v-if="!curSchema">
+          <table class="table-layout" v-if="actSchemaObj.fields">
             <thead>
             <tr>
               <th><div class="th-p">别名</div></th>
@@ -39,36 +35,37 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td><div class="td-p">别名</div></td>
-              <td><div class="td-p">类型</div></td>
-              <td><div class="td-p">默认值</div></td>
-              <td><div class="td-p">选项</div></td>
-              <td><div class="td-p">
-                <span class="table-btn">编辑</span>
-                <span class="table-btn warn">删除</span>
-              </div></td>
-            </tr>
-            <tr>
-              <td><div class="td-p">别名</div></td>
-              <td><div class="td-p">类型</div></td>
-              <td><div class="td-p">默认值</div></td>
-              <td><div class="td-p">选项</div></td>
-              <td><div class="td-p"><span>编辑</span><span>删除</span></div></td>
-            </tr>
-            <tr>
-              <td><div class="td-p">别名</div></td>
-              <td><div class="td-p">类型</div></td>
-              <td><div class="td-p">默认值</div></td>
-              <td><div class="td-p">选项</div></td>
-              <td><div class="td-p"><span>编辑</span><span>删除</span></div></td>
+            <tr v-for="(item, index) in actSchemaObj.fields">
+              <td><div class="td-p">{{item.name}}</div></td>
+              <td><div class="td-p">{{item.type}}</div></td>
+              <td><div class="td-p">{{item.default || '-'}}</div></td>
+              <td>
+                <div class="td-p" v-if="item.options&&item.options.length">
+                  <span
+                    class="option-label"
+                    v-for="(optionsItem, index) in item.options"
+                  >
+                    {{optionsItem.name}}
+                  </span>
+                </div>
+                <div class="td-p" v-else>-</div>
+              </td>
+              <td>
+                <div class="td-p">
+                  <span class="table-btn" @click="doShowEdit(item)">编辑</span>
+                  <span class="table-btn warn">删除</span>
+                </div>
+              </td>
             </tr>
             </tbody>
           </table>
         </div>
 
-        <div class="panel-bg" v-if="showEditMark">
-          <EditSchema></EditSchema>
+        <div class="panel-bg flex flex-1" v-if="curSchema">
+          <EditSchema
+            :curSchema="curSchema"
+            @emitCloseEdit="doHideEdit"
+          ></EditSchema>
         </div>
 
       </div>
@@ -76,6 +73,9 @@
   </div>
 </template>
 <script>
+  import { mapState, mapGetter, mapMutations, mapActions } from 'vuex'
+  import * as MUTATIONS from '../../store/const/mutaions'
+  import * as ACTIONS from '../../store/const/actions'
   import EditSchema from './editSchema'
   export default {
     components: {
@@ -83,11 +83,50 @@
     },
     data() {
       return {
-        showEditMark: true
+        actSchema: '',
+        curSchema: null
+      }
+    },
+    computed: {
+      ...mapState({
+        schemaList: state => state.schema.list
+      }),
+      schemaListArr: function () {
+        return [ ...this.schemaList.values() ]
+      },
+      actSchemaObj: function () {
+        return this.schemaList.get(this.actSchema) || {}
       }
     },
     methods: {
+      ...mapActions([
+        ACTIONS.SCHEMA_LIST_GET
+      ]),
+      async getData(){
+        const result = await this[ACTIONS.SCHEMA_LIST_GET]()
+        if(!result.err) {
 
+        }
+        if(result.data.list.length) {
+          this.actSchema = result.data.list[0]._id
+        }
+      },
+      /**
+       * tar有值则为编辑，否则是添加
+       * */
+      doShowEdit(tar) {
+        console.log('tart', tar)
+        this.curSchema = tar || {}
+      },
+      doHideEdit() {
+        this.curSchema = null
+      },
+      init(){
+        this.getData()
+      }
+    },
+    mounted() {
+      this.init()
     }
   }
 </script>
@@ -121,10 +160,6 @@
     transition: .4s;
   }
 
-  .add-options-input {
-    width: 140px;
-    margin-right: 10px;
-  }
   .form-content{
     max-width: 500px;
   }

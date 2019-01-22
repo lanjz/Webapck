@@ -5,6 +5,8 @@ import store from './store'
 import directive from './global/directive'
 import toast from './components/toast/index'
 
+
+Vue.config.devtools = true
 Vue.use(toast)
 Vue.use(directive)
 
