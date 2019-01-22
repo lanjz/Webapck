@@ -1,15 +1,9 @@
+import * as util from 'util'
+import * as Busboy from 'busboy'
+import * as fs from 'fs'
+import * as path from 'path'
 import hello from '../utils/hello'
-
-function mkdirsSync( dirname ) {
-  if (fs.existsSync( dirname )) {
-    return true
-  } else {
-    if (mkdirsSync( path.dirname(dirname)) ) {
-      fs.mkdirSync( dirname )
-      return true
-    }
-  }
-}
+import { STATIC_IMG_PATH } from '../utils/CONST'
 
 class BaseCtl {
   constructor() {
@@ -166,51 +160,65 @@ class BaseCtl {
     return this.Model.findOne(query)
   }
   async uploadImg(ctx, next){
-    const serverFilePath = path.join( __dirname, 'static/image' )
-    console.log('ctx', ctx)
-    const busboy = new Busboy({ headers: ctx.req.headers })
-    const fileType = 'album' || 'common'
-    const filePath = path.join(serverFilePath, fileType)
-    const mkdirResult = mkdirsSync( filePath )
-    console.log('文件上传中...')
-    const result = {
-      success: false,
-      formData: {}
+    const result = await this.uploadFile(ctx)
+    if(result.err) {
+      ctx.send(2, '', hello.dealError(result.err, id))
+      return
     }
-    busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
-      let fileName = Math.random().toString(16).substr(2) + '.' + getSuffixName(filename)
-      let _uploadFilePath = path.join( filePath, fileName )
-      let saveTo = path.join(_uploadFilePath)
-  
-      // 文件保存到制定路径
-      file.pipe(fs.createWriteStream(saveTo))
-      // 文件写入事件结束
-      file.on('end', function() {
-        result.success = true
-        result.message = '文件上传成功'
-    
-        console.log('文件上传成功！')
-        resolve(result)
+    ctx.send(1, result.data, '')
+  }
+  async uploadFile(ctx, saveCatalog = 'common'){
+    const res = {
+      err: null,
+      data: {}
+    }
+    const busboy = new Busboy({ headers: ctx.req.headers })
+    const filePath = path.join(STATIC_IMG_PATH, saveCatalog)
+    hello.mkdirsSync( filePath )
+    return new Promise((resolve) => {
+      console.log('文件上传中...')
+      const result = {
+        formData: {},
+        uploadSuccess: false,
+        imgUrl: []
+      }
+      busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
+        console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
+        file.on('data', function(data) {
+          console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
+        });
+        let fileName = Math.random().toString(16).substr(2) + '_' + filename
+        let saveTo = path.join( filePath, fileName )
+        // 文件保存到制定路径
+        file.pipe(fs.createWriteStream(saveTo))
+        // 文件写入事件结束
+        file.on('end', function() {
+          console.log('文件上传成功！')
+          result.uploadSuccess = true
+          result.imgUrl.push(saveTo)
+        })
       })
-    })
-    busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
-      console.log('表单字段数据 [' + fieldname + ']: value: ' + inspect(val));
-      result.formData[fieldname] = inspect(val);
-    });
+      // 解析表单中其他字段信息
+      busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
+        console.log('表单字段数据 [' + fieldname + ']: value: ' + util.inspect(val));
+        result.formData[fieldname] = util.inspect(val);
+      });
   
-    // 解析结束事件
-    busboy.on('finish', function( ) {
-      console.log('文件上结束')
-      ctx.send(1, '文件上结束', '')
-    })
+      // 解析结束事件
+      busboy.on('finish', function( ) {
+        console.log('文件上结束')
+        res.data = result
+        resolve(res)
+      })
   
-    // 解析错误事件
-    busboy.on('error', function(err) {
-      console.log('文件上出错')
-      ctx.send(1, '文件上出错', '')
-    })
+      // 解析错误事件
+      busboy.on('error', function(err) {
+        res.err = err
+        resolve(res)
+      })
   
-    ctx.req.pipe(busboy)
+      ctx.req.pipe(busboy)
+    })
     
   }
 }

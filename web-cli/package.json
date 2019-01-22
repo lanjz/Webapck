@@ -24,6 +24,7 @@
     "@types/node": "^10.12.12",
     "axios": "^0.18.0",
     "babel-plugin-import": "^1.11.0",
+    "busboy": "^0.3.0",
     "clean-webpack-plugin": "^1.0.0",
     "codemirror": "^5.42.0",
     "eslint-plugin-vue": "^5.1.0",

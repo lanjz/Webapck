@@ -1,5 +1,7 @@
 import * as jwt from 'jwt-simple'
 import * as mongoose from 'mongoose'
+import * as path from 'path';
+import * as fs from 'fs';
 import userCtrl from '../controller/User'
 
 /**
@@ -55,6 +57,29 @@ function filterParams(params, model) {
       resolve({ err: e, data: filterData })
     }
   })
+}
+
+/**
+ * 检测路径是否存在，不存在则创建，支持递归创建
+ * @param {String} dirname 目录路径
+ * @return {Boolean} 创建结果
+ * */
+
+function mkdirsSync( dirname ) {
+  if(fs.existsSync(dirname)) {
+    return true
+  }
+  console.log(path.sep, dirname)
+  dirname
+    .split(path.sep)
+    .reduce((currentPath, folder) => {
+      currentPath += folder + path.sep
+      console.log('currentPath', currentPath, fs.existsSync(currentPath))
+      if(!fs.existsSync(currentPath)) {
+        fs.mkdirSync(currentPath)
+      }
+      return currentPath
+    }, '') // 第二参数 设置初始值
 }
 
 function errorHandle(ctx, next){
@@ -139,5 +164,6 @@ export default {
   decodeLoginTypeJwt,
   checkAuth,
   createObjectId,
-  promiseToAwait
+  promiseToAwait,
+  mkdirsSync
 }
