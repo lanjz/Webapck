@@ -2,25 +2,19 @@ import fetch from '../../util/fetch/fetch.js'
 import * as MUTATIONS from '../const/mutaions'
 import * as ACTIONS from '../const/actions'
 
-const list = new Map()
-list.set(1, 2)
 const state = {
-  list,
+  list: {},
   curSchema: 12
 }
 
 const mutations = {
   [MUTATIONS.SCHEMA_LIST_SAVE](state, data, start) {
-    const newMap = start ? state.list : new Map()
-    data.forEach(item => newMap.set(item._id, item))
-    state.list = newMap
-    state.curSchema = 11
-    console.log('state', state.list)
+    const newObj = start ? state.list : {}
+    data.forEach(item => newObj[item._id] = item)
+    state.list = newObj
   },
   [MUTATIONS.SCHEMA_LIST_UPDATE](state, data) {
-    const newMap = state.list
-    newMap.set(data._id, data)
-    state.list = newMap
+    state.list[data._id] = data
   }
 }
 

@@ -5,6 +5,7 @@
         class="flex align-items-center catalogs-item-layout"
         v-for="(item, index) in schemaListArr"
         :class="{'act': actSchema === item._id}"
+        @click="chooseSchema(item)"
       >
         <div class="iconfont">
           <svg class="icon icon-close" aria-hidden="true">
@@ -93,11 +94,11 @@
         schemaList: state => state.schema.list
       }),
       schemaListArr: function () {
-        return [ ...this.schemaList.values() ]
+        return Object.values(this.schemaList)
       },
       actSchemaObj: function () {
         console.log('this.schemaList', this.schemaList)
-        return this.schemaList.get(this.actSchema) || {}
+        return this.schemaList[this.actSchema] || {}
       }
     },
     methods: {
@@ -122,6 +123,9 @@
       },
       doHideEdit() {
         this.curField = null
+      },
+      chooseSchema(item) {
+        this.actSchema = item._id
       },
       init(){
         this.getData()

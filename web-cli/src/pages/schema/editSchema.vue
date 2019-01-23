@@ -2,7 +2,6 @@
   <div class="flex">
     <div class="flex flex-1 direction-column">
       <div class="flex-1 form-bg bg-fff">
-        {{field}}
         <div class="form-layout">
           <div class="form-group flex">
             <div class="form-label-layout">
@@ -34,8 +33,9 @@
               <div class="flex align-items-center wrap">
                 <div class="add-options-item"
                      v-for="(item, index) in field.options"
+                     @blur="e => todoOptionRename(e, index)"
                      contenteditable="true">
-                  {{item}}
+                  {{item.name}}
                 </div>
               </div>
               <div flex align-items-center wrap>
@@ -189,6 +189,9 @@
           window.alert('请输入别名')
           return
         }
+        if(this.field.type === 'select') {
+          this.field.default = this.field.arrDefault
+        }
         let validErr = null
         const validType = Object.prototype.toString.call(this.field.default)
         switch (this.field.type) {
@@ -214,9 +217,6 @@
         this.doSaveSchema()
       },
       async doSaveSchema() {
-        if(this.field.type === 'select') {
-          this.field.default = this.field.arrDefault
-        }
         let result  = null
         if(this.field._id) {
           result = await this[ACTIONS.SCHEMA_FIELD_PUT]({
@@ -228,11 +228,13 @@
           result = await this[ACTIONS.SCHEMA_FIELD_POST](this.field)
         }
         if(result.err) return
-
-        console.log('this.field', this.field)
+        this.todoCloseEdit()
       },
       todoCloseEdit() {
         this.$emit('emitCloseEdit')
+      },
+      todoOptionRename(e, index){
+        this.field.options[index].name = e.target.innerText
       }
     },
     mounted() {
