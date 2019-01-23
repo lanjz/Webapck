@@ -56,7 +56,7 @@ const actions = {
   },
   async [ACTIONS.SCHEMA_FIELD_POST]({ dispatch }, data) {
     const result = await fetch({
-      url: '/api/schemata',
+      url: '/api/schemataField',
       method: 'post',
       data
     })
@@ -65,14 +65,14 @@ const actions = {
     }
     return result
   },
-  async [ACTIONS.SCHEMA_FIELD_PUT]({ dispatch }, data) {
+  async [ACTIONS.SCHEMA_FIELD_PUT]({ commit }, data) {
     const result = await fetch({
-      url: '/api/schemata',
+      url: '/api/schemataField',
       method: 'put',
       data
     })
     if(!result.err) {
-      await dispatch(ACTIONS.SCHEMA_LIST_GET)
+      await commit(MUTATIONS.SCHEMA_LIST_UPDATE, result.data)
     }
     return result
   }

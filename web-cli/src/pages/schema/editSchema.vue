@@ -230,7 +230,7 @@
     },
     mounted() {
       if(this.curSchema._id) {
-        this.schema = { ...this.curSchema }
+        this.schema = { ...this.schema, ...this.curSchema }
       }
     },
     beforeDestroy() {
