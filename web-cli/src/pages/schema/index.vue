@@ -18,12 +18,12 @@
       <div class="schema-title flex justify-content-space-between">
         <div>{{actSchemaObj.name}}</div>
         <div class="schema-operate" v-if="actSchema">
-          <span class="btn" v-if="!curSchema" @click="doShowEdit(null)">添加</span>
+          <span class="btn" v-if="!curField" @click="doShowEdit(null)">添加</span>
           <span class="btn warn">删除</span>
         </div>
       </div>
       <div class="schema-content flex-1 flex">
-        <div class="panel-bg flex-1 flex" v-if="!curSchema">
+        <div class="panel-bg flex-1 flex" v-if="!curField">
           <table class="table-layout" v-if="actSchemaObj.fields">
             <thead>
             <tr>
@@ -61,11 +61,12 @@
           </table>
         </div>
 
-        <div class="panel-bg flex flex-1" v-if="curSchema">
-          <EditSchema
-            :curSchema="curSchema"
+        <div class="panel-bg flex flex-1" v-if="curField">
+          <EditField
+            :curField="curField"
+            :curSchemataId="actSchemaObj"
             @emitCloseEdit="doHideEdit"
-          ></EditSchema>
+          ></EditField>
         </div>
 
       </div>
@@ -76,15 +77,15 @@
   import { mapState, mapGetter, mapMutations, mapActions } from 'vuex'
   import * as MUTATIONS from '../../store/const/mutaions'
   import * as ACTIONS from '../../store/const/actions'
-  import EditSchema from './editSchema'
+  import EditField from './editSchema'
   export default {
     components: {
-      EditSchema
+      EditField
     },
     data() {
       return {
         actSchema: '',
-        curSchema: null
+        curField: null
       }
     },
     computed: {
@@ -95,6 +96,7 @@
         return [ ...this.schemaList.values() ]
       },
       actSchemaObj: function () {
+        console.log('this.schemaList', this.schemaList)
         return this.schemaList.get(this.actSchema) || {}
       }
     },
@@ -116,10 +118,10 @@
        * */
       doShowEdit(tar) {
         console.log('tart', tar)
-        this.curSchema = tar || {}
+        this.curField = tar || {}
       },
       doHideEdit() {
-        this.curSchema = null
+        this.curField = null
       },
       init(){
         this.getData()

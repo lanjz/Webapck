@@ -18,7 +18,9 @@ const mutations = {
     console.log('state', state.list)
   },
   [MUTATIONS.SCHEMA_LIST_UPDATE](state, data) {
-    state.list.set(data._id, data)
+    const newMap = state.list
+    newMap.set(data._id, data)
+    state.list = newMap
   }
 }
 

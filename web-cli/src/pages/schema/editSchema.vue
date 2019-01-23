@@ -2,14 +2,14 @@
   <div class="flex">
     <div class="flex flex-1 direction-column">
       <div class="flex-1 form-bg bg-fff">
-        {{schema}}
+        {{field}}
         <div class="form-layout">
           <div class="form-group flex">
             <div class="form-label-layout">
               别名：
             </div>
             <div class="flex flex-1 align-items-center">
-              <input class="form-input" v-model="schema.name"/>
+              <input class="form-input" v-model="field.name"/>
             </div>
           </div>
           <div class="form-group flex">
@@ -17,7 +17,7 @@
               类型：
             </div>
             <div class="flex flex-1 align-items-center">
-              <select class="from-select" v-model="schema.type" @change="doClearSchemaDefault">
+              <select class="from-select" v-model="field.type" @change="doClearSchemaDefault">
                 <option
                   v-for="(item, index) in typeList"
                   :value="item.name"
@@ -26,14 +26,14 @@
               </select>
             </div>
           </div>
-          <div class="form-group flex" v-if="schema.type === 'radio' || schema.type === 'select'">
+          <div class="form-group flex" v-if="field.type === 'radio' || field.type === 'select'">
             <div class="form-label-layout">
               选项：
             </div>
             <div class="flex flex-1 form-content wrap direction-column">
               <div class="flex align-items-center wrap">
                 <div class="add-options-item"
-                     v-for="(item, index) in schema.options"
+                     v-for="(item, index) in field.options"
                      contenteditable="true">
                   {{item}}
                 </div>
@@ -50,59 +50,59 @@
             </div>
           </div>
           <!--单选默认值-->
-          <div class="form-group flex" v-if="schema.type === 'input'">
+          <div class="form-group flex" v-if="field.type === 'input'">
             <div class="form-label-layout">
               默认值：
             </div>
             <div class="flex flex-1 align-items-center">
-              <input type="text" class="form-input" v-model="schema.default">
+              <input type="text" class="form-input" v-model="field.default">
             </div>
           </div>
           <!--多行默认值-->
           <div class="form-group flex"
-               v-if="schema.type === 'textarea' || schema.type === 'markdown'"
+               v-if="field.type === 'textarea' || field.type === 'markdown'"
           >
             <div class="form-label-layout">
               默认值：
             </div>
             <div class="flex flex-1 align-items-center">
-              <textarea type="text" class="form-input" v-model="schema.default" />
+              <textarea type="text" class="form-input" v-model="field.default" />
             </div>
           </div>
           <!--radios默认值-->
-          <div class="form-group flex" v-if="schema.type === 'radio'&&schema.options.length">
+          <div class="form-group flex" v-if="field.type === 'radio'&&field.options.length">
             <div class="form-label-layout">
               默认值：
             </div>
             <div class="flex flex-1 align-items-center">
               <div
                 class="add-options-item radio-style"
-                :class="{'act':!schema.default}"
-                @click="schema.default = ''"
+                :class="{'act':!field.default}"
+                @click="field.default = ''"
               >
                 无
               </div>
               <div
                 class="add-options-item radio-style"
-                v-for="(item, index) in schema.options"
-                :class="{'act':item.id === schema.default}"
+                v-for="(item, index) in field.options"
+                :class="{'act':item.id === field.default}"
               >
-                <input type="radio" class="form-radio" :value="item.id" :key="item.id" v-model="schema.default">{{item.name}}
+                <input type="radio" class="form-radio" :value="item.id" :key="item.id" v-model="field.default">{{item.name}}
               </div>
             </div>
           </div>
           <!--select默认值-->
-          <div class="form-group flex" v-if="schema.type === 'select'&&schema.options.length">
+          <div class="form-group flex" v-if="field.type === 'select'&&field.options.length">
             <div class="form-label-layout">
               默认值：
             </div>
             <div class="flex flex-1 align-items-center">
               <div
                 class="add-options-item radio-style"
-                v-for="(item, index) in schema.options"
-                :class="{'act':schema.arrDefault.indexOf(item.id) > -1}"
+                v-for="(item, index) in field.options"
+                :class="{'act':field.arrDefault.indexOf(item.id) > -1}"
               >
-                <input type="checkbox" class="form-radio" :value="item.id" :key="item.id" v-model="schema.arrDefault">{{item.name}}
+                <input type="checkbox" class="form-radio" :value="item.id" :key="item.id" v-model="field.arrDefault">{{item.name}}
               </div>
             </div>
           </div>
@@ -128,7 +128,13 @@
   }
   export default {
     props: {
-      curSchema: {
+      curField: {
+        type: Object,
+        default: function () {
+          return {}
+        }
+      },
+      curSchemataId: {
         type: Object,
         default: function () {
           return {}
@@ -137,7 +143,7 @@
     },
     data() {
       return {
-        schema: { ...initSchema },
+        field: { ...initSchema },
         optionsIdAsc: 0,
         typeList: [
           {alias: '单行文本', name: 'input', type: 'String'},
@@ -157,46 +163,46 @@
         ACTIONS.SCHEMA_FIELD_PUT
       ]),
       doClearSchemaDefault() {
-        this.schema.default = ''
-        this.schema.arrDefault = []
+        this.field.default = ''
+        this.field.arrDefault = []
       },
       doAddSchemaOption() {
         if(!this.newOptionValue) return
-        if (this.schema.options.findIndex(item => item.name === this.newOptionValue) > -1){
+        if (this.field.options.findIndex(item => item.name === this.newOptionValue) > -1){
           window.alert(`${this.newOptionValue}已存在`)
           return
         }
         let temIndex = this.optionsIdAsc + 1
         let temId = `option_${temIndex}`
-        while (this.schema.options.findIndex(item => item.id === temId) > -1){
+        while (this.field.options.findIndex(item => item.id === temId) > -1){
           temIndex += 1
           temId = `option_${temIndex}`
         }
-        this.schema.options.push({
+        this.field.options.push({
           name: this.newOptionValue,
           id: temId
         })
         this.newOptionValue = ''
       },
       todoSaveSchema() {
-        if(!this.schema.name) {
+        if(!this.field.name) {
           window.alert('请输入别名')
           return
         }
         let validErr = null
-        const validType = Object.prototype.toString.call(this.schema.default)
-        switch (this.schema.type) {
+        const validType = Object.prototype.toString.call(this.field.default)
+        switch (this.field.type) {
           case 'input':
           case 'textarea':
           case 'markdown':
           case 'time':
           case 'radio':
-            if(this.schema.default && validType !== '[object String]') {
+            if(this.field.default && validType !== '[object String]') {
               validErr = new TypeError('类型值不是String类型')
             }
             break
           case 'select':
-            if(this.schema.default && validType !== '[object Array]') {
+            if(this.field.default && validType !== '[object Array]') {
               validErr = new TypeError('类型值不是Array类型')
             }
             break
@@ -208,50 +214,51 @@
         this.doSaveSchema()
       },
       async doSaveSchema() {
-        if(this.schema.type === 'select') {
-          this.schema.default = this.schema.arrDefault
+        if(this.field.type === 'select') {
+          this.field.default = this.field.arrDefault
         }
         let result  = null
-        if(this.schema._id) {
+        if(this.field._id) {
           result = await this[ACTIONS.SCHEMA_FIELD_PUT]({
-            schemataId: this.schema._id,
-            fields: this.schema
+            schemataId: this.curSchemataId._id,
+            _id: this.field._id,
+            fields: this.field
           })
         } else {
-          result = await this[ACTIONS.SCHEMA_FIELD_POST](this.schema)
+          result = await this[ACTIONS.SCHEMA_FIELD_POST](this.field)
         }
         if(result.err) return
 
-        console.log('this.schema', this.schema)
+        console.log('this.field', this.field)
       },
       todoCloseEdit() {
         this.$emit('emitCloseEdit')
       }
     },
     mounted() {
-      if(this.curSchema._id) {
-        this.schema = { ...this.schema, ...this.curSchema }
+      if(this.curField._id) {
+        this.field = { ...this.field, ...this.curField }
       }
     },
     beforeDestroy() {
       console.log('beforeDestroy')
-      this.schema = initSchema
+      this.field = initSchema
     }
 
   }
 </script>
 <style lang="less">
-  .schema-layout {
+  .field-layout {
     padding: 0 7px;
   }
 
-  .schema-title {
+  .field-title {
     border-bottom: solid 1px @border-color;
     padding: 15px;
     font-size: 18px;
   }
 
-  .schema-content {
+  .field-content {
     padding: 15px;
   }
 
