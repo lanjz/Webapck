@@ -227,7 +227,10 @@
         } else {
           result = await this[ACTIONS.SCHEMA_FIELD_POST](this.field)
         }
-        if(result.err) return
+        if(result.err) {
+          alert(result.err.message)
+          return
+        }
         this.todoCloseEdit()
       },
       todoCloseEdit() {

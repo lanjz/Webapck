@@ -42,6 +42,14 @@ const actions = {
     })
     return result
   },
+  async [ACTIONS.SCHEMA_PUT]({ commit }, data) {
+    const result = await fetch({
+      url: '/api/schemata',
+      method: 'put',
+      data
+    })
+    return result
+  },
   async [ACTIONS.SCHEMA_DELETE]({ commit }, data) {
     const result = await fetch({
       url: '/api/schemata',
@@ -61,7 +69,24 @@ const actions = {
     }
     return result
   },
-  async [ACTIONS.SCHEMA_FIELD_PUT]({ commit }, data) {
+  async [ACTIONS.SCHEMA_FIELD_PUT]({ state, commit }, data) {
+    const res = { err: null, data: ''}
+    const curSchema = state.list[data.schemataId]
+    if(!curSchema) {
+      res.err = new Error(`没有${data.schemataId}的schema`)
+      return res
+    }
+    curSchema.fields.some((item, index) => {
+      if(item._id !== data.fields._id && item.name === data.fields.name) {
+        res.err = new Error(`${data.fields.name}已存在`)
+        return true
+      }
+      return false
+    })
+    console.log('ers', res)
+    if(res.err) {
+      return res
+    }
     const result = await fetch({
       url: '/api/schemataField',
       method: 'put',

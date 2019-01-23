@@ -17,7 +17,9 @@
     </div>
     <div class="flex flex-1 direction-column">
       <div class="schema-title flex justify-content-space-between">
-        <div>{{actSchemaObj.name}}</div>
+        <div class="flex-1 schema-title-layout relative">
+          <input class="full-input" v-model="cacheName" @blur="todoSchemaRename"/>
+        </div>
         <div class="schema-operate" v-if="actSchema">
           <span class="btn" v-if="!curField" @click="doShowEdit(null)">添加</span>
           <span class="btn warn">删除</span>
@@ -86,7 +88,8 @@
     data() {
       return {
         actSchema: '',
-        curField: null
+        curField: null,
+        cacheName: ''
       }
     },
     computed: {
@@ -103,7 +106,8 @@
     },
     methods: {
       ...mapActions([
-        ACTIONS.SCHEMA_LIST_GET
+        ACTIONS.SCHEMA_LIST_GET,
+        ACTIONS.SCHEMA_PUT
       ]),
       async getData(){
         const result = await this[ACTIONS.SCHEMA_LIST_GET]()
@@ -112,6 +116,7 @@
         }
         if(result.data.list.length) {
           this.actSchema = result.data.list[0]._id
+          this.cacheName = result.data.list[0].name
         }
       },
       /**
@@ -126,6 +131,33 @@
       },
       chooseSchema(item) {
         this.actSchema = item._id
+        this.cacheName = item.name
+      },
+      async todoSchemaRename() {
+        if(!this.cacheName) {
+          this.cacheName = this.actSchemaObj.name
+          return
+        }
+        if(this.actSchemaObj.name === this.cacheName) return
+        let isRepeatName = false
+        this.schemaListArr.some((item, index) => {
+          if(item._id !== this.actSchemaObj._id && item.name === this.cacheName) {
+            alert(`${this.cacheName}已存在`)
+            isRepeatName = true
+            return true
+          }
+          return false
+        })
+        if(isRepeatName) {
+          this.cacheName = this.actSchemaObj.name
+          return
+        }
+        const result = await this[ACTIONS.SCHEMA_PUT]({
+          _id: this.actSchemaObj._id,
+          name: this.cacheName
+        })
+        if(result.err) return
+        this.getData()
       },
       init(){
         this.getData()
@@ -187,5 +219,8 @@
   }
   .schema-operate{
     font-size: 15px;
+  }
+  .schema-title-layout{
+    padding: 0 10px;
   }
 </style>
