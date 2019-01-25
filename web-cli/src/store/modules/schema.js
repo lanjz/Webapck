@@ -34,12 +34,16 @@ const actions = {
     return result
   },
   /* eslint-disable no-unused-vars */
-  async [ACTIONS.SCHEMA_POST]({ commit }, data) {
+  async [ACTIONS.SCHEMA_POST]({ dispatch }, data) {
     const result = await fetch({
       url: '/api/schemata',
       method: 'post',
       data
     })
+    if(result.err) {
+
+    }
+    await dispatch(ACTIONS.SCHEMA_LIST_GET)
     return result
   },
   async [ACTIONS.SCHEMA_PUT]({ commit }, data) {

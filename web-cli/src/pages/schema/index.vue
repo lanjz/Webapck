@@ -3,6 +3,28 @@
     <div class="catalogs-layout">
       <div
         class="flex align-items-center catalogs-item-layout"
+        @click="todoAddSchema"
+      >
+        <div class="iconfont">
+          <svg class="icon icon-close" aria-hidden="true">
+            <use xlink:href="#icon-wenjian2"></use>
+          </svg>
+        </div>
+        <div class="catalogs-name line-ellipsis">+add</div>
+      </div>
+      <div
+        v-if="showAddInput"
+        class="flex align-items-center catalogs-item-layout">
+        <input
+          v-model.trim="newSchemaName"
+          class="edit-catalogs-input line-ellipsis"
+          @blur="toAddSchema"
+          v-focus:select
+
+        />
+      </div>
+      <div
+        class="flex align-items-center catalogs-item-layout"
         v-for="(item, index) in schemaListArr"
         :class="{'act': actSchema === item._id}"
         @click="chooseSchema(item)"
@@ -89,7 +111,9 @@
       return {
         actSchema: '',
         curField: null,
-        cacheName: ''
+        cacheName: '',
+        showAddInput: false,
+        newSchemaName: ''
       }
     },
     computed: {
@@ -107,8 +131,33 @@
     methods: {
       ...mapActions([
         ACTIONS.SCHEMA_LIST_GET,
-        ACTIONS.SCHEMA_PUT
+        ACTIONS.SCHEMA_PUT,
+        ACTIONS.SCHEMA_POST
       ]),
+      todoAddSchema() {
+        let tempName = '未命名'
+        let i = 1
+        do{
+          tempName += i
+        } while ((this.schemaListArr.find(item => item.name === tempName)))
+        this.newSchemaName = tempName
+        this.showAddInput = true
+      },
+      async toAddSchema() {
+        const isReatName = this.schemaListArr.find(item => item.name === this.newSchemaName)
+        if(isReatName){
+          alert(`${this.newSchemaName}不存在`)
+          return
+        }
+        const result = await this[ACTIONS.SCHEMA_POST](
+          {
+            name: this.newSchemaName
+          }
+        )
+        this.showAddInput = false
+        this.newSchemaName = ''
+
+      },
       async getData(){
         const result = await this[ACTIONS.SCHEMA_LIST_GET]()
         if(!result.err) {
