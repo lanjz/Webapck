@@ -1,7 +1,7 @@
 import vue from 'vue'
 
 // 这里就是我们刚刚创建的那个静态组件
-import toastComponent from './Toast.vue'
+import toastComponent from './MessageBox.vue'
 
 let instance, tempPro;
 
@@ -43,19 +43,22 @@ function benfen(text, duration = 2000){
   // 过了 duration 时间后隐藏
   setTimeout(() => { toastDom.show = false }, duration)
 }
-function showNextMsg() {
+function showNextMsg(options) {
   if(!instance){
-    console.log(1)
     initInstance()
   }
-  instance.action = ''
-  console.log(2)
+  for(let item in options) {
+    instance[item] = options[item]
+  }
   document.body.appendChild(instance.$el);
+  vue.nextTick(() => {
+    instance.visible = false;
+  });
 }
 function MessageBox(options){
   return new Promise((resolve, reject) => {
     tempPro =  resolve
-    showNextMsg()
+    showNextMsg(options)
   })
 }
 const defaultOptions = {
@@ -63,9 +66,9 @@ const defaultOptions = {
   content: '',
   type: 'alert', // 'alert',  'confirm'
   confirmText: '确定',
-  cancel: '取消'
+  cancelText: '取消'
 }
-function showToast(options, duration = 2000){
+function showToast(options){
   if( Object.prototype.toString.call(options) !== '[object Object]') {
     options = {}
   }

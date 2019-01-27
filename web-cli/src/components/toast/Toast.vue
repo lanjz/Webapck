@@ -1,6 +1,22 @@
 <template>
-  <div class="wrap" v-if="show">{{text}}</div>
+  <div class="wrap">{{text}}</div>
 </template>
+<script>
+  export default {
+    data(){
+      return {
+        text: 'tt'
+      }
+    },
+    mounted() {
+      console.log('this', this.callback)
+      setTimeout(() => {
+        this.callback('abc')
+      })
+
+    }
+  }
+</script>
 
 <style scoped>
   .wrap{

@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import directive from './global/directive'
-import toast from './components/toast/index'
+import toast from './components/messageBox/index'
 
 
 Vue.config.devtools = true

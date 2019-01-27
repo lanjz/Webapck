@@ -210,10 +210,20 @@
       },
       init(){
         this.getData()
+      },
+      alertBack() {
+        console.log('tis', this)
       }
     },
     mounted() {
       this.init()
+      this.$toast("ttt")
+        .then(res => {
+          console.log('res', res)
+        })
+        .catch(err => {
+          console.log('err', err)
+        })
     }
   }
 </script>
