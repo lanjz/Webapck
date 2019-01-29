@@ -44,7 +44,7 @@
         </div>
         <div class="schema-operate" v-if="actSchema">
           <span class="btn" v-if="!curField" @click="doShowEdit(null)">添加</span>
-          <span class="btn warn">删除</span>
+          <span class="btn warn" @click="todoDelete">删除</span>
         </div>
       </div>
       <div class="schema-content flex-1 flex">
@@ -78,7 +78,7 @@
               <td>
                 <div class="td-p">
                   <span class="table-btn" @click="doShowEdit(item)">编辑</span>
-                  <span class="table-btn warn">删除</span>
+                  <span class="table-btn warn" @click="todoDeleteField">删除</span>
                 </div>
               </td>
             </tr>
@@ -211,19 +211,27 @@
       init(){
         this.getData()
       },
-      alertBack() {
-        console.log('tis', this)
+      todoDelete() {
+        this.$alert({
+          title: '弹窗测试',
+          content: '你确认要删除此Schema',
+          showCancel: false
+        })
+      },
+      todoDeleteField() {
+        this.$alert({
+          title: '弹窗测试',
+          content: '你确认要删除此字段',
+          showCancel: false
+        })
+          .then(res => {
+            console.log('res', res)
+          })
       }
     },
     mounted() {
       this.init()
-      this.$toast("ttt")
-        .then(res => {
-          console.log('res', res)
-        })
-        .catch(err => {
-          console.log('err', err)
-        })
+
     }
   }
 </script>
