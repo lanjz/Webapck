@@ -24,7 +24,7 @@ const actions = {
    * */
   async [ACTIONS.BOOK_LIST_GET]({ state, commit }, limit = 0, start = 0) {
     if(limit === -1 && Object.keys(state.list).length){
-      return { err: null, data: state.list}
+      return { err: null, data: {list: state.list}}
     }
     const result = await fetch({
       url: '/api/books',

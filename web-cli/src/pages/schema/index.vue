@@ -162,8 +162,8 @@
         this.$hideLoading()
 
       },
-      async getData(){
-        const result = await this[ACTIONS.SCHEMA_LIST_GET]()
+      async getData(force){
+        const result = await this[ACTIONS.SCHEMA_LIST_GET](force)
         if(!result.err) {
 
         }
@@ -216,7 +216,7 @@
       },
       async init(){
         this.$showLoading()
-        await this.getData()
+        await this.getData(-1)
         this.$hideLoading()
       },
       todoDelete() {
