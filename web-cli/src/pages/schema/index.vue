@@ -78,7 +78,7 @@
               <td>
                 <div class="td-p">
                   <span class="table-btn" @click="doShowEdit(item)">编辑</span>
-                  <span class="table-btn warn" @click="todoDeleteField">删除</span>
+                  <span class="table-btn warn" @click="todoDeleteField(item)">删除</span>
                 </div>
               </td>
             </tr>
@@ -132,7 +132,9 @@
       ...mapActions([
         ACTIONS.SCHEMA_LIST_GET,
         ACTIONS.SCHEMA_PUT,
-        ACTIONS.SCHEMA_POST
+        ACTIONS.SCHEMA_POST,
+        ACTIONS.SCHEMA_DELETE,
+        ACTIONS.SCHEMA_FIELD_DELETE
       ]),
       todoAddSchema() {
         let tempName = '未命名'
@@ -149,6 +151,7 @@
           alert(`${this.newSchemaName}不存在`)
           return
         }
+        this.$showLoading()
         const result = await this[ACTIONS.SCHEMA_POST](
           {
             name: this.newSchemaName
@@ -156,6 +159,7 @@
         )
         this.showAddInput = false
         this.newSchemaName = ''
+        this.$hideLoading()
 
       },
       async getData(){
@@ -208,30 +212,57 @@
         if(result.err) return
         this.getData()
       },
-      init(){
-        this.getData()
+      async init(){
+        this.$showLoading()
+        await this.getData()
+        this.$hideLoading()
       },
       todoDelete() {
         this.$alert({
           title: '弹窗测试',
-          content: '你确认要删除此Schema',
+          content: `你确认要删除"${this.cacheName}"`,
           showCancel: false
         })
+          .then(async res => {
+            if(res) {
+              this.doDeleteSchema()
+            }
+          })
       },
-      todoDeleteField() {
+      async doDeleteSchema() {
+        this.$showLoading()
+        const result = await this[ACTIONS.SCHEMA_DELETE]({ _id: this.actSchemaObj._id })
+        if(!result.err) {
+          await this.getData()
+        }
+        this.$hideLoading()
+      },
+      todoDeleteField(item) {
         this.$alert({
           title: '弹窗测试',
           content: '你确认要删除此字段',
           showCancel: false
         })
           .then(res => {
-            console.log('res', res)
+            if(res) {
+              this.doDeleteField(item)
+            }
           })
+      },
+      async doDeleteField(item) {
+        this.$showLoading()
+        const result = this[ACTIONS.SCHEMA_FIELD_DELETE]({
+          fieldId: this.actSchemaObj._id,
+          schemataId: item._id
+        })
+        if(!result.err) {
+          await this.getData()
+        }
+        this.$hideLoading()
       }
     },
     mounted() {
       this.init()
-
     }
   }
 </script>
@@ -274,6 +305,7 @@
   }
   .catalogs-item-layout{
     padding: 5px 20px;
+    cursor: pointer;
   }
   .iconfont{
     font-size: 25px;

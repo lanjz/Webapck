@@ -218,6 +218,7 @@
       },
       async doSaveSchema() {
         let result  = null
+        this.$showLoading()
         if(this.field._id) {
           result = await this[ACTIONS.SCHEMA_FIELD_PUT]({
             schemataId: this.curSchemataId._id,
@@ -227,6 +228,7 @@
         } else {
           result = await this[ACTIONS.SCHEMA_FIELD_POST](this.field)
         }
+        this.$hideLoading()
         if(result.err) {
           alert(result.err.message)
           return

@@ -100,7 +100,15 @@ const actions = {
       await commit(MUTATIONS.SCHEMA_LIST_UPDATE, result.data)
     }
     return result
-  }
+  },
+  async [ACTIONS.SCHEMA_FIELD_DELETE]({ commit }, data) {
+    const result = await fetch({
+      url: '/api/schemataField',
+      method: 'delete',
+      data
+    })
+    return result
+  },
 }
 export default {
   state,
