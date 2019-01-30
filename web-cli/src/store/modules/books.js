@@ -19,6 +19,9 @@ const mutations = {
 }
 
 const actions = {
+  /**
+   * @params <number> limit 如果为-1 如果已经有数据不需要直接获取
+   * */
   async [ACTIONS.BOOK_LIST_GET]({ state, commit }, limit = 0, start = 0) {
     if(limit === -1 && Object.keys(state.list).length){
       return { err: null, data: state.list}
