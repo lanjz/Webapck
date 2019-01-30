@@ -22,7 +22,12 @@
           </div>
         </div>
       </div>
-      <div class="book-layout act">
+      <div class="book-layout act" @click="goBook">
+        <div class="book-icon-layout">
+          <i class="iconfont icon-jingdian"></i>
+        </div>
+      </div>
+      <div class="book-layout act" @click="goSchema">
         <div class="book-icon-layout">
           <i class="iconfont icon-jingdian"></i>
         </div>
@@ -44,6 +49,12 @@
       }),
     },
     methods: {
+      goBook() {
+        this.$router.push('/BookList')
+      },
+      goSchema() {
+        this.$router.push('/Schema')
+      },
       goTest() {
         this.$router.push('/Bar')
       }

@@ -42,7 +42,8 @@ const defaultOptions = {
   content: '',
   theme: 'confirm', // 'confirm',  'warn'
   confirmText: '确定',
-  cancelText: '取消'
+  cancelText: '取消',
+  showCancel: true
 }
 function helloAlert(options){
   if( Object.prototype.toString.call(options) !== '[object Object]') {

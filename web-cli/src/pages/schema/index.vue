@@ -205,12 +205,14 @@
           this.cacheName = this.actSchemaObj.name
           return
         }
+        this.$showLoading()
         const result = await this[ACTIONS.SCHEMA_PUT]({
           _id: this.actSchemaObj._id,
           name: this.cacheName
         })
         if(result.err) return
-        this.getData()
+        await this.getData()
+        this.$hideLoading()
       },
       async init(){
         this.$showLoading()

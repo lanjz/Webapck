@@ -6,7 +6,7 @@
         <div class="hello-des" v-if="content">{{content}}</div>
       </div>
       <div class="hello-btn-operate">
-        <div class="hello-btn cancel" @click="cancel(false)">{{cancelText}}</div>
+        <div class="hello-btn cancel" v-show="showCancel" @click="cancel(false)">{{cancelText}}</div>
         <div class="hello-btn confirm" @click="cancel(true)">{{confirmText}}</div>
       </div>
     </div>
@@ -20,7 +20,8 @@
         content: '',
         confirmText: '',
         cancelText: '',
-        visible: false
+        visible: false,
+        showCancel: true
       }
     },
     methods: {

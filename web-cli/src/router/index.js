@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Bookshelve from '../pages/bookshelve.vue'
 import Article from '../pages/article/index.vue'
 import Schema from '../pages/schema/index.vue'
+import BookList from '../pages/bookList/index.vue'
 
 const Foo = { template: '<div>foo</div>' }
 const Bar = { template: '<div>bar</div>' }
@@ -15,7 +16,11 @@ const routes = [
     component: Bookshelve,
     children: [
       {
-        path: '',
+        path: '/BookList',
+        component: BookList
+      },
+      {
+        path: '/Schema',
         component: Schema
       },
       {

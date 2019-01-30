@@ -1,4 +1,5 @@
 import axios from 'axios'
+import helloAlert from '../../components/messageBox/index'
 import { HOST_CONFIG as hostConfig } from './fetchConifg'
 import LoadingLine from './loadingLine'
 const loadingLine = new LoadingLine()
@@ -6,6 +7,9 @@ const loadingLine = new LoadingLine()
 const { MOCK } = process.env
 function dealRetCode(response) {
   const res = { err: null, data: response.data }
+  if(response.errmsg || response.retCode !== 0) {
+    res.err = new Error(response.errmsg)
+  }
   return res
 }
 function onUploadProgress(p) {
@@ -54,6 +58,10 @@ const doFetchData = function (options) {
         const result = dealRetCode(response.data)
         if(result.err) {
           res.err = result.err
+          helloAlert({
+            content: res.err.message,
+            showCancel: false
+          })
           resolve(res)
           return
         }
