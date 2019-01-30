@@ -19,7 +19,10 @@ const mutations = {
 }
 
 const actions = {
-  async [ACTIONS.BOOK_LIST_GET]({ commit }, limit = 0, start = 0) {
+  async [ACTIONS.BOOK_LIST_GET]({ state, commit }, limit = 0, start = 0) {
+    if(limit === -1 && Object.keys(state.list).length){
+      return { err: null, data: state.list}
+    }
     const result = await fetch({
       url: '/api/books',
       data: {

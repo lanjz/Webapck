@@ -69,12 +69,12 @@
         ACTIONS.BOOK_LIST_POST,
         ACTIONS.BOOK_LIST_DELETE,
       ]),
-      async getData() {
-        const result = await this[ACTIONS.BOOK_LIST_GET]()
+      async getData(force) {
+        const result = await this[ACTIONS.BOOK_LIST_GET](force)
       },
       async init() {
         this.$showLoading()
-        await this.getData()
+        await this.getData(-1)
         this.$hideLoading()
       },
       todoDeleteBook(item) {
