@@ -1,7 +1,6 @@
 <template>
   <div>
     <TreeItem
-      v-if="catalogs['root']"
       v-for="(item, index) in catalogs['root']"
       :key="index"
       :curNode="item"
@@ -26,8 +25,13 @@
     },
     computed: {
       ...mapState({
-        catalogs: state => state.catalogs.catalogs
-      }),
+        catalogs: state => state.catalogs.list
+      })
+    },
+    watch: {
+      catalogs: function () {
+        console.log('catalogs', this.catalogs)
+      }
     },
     methods: {
       ...mapActions([
@@ -36,8 +40,10 @@
       async getDate(){
         await this[ACTIONS.CATALOGS_GET]({ parentId: 'root' })
       },
-      init() {
-        this.getDate()
+      async init() {
+        this.$showLoading()
+        await this.getDate()
+        this.$hideLoading()
       },
     },
     mounted() {

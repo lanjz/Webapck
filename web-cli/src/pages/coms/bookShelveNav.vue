@@ -2,7 +2,7 @@
   <div class="left-layout flex">
     <div class="book-slider-layout">
       <div class="relative book-layout show-book-list act">
-        <div class="book-icon-layout">
+        <div class="book-icon-layout" @click="goArticle">
           <i class="iconfont icon-jingdian"></i>
         </div>
         <div class="book-list-layout  flex justify-content-start direction-column">
@@ -49,6 +49,9 @@
       }),
     },
     methods: {
+      goArticle() {
+        this.$router.push('/')
+      },
       goBook() {
         this.$router.push('/BookList')
       },

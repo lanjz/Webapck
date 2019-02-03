@@ -16,6 +16,10 @@ const routes = [
     component: Bookshelve,
     children: [
       {
+        path: '/',
+        component: Article
+      },
+      {
         path: '/BookList',
         component: BookList
       },

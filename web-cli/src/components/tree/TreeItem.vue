@@ -29,6 +29,12 @@
       <div v-else class="catalogs-name line-ellipsis">{{curNode.name}}</div>
       <div class="operate-triangle-btn" @click.left.stop="(e) => showOperateMenu(e)"></div>
       <div class="catalog-operate-layout" v-click-outside="closeMenu" :style="operateMenuStyle" v-if="operateMenuStyle.left !== -1">
+        <div class="catalog-operate-item hadChild" @click="doCreateTemDir">
+          新建文件
+          <div class="operate-item-child">
+            <div class="catalog-operate-item" v-for="(item, index) in schemaList ">{{item.name}}</div>
+          </div>
+        </div>
         <div class="catalog-operate-item" @click="doCreateTemDir">新建文件夹</div>
         <div class="catalog-operate-item" @click="todoRename">重命名</div>
         <div class="catalog-operate-item">删除</div>
@@ -91,9 +97,10 @@
     },
     computed: {
       ...mapState({
-        catalogs: state => state.catalogs.catalogs,
+        catalogs: state => state.catalogs.list,
         actCatalog: state => state.catalogs.curCatalog,
-        treeChainList: state => state.catalogs.treeChain
+        treeChainList: state => state.catalogs.treeChain,
+        schemaList: state => Object.values(state.schema.list)
       }),
     },
     methods: {
@@ -104,7 +111,8 @@
       ...mapActions([
         ACTIONS.CATALOGS_GET,
         ACTIONS.CATALOGS_PUT,
-        ACTIONS.CATALOGS_POST
+        ACTIONS.CATALOGS_POST,
+        ACTIONS.SCHEMA_LIST_GET,
       ]),
       chooseCatalog() {
         this.isOpen = !this.isOpen
@@ -176,7 +184,10 @@
         this.newDir.parentId = this.curNode['_id']
       },
       async getDate(id){
-        await this[ACTIONS.CATALOGS_GET]({ parentId: id || this.curNode['_id'] })
+        await Promise.all([
+          this[ACTIONS.SCHEMA_LIST_GET]('-1'),
+          this[ACTIONS.CATALOGS_GET]({ parentId: id || this.curNode['_id'] })
+        ])
       },
       init() {
         // 如果就新建文件夹则直接执行todoRename函数
@@ -314,13 +325,36 @@
     color: #fff;
     z-index: 999;
     border-radius: 5px;
-    overflow: hidden;
     .catalog-operate-item{
       width: 150px;
       padding: 10px 20px;
+      position: relative;
     }
     .catalog-operate-item:not(:last-child){
       border-bottom: solid 1px @border-color;
+    }
+    .catalog-operate-item.hadChild:after{
+      content: '';
+      position: absolute;
+      border-left:solid 4px #fff;
+      border-top: solid 4px transparent;
+      border-bottom: solid 4px transparent;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .catalog-operate-item:hover .operate-item-child{
+      display: block;
+    }
+    .operate-item-child{
+      position: absolute;
+      left: 100%;
+      top: 0;
+      width: 100%;
+      border-radius: 0 5px 5px 0;
+      background: rgba(0,0,0,0.8);
+      border-left:solid 1px rgba(255,255,255,.5);
+      display: none
     }
   }
 

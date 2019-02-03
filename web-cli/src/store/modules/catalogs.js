@@ -3,15 +3,17 @@ import * as MUTATIONS from '../const/mutaions'
 import * as ACTIONS from '../const/actions'
 
 const state = {
-  catalogs: {},
+  list: {
+    root: []
+  },
   curCatalog: {},
   treeChain: [], // 记录当前选择的node链
 }
 
 const mutations = {
   [MUTATIONS.CATALOGS_SAVE](state, { parentId, data }) {
-    state.catalogs = {
-      ...state.catalogs,
+    state.list = {
+      ...state.list,
       ...{ [parentId]: data }
     }
   },
@@ -30,10 +32,10 @@ const mutations = {
       parentId: id
     }
     // 将临时目录插入到目标文件夹最前面，并更新state
-    const getCatalog = state.catalogs[id] ? state.catalogs[id] : []
+    const getCatalog = state.list[id] ? state.list[id] : []
     const addCatalog = [ newDir, ...getCatalog ]
-    state.catalogs = {
-      ...state.catalogs,
+    state.list = {
+      ...state.list,
       ...{ [id]: addCatalog }
     }
     console.log('state', state)
