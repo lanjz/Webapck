@@ -23,7 +23,7 @@ class ArticleCtl extends BaseCtl {
     }
     this.defaultSchema = {
       is_markdown: {
-      
+
       }
     }
   }
@@ -57,7 +57,6 @@ class ArticleCtl extends BaseCtl {
         return res
       }
     }
- 
     return res
   }
   selectConValid(con = [], schema) {
@@ -178,7 +177,6 @@ class ArticleCtl extends BaseCtl {
     if(res.err) {
       return res
     }
-  
     if(!getParams.name) {
       res.err = new Error('name不能为空')
       return res

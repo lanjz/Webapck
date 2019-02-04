@@ -38,7 +38,7 @@
                   {{item.name}}
                 </div>
               </div>
-              <div flex align-items-center wrap>
+              <div class="flex align-items-center wrap">
                 <input type="text" class="form-input add-options-input" v-focus:select v-model="newOptionValue">
                 <div
                   class="add-options-item add-options-btn"

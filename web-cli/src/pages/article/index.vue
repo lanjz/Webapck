@@ -2,14 +2,15 @@
   <div class="flex flex-1">
     <div class="catalog-layout">
       {{treeChain}}
-      <TreeItem></TreeItem>
+      <TreeItem @emitToAdd="todoAddCreateArticle"></TreeItem>
     </div>
     <ArticleBrief></ArticleBrief>
-    <articles></articles>
+    <articles :editMeta="editMeta"></articles>
   </div>
 </template>
 <script>
   import { mapState } from 'vuex'
+  import bus from '../../global/eventBus'
   import TreeItem from '../../components/tree/index.vue'
   import ArticleBrief from './ArticleBrief.vue'
   import articles from './article.vue'
@@ -19,10 +20,33 @@
       ArticleBrief,
       articles
     },
+    data: function () {
+      return {
+        editMeta: {
+          type: 'edit'
+        }
+      }
+    },
     computed: {
       ...mapState({
         treeChain: state => state.catalogs.treeChain
       }),
+    },
+    methods: {
+      todoAddCreateArticle(item) {
+        this.editMeta = {
+          ...item,
+          type: 'add'
+        }
+
+      }
+    },
+    mounted() {
+      console.log("bus", bus)
+      console.log("this", this)
+      bus.$on('emitToAdd', (item) => {
+        this.todoAddCreateArticle(item)
+      })
     }
   }
 </script>

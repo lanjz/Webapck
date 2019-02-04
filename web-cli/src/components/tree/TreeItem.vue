@@ -29,10 +29,10 @@
       <div v-else class="catalogs-name line-ellipsis">{{curNode.name}}</div>
       <div class="operate-triangle-btn" @click.left.stop="(e) => showOperateMenu(e)"></div>
       <div class="catalog-operate-layout" v-click-outside="closeMenu" :style="operateMenuStyle" v-if="operateMenuStyle.left !== -1">
-        <div class="catalog-operate-item hadChild" @click="doCreateTemDir">
+        <div class="catalog-operate-item hadChild">
           新建文件
           <div class="operate-item-child">
-            <div class="catalog-operate-item" v-for="(item, index) in schemaList ">{{item.name}}</div>
+            <div class="catalog-operate-item" v-for="(item, index) in schemaList" @click.stop="todoCreateFile(item)">{{item.name}}</div>
           </div>
         </div>
         <div class="catalog-operate-item" @click="doCreateTemDir">新建文件夹</div>
@@ -60,6 +60,7 @@
   import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
   import * as MUTATIONS from '../../store/const/mutaions'
   import * as ACTIONS from '../../store/const/actions'
+  import bus from '../../global/eventBus'
 
   export default {
     name: 'TreeItem',
@@ -136,6 +137,10 @@
         this.renameValue = this.curNode.name
         this.closeMenu()
         this.renameCatalog = true
+      },
+      todoCreateFile(item) {
+        bus.$emit('emitToAdd', item)
+        this.closeMenu()
       },
       /**
        * 重命名input失去焦点时

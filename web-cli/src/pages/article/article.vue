@@ -1,19 +1,119 @@
 <template>
   <div class="article-layout flex-1 flex direction-column">
-    <div class="article-title">
-      测试测试测试
+    <div class="article-title flex">
+      <div class="flex-1 schema-title-layout relative">
+        <input class="full-input" v-model.trim="articleName"/>
+      </div>
+      <div class="schema-operate">
+        <span class="btn"
+              :class="{'disable-btn': !articleName}"
+              @click="todoSave">保存</span>
+        <span class="btn warn" @click="todoDelete">删除</span>
+      </div>
     </div>
     <div class="article-content">
-      测试测试测试
-      测试测试测试
-      测试测试测试
+      <div class="form-layout theme-1" v-if="editMeta.fields&&editMeta.fields.length">
+        <div class="form-group flex" v-for="(field, index) in editMeta.fields" :index="index">
+          <div class="form-label-layout">
+            {{field.name}}-{{field.type}}：
+          </div>
+          <div class="flex flex-1 align-items-center" v-if="field.type==='markdown'">
+            <textarea type="text" class="form-input" v-model="contents[field._id]"/>
+          </div>
+          <div class="flex flex-1 align-items-center" v-if="field.type==='input'">
+            <input class="form-input" v-model="contents[field._id]"/>
+          </div>
+          <div class="flex flex-1 align-items-center" v-if="field.type==='textarea'">
+            <textarea type="text" class="form-input"  />
+          </div>
+          <div class="flex flex-1 align-items-center" v-if="field.type==='radio'">
+            <div
+              class="add-options-item radio-style"
+              :class="{'act':optionsItem.id === contents[field._id]}"
+              v-for="(optionsItem, optionsIndex) in field.options"
+            >
+              {{optionsItem.name}}
+              <input
+                type="radio"
+                class="form-radio"
+                :value="optionsItem.id"
+                v-model="contents[field._id]">
+            </div>
+          </div>
+          <div class="flex flex-1 align-items-center"
+               v-if="field.type==='select'">
+            <div
+              class="add-options-item radio-style"
+              v-for="(optionsItem, optionsIndex) in field.options"
+              :class="{
+                'act':Object.prototype.toString.call(contents[field._id]) === '[object Array]'&&
+                contents[field._id].indexOf(optionsItem.id) > -1
+              }"
+            >
+              {{optionsItem.name}}
+              <input type="checkBox"
+                     class="form-radio"
+                     :value="optionsItem.id"
+                     @change="changeSelect(field._id, optionsItem)"
+                     :key="optionsItem.id" >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-if="Object.values(contents)">{{contents}}</div>
     </div>
   </div>
 </template>
 
 <script>
   export default {
+    props: {
+      editMeta: {
+        type: Object,
+      }
+    },
+    data: function () {
+      return {
+        articleName:'',
+        contents: {},
+      }
+    },
+    watch: {
+      editMeta: function (val) {
+        const tempObj = {}
+        const { MOCK } = process.env
+        if(val.fields && val.fields.length) {
+          val.fields.forEach((item) => {
+            if(MOCK && item.type === 'select') {
+              tempObj[item._id] = []
+            } else {
+              tempObj [item._id] = item.default ?　item.default :  ''
+            }
+          })
+        }
+        this.contents = tempObj
+      }
+    },
     components: {
+    },
+    methods: {
+      changeSelect(id, tar) {
+        if(Object.prototype.toString.call(this.contents[id]) !== '[object Array]') {
+          this.contents[id] = []
+        }
+        const findIndex = this.contents[id].indexOf(tar.id)
+        if(findIndex > -1) {
+          this.contents[id].splice(findIndex, 1)
+          return
+        }
+        this.contents[id].push(tar.id)
+      },
+      todoDelete() {
+
+      },
+      todoSave() {
+        if(!this.articleName) return
+      }
     }
   }
 </script>
