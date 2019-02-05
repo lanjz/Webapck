@@ -7,7 +7,6 @@ let instance, tempPro;
 
 const MessageBoxConstructor = vue.extend(toastComponent)
 const defaultCallback = action => {
-  console.log('action', action)
   tempPro(action)
 }
 
@@ -15,7 +14,6 @@ const initInstance = () => {
   instance = new MessageBoxConstructor({
     el: document.createElement('div')
   })
-  console.log('instance.callback', instance.callback)
   instance.callback = defaultCallback
 }
 
@@ -36,7 +34,6 @@ function benfen(text, duration = 2000){
     }
   })
   toastDom.callback = defaultCallback
-  console.log('toastDom', toastDom.callback)
   // 把 实例化的 toast.vue 添加到 body 里
   document.body.appendChild(toastDom.$el)
 
@@ -45,11 +42,9 @@ function benfen(text, duration = 2000){
 }
 function showNextMsg() {
   if(!instance){
-    console.log(1)
     initInstance()
   }
   instance.action = ''
-  console.log(2)
   document.body.appendChild(instance.$el);
 }
 function MessageBox(options){

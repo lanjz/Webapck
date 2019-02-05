@@ -55,6 +55,7 @@ const getters = {
 }
 const actions = {
   async [ACTIONS.CATALOGS_GET]({ commit }, params) {
+    console.log('params', JSON.stringify(params))
     const result = await fetch({
       url: '/api/catalogs',
       data: params

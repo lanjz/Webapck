@@ -124,7 +124,6 @@
         return Object.values(this.schemaList)
       },
       actSchemaObj: function () {
-        console.log('this.schemaList', this.schemaList)
         return this.schemaList[this.actSchema] || {}
       }
     },
@@ -176,7 +175,6 @@
        * tar有值则为编辑，否则是添加
        * */
       doShowEdit(tar) {
-        console.log('tart', tar)
         this.curField = tar || {}
       },
       doHideEdit() {

@@ -10,7 +10,8 @@
         'has-child': curNode['hasChild']
       }"
     >
-      <div class="iconfont">
+      <i class="iconfont" v-if="curNode.icon" :class="curNode.icon" :id="curNode._id"></i>
+      <div class="iconfont" v-else>
         <svg class="icon icon-close" aria-hidden="true">
           <use xlink:href="#icon-wenjian2"></use>
         </svg>
@@ -35,9 +36,9 @@
             <div class="catalog-operate-item" v-for="(item, index) in schemaList" @click.stop="todoCreateFile(item)">{{item.name}}</div>
           </div>
         </div>
-        <div class="catalog-operate-item" @click="doCreateTemDir">新建文件夹</div>
-        <div class="catalog-operate-item" @click="todoRename">重命名</div>
-        <div class="catalog-operate-item">删除</div>
+        <div class="catalog-operate-item" @click.stop="doCreateTemDir">新建文件夹</div>
+        <div class="catalog-operate-item" @click.stop="todoRename" v-if="curNode._id !== 'root'">重命名</div>
+        <div class="catalog-operate-item" @click.stop="" v-if="curNode._id !== 'root'">删除</div>
       </div>
     </div>
     <TreeItem
@@ -80,7 +81,7 @@
         default: function () {
           return []
         }
-      }
+      },
     },
     data() {
       return {
@@ -124,6 +125,7 @@
         )
       },
       showOperateMenu(e) {
+        if(!this.curNode._id) return
         const { clientX, clientY } = e
         this.operateMenuStyle = {
           top: `${clientY}px`,
@@ -189,6 +191,7 @@
         this.newDir.parentId = this.curNode['_id']
       },
       async getDate(id){
+        console.log('ac', this.curNode['_id'])
         await Promise.all([
           this[ACTIONS.SCHEMA_LIST_GET]('-1'),
           this[ACTIONS.CATALOGS_GET]({ parentId: id || this.curNode['_id'] })
@@ -207,6 +210,7 @@
       }
     },
     mounted() {
+      console.log('mounted', this.curNode['_id'])
       this.init()
     }
   }
@@ -361,5 +365,7 @@
       display: none
     }
   }
-
+  #hello_recent{
+    font-size: 24px;
+  }
 </style>

@@ -39,7 +39,6 @@ class LoadingLine {
     this.ele.style.display = 'block'
   }
   setWid(arg) {
-    console.log('arg', arg)
     this.showEle()
     this.ele.style.width = `${arg}%`
     if(arg === 100) {

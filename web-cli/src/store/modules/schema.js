@@ -90,7 +90,6 @@ const actions = {
       }
       return false
     })
-    console.log('ers', res)
     if(res.err) {
       return res
     }

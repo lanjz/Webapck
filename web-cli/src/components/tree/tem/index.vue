@@ -92,7 +92,6 @@
         await this[ACTIONS.CATALOGS_GET]({ parentId: this.parentId })
       },
       init() {
-        console.log('isNewDir', this.isNewDir, this.parentId)
         if(!this.isNewDir) {
           this.getDate()
         }
@@ -142,7 +141,6 @@
           name
         })
         this.newDir.parentId = ''
-        console.log('this.newDir.parentId', this.newDir.parentId)
         if(!result.err) {
           this.getDate()
         }

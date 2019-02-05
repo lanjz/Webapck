@@ -77,7 +77,6 @@
         const value = this.editor.getValue()
         this.markDownValue = value
         this.$emit('input', value)
-        console.log('changeObj', changeObj)
       })
       window.onresize = () => {
         console.log(this.editor.refresh)

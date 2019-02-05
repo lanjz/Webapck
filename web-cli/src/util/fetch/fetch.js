@@ -14,7 +14,6 @@ function dealRetCode(response) {
 }
 function onUploadProgress(p) {
   loadingLine.setWid((p.loaded / p.total)*100)
-  console.log('onUploadProgress', p.loaded / p.total)
 }
 function fetchData(options) {
   const res = { err: null, data: '' }
@@ -29,7 +28,6 @@ function fetchData(options) {
     const env = process.DEV
     url = `${hostConfig[env]}${url}`
   }
-  console.log('options', options)
   options.url = url
   options.method = options.method || 'get'
   options.onUploadProgress = onUploadProgress
@@ -51,7 +49,6 @@ function fetchData(options) {
 
 const doFetchData = function (options) {
   const res = { err: null, data: '' }
-  console.log('options', options)
   return new Promise((resolve) => {
     fetchData(options)
       .then((response) => {
