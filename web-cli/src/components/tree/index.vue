@@ -21,6 +21,10 @@
     data() {
       return {
         operateMenuStyle: { left: -1, top: '50%'},
+        catalogs: [
+          { _id: 'hello_recent', name: '最近文档', hasChild: false },
+          { _id: 'hello_dir', name: '我的文件夹', hasChild: true },
+        ]
       }
     },
     computed: {

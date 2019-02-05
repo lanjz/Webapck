@@ -2,7 +2,7 @@
   <div class="left-layout flex">
     <div class="book-slider-layout">
       <div class="relative book-layout show-book-list">
-        <div class="book-icon-layout" @click="goArticle">
+        <div class="book-icon-layout" @click="goArticle" v-if="curBookInfo">
          <!-- <div class="cur-book-icon">
             <i class="iconfont icon-bianji1"></i>
           </div>-->
@@ -33,11 +33,13 @@
         <router-link class="book-icon-layout" to="/BookList">
           <i class="iconfont icon-shuji"></i>
         </router-link>
+        <div class="book-layout-name">本子</div>
       </div>
       <div class="book-layout" @click="goSchema">
         <router-link class="book-icon-layout" to="/Schema">
           <i class="iconfont icon-neirong"></i>
         </router-link>
+        <div class="book-layout-name">字段</div>
       </div>
     </div>
   </div>
@@ -159,8 +161,24 @@
         }
       }
     }
+    .book-layout-name{
+      text-align: center;
+      color: #fff;
+      height: 20px;
+      line-height: 20px;
+      position: absolute;
+      bottom: -22px;
+      width: 40px;
+      font-size: 12px;
+      transform: translateY(-10px);
+      opacity: 0;
+      transition: .2s
+    }
   }
-
+  .book-layout:hover .book-layout-name{
+    transform: translateY(0);
+    opacity: 1;
+  }
   .show-book-list:hover  .book-list-layout{
     transform: scale(1);
   }

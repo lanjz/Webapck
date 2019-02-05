@@ -2,7 +2,23 @@
   <div class="flex flex-1">
     <div class="catalog-layout">
       {{treeChain}}
-      <TreeItem @emitToAdd="todoAddCreateArticle"></TreeItem>
+      <div class="catalogs-layout">
+        <div class="flex align-items-center catalogs-item-layout">
+          <i class="iconfont icon-wendang" style="font-size: 24px"></i>
+          <div class="catalogs-name line-ellipsis">最近文档</div>
+        </div>
+      </div>
+      <div class="catalogs-layout">
+        <div
+          class="flex align-items-center catalogs-item-layout relative has-child"
+          :class="{'act': openDir}"
+        >
+          <i class="iconfont icon-wenjianjia"></i>
+          <div class="catalogs-name line-ellipsis" @click="doOpenDir">我的文件夹</div>
+        </div>
+        <TreeItem @emitToAdd="todoAddCreateArticle" v-show="openDir"></TreeItem>
+      </div>
+
     </div>
     <ArticleBrief></ArticleBrief>
     <articles :editMeta="editMeta"></articles>
@@ -24,7 +40,8 @@
       return {
         editMeta: {
           type: 'edit'
-        }
+        },
+        openDir: false
       }
     },
     computed: {
@@ -39,6 +56,9 @@
           type: 'add'
         }
 
+      },
+      doOpenDir() {
+        this.openDir = !this.openDir
       }
     },
     mounted() {
@@ -134,5 +154,24 @@
     border-right:solid 1px #eee;
     padding: 15px 0;
     overflow: auto;
+  }
+  .catalogs-name{
+    padding: 0 5px;
+  }
+  .catalogs-item-layout.has-child:before{
+    content: '';
+    position: absolute;
+    border-left: solid 6px @bg-second-color;
+    border-top: solid 5px transparent;
+    border-bottom: solid 5px transparent;
+    width: 0;
+    height: 0;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-6px);
+  }
+  .catalogs-item-layout.act.has-child:before{
+    border-left: solid 6px #fff;
+    transform: translateY(-0.375rem) rotate(90deg);
   }
 </style>
