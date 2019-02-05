@@ -1,8 +1,14 @@
 <template>
   <div>
     <div class="book-list-layout">
-      <div v-for="(item, index) in bookList" :key="index" class="book-item-layout">
-        <div class="delete-icon book-item-delete" @click="todoDeleteBook(item)"></div>
+      <div
+        v-for="(item, index) in bookList"
+        :key="index"
+        class="book-item-layout"
+        :class="{'act': item._id === curBook}"
+        @click.stop="todoSetCurBook(item)"
+      >
+        <div class="delete-icon book-item-delete" @click.stop="todoDeleteBook(item)"></div>
         <div>
           <svg class="icon book-iconfont" aria-hidden="true">
             <use xlink:href="#icon-wenjianjia1"></use>
@@ -10,7 +16,7 @@
         </div>
         {{item.name}}
         <div class="book-item-layout-edit">
-          <div class="book-item-layout-in-edit" @click="todoEditBool(item)">编辑</div>
+          <div class="book-item-layout-in-edit" @click.stop="todoEditBool(item)">编辑</div>
         </div>
       </div>
       <div class="book-item-layout" style="padding-top: 25px">
@@ -46,7 +52,7 @@
   </div>
 </template>
 <script>
-  import { mapState, mapGetter, mapMutaions, mapActions } from 'vuex'
+  import { mapState, mapGetter, mapMutations, mapActions } from 'vuex'
   import * as MUTATIONS from '../../store/const/mutaions'
   import * as ACTIONS from '../../store/const/actions'
   export default {
@@ -59,16 +65,23 @@
     },
     computed: {
       ...mapState({
-        bookList: state => Object.values(state.books.list)
+        bookList: state => Object.values(state.books.list),
+        curBook: state => state.books.curBook
       }),
     },
     methods: {
+      ...mapMutations([
+        MUTATIONS.BOOK_CUR_UPDATE
+      ]),
       ...mapActions([
         ACTIONS.BOOK_LIST_GET,
         ACTIONS.BOOK_LIST_PUT,
         ACTIONS.BOOK_LIST_POST,
         ACTIONS.BOOK_LIST_DELETE,
       ]),
+      todoSetCurBook(item) {
+        this[MUTATIONS.BOOK_CUR_UPDATE](item._id)
+      },
       async getData(force) {
         const result = await this[ACTIONS.BOOK_LIST_GET](force)
       },
@@ -178,6 +191,9 @@
         transition: .2s;
       }
     }
+  }
+  .book-item-layout.act{
+    border:solid 1px @highlight-color;
   }
   .book-item-layout:hover .book-item-layout-in-edit{
     transform: translateY(0);

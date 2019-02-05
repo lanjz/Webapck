@@ -4,17 +4,24 @@ import * as ACTIONS from '../const/actions'
 
 const state = {
   list: {},
-  curBook: {}
+  curBook: ''
 }
-
+const getters = {
+  curBookInfo: state => state.list[state.curBook]
+}
 const mutations = {
   [MUTATIONS.BOOK_LIST_SAVE](state, data, start) {
     const newMap = start ? state.list : {}
-    data.forEach(item => newMap[item._id] = item)
+    data.forEach((item) => {
+      newMap[item._id] = item
+    })
     state.list = newMap
   },
   [MUTATIONS.BOOK_LIST_UPDATE](state, data) {
     state.list[data._id] = data
+  },
+  [MUTATIONS.BOOK_CUR_UPDATE](state, data) {
+    state.curBook = data
   }
 }
 
@@ -24,7 +31,7 @@ const actions = {
    * */
   async [ACTIONS.BOOK_LIST_GET]({ state, commit }, limit = 0, start = 0) {
     if(limit === -1 && Object.keys(state.list).length){
-      return { err: null, data: {list: state.list}}
+      return { err: null, data: { list: state.list } }
     }
     const result = await fetch({
       url: '/api/books',
@@ -68,5 +75,6 @@ const actions = {
 export default {
   state,
   mutations,
-  actions
+  actions,
+  getters
 }

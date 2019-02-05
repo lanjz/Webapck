@@ -1,54 +1,64 @@
 <template>
   <div class="left-layout flex">
     <div class="book-slider-layout">
-      <div class="relative book-layout show-book-list act">
+      <div class="relative book-layout show-book-list">
         <div class="book-icon-layout" @click="goArticle">
-          <i class="iconfont icon-jingdian"></i>
+         <!-- <div class="cur-book-icon">
+            <i class="iconfont icon-bianji1"></i>
+          </div>-->
+          <div class="book-icon-layout flex justify-content-center align-items-center">
+            <svg class="icon shelve-svg-icon" aria-hidden="true">
+              <use xlink:href="#icon-wenjianjia1"></use>
+            </svg>
+            <div class="cur-book-name line-ellipsis" v-if="curBookInfo">{{curBookInfo.name}}</div>
+          </div>
         </div>
         <div class="book-list-layout  flex justify-content-start direction-column">
           <div>
-            <div class="book-list-item-layout flex align-items-center">
-              <div class="icon">
-                <i class="iconfont icon-jingdian"></i>
+            <div
+              v-for="(item, index) in bookList"
+              @click.stop="todoSetCurBook(item)"
+              class="book-list-item-layout flex align-items-center">
+              <div>
+                <svg class="icon shelve-svg-icon" aria-hidden="true">
+                  <use xlink:href="#icon-wenjianjia1"></use>
+                </svg>
               </div>
-              <div class="book-name line-ellipsis">测试测试测试测试</div>
-            </div>
-            <div class="book-list-item-layout flex align-items-center act">
-              <div class="icon">
-                <i class="iconfont icon-jingdian"></i>
-              </div>
-              <div class="book-name line-ellipsis">测试测试测试测试</div>
+              <div class="book-name line-ellipsis">{{item.name}}</div>
             </div>
           </div>
         </div>
       </div>
-      <div class="book-layout act" @click="goBook">
-        <div class="book-icon-layout">
-          <i class="iconfont icon-jingdian"></i>
-        </div>
+      <div class="book-layout" @click="goBook">
+        <router-link class="book-icon-layout" to="/BookList">
+          <i class="iconfont icon-shuji"></i>
+        </router-link>
       </div>
-      <div class="book-layout act" @click="goSchema">
-        <div class="book-icon-layout">
-          <i class="iconfont icon-jingdian"></i>
-        </div>
-      </div>
-      <div class="book-layout" @click="goTest">
-        <div class="book-icon-layout">
-          <i class="iconfont icon-liebiao3"></i>
-        </div>
+      <div class="book-layout" @click="goSchema">
+        <router-link class="book-icon-layout" to="/Schema">
+          <i class="iconfont icon-neirong"></i>
+        </router-link>
       </div>
     </div>
   </div>
 </template>
 <script>
-  import { mapState } from 'vuex'
+  import { mapState, mapGetters, mapMutations } from 'vuex'
+  import * as MUTATIONS from '../../store/const/mutaions'
   export default {
     computed: {
       ...mapState({
-        treeChain: state => state.catalogs.treeChain
+        treeChain: state => state.catalogs.treeChain,
+        bookList: state => Object.values(state.books.list),
       }),
+      ...mapGetters([
+        'curBookInfo'
+      ])
     },
     methods: {
+      ...mapMutations([
+        MUTATIONS.BOOK_CUR_UPDATE
+      ]),
       goArticle() {
         this.$router.push('/')
       },
@@ -60,7 +70,10 @@
       },
       goTest() {
         this.$router.push('/Bar')
-      }
+      },
+      todoSetCurBook(item) {
+        this[MUTATIONS.BOOK_CUR_UPDATE](item._id)
+      },
     }
   }
 </script>
@@ -76,6 +89,9 @@
     cursor: pointer;
     position: relative;
     z-index: 1;
+    a.book-icon-layout{
+      display: inline-block;
+    }
     .book-icon-layout{
       line-height: 38px;
       width: 100%;
@@ -83,11 +99,37 @@
       text-align: center;
       border-radius: 50%;
       background: #fff;
-      overflow: hidden;
       position: relative;
+      text-decoration: none;
+      color: @bg-second-color;
+      .cur-book-name{
+        background: rgba(0,0,0,0.5);
+        color: #fff;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top:0;
+        text-align: center;
+        font-size: 12px;
+        border-radius: 50%;
+      }
     }
-    .iconfont{
-      font-size: 26px;
+    .cur-book-icon{
+      position: absolute;
+      z-index: 2;
+      width: 35px;
+      height: 35px;
+      left: 20px;
+      bottom: 25px;
+      border-radius: 50%;
+    }
+    .shelve-svg-icon{
+      border-radius: 50%;
+      font-size: 28px;
+    }
+    .router-link-active .iconfont{
+      color: @highlight-color;
     }
     .book-list-layout{
       max-width: 300px;
@@ -102,16 +144,6 @@
       .book-list-item-layout{
         color: #fff;
         text-align: center;
-        .icon{
-          width: 25px;
-          height: 25px;
-          line-height: 22px;
-          border: solid 1px #fff;
-          border-radius: 50%;
-          .iconfont{
-            font-size: 16px;
-          }
-        }
         .book-name{
           font-size: 12px;
           margin-left: 10px;

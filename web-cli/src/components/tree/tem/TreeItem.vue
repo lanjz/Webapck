@@ -113,7 +113,6 @@
 <style lang="less" scoped>
   .iconfont{
     font-size: 25px;
-    margin-right: 2px;
     position: relative;
     z-index: 1;
   }

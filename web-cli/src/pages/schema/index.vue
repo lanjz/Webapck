@@ -311,7 +311,6 @@
   }
   .iconfont{
     font-size: 25px;
-    margin-right: 2px;
     position: relative;
   }
   .catalogs-item-layout.act{
