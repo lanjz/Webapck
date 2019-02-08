@@ -28,7 +28,7 @@
 
       />
       <div v-else class="catalogs-name line-ellipsis">{{curNode.name}}</div>
-      <div class="operate-triangle-btn" @click.left.stop="(e) => showOperateMenu(e)"></div>
+      <div class="operate-triangle-btn" @click.left.stop="(e) => showOperateMenu(e)" v-if="curNode._id"></div>
       <div class="catalog-operate-layout" v-click-outside="closeMenu" :style="operateMenuStyle" v-if="operateMenuStyle.left !== -1">
         <div class="catalog-operate-item hadChild">
           新建文件
