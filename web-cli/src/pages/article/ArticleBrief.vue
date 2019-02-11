@@ -1,16 +1,35 @@
 <template>
   <div class="article-layout">
     <input type="text" class="article-layout-input"/>
-    <div class="article-item act">
-      <div class="article-item-title">未解决问题记录</div>
-      <div class="article-item-mark">2019.1.1</div>
-    </div>
-    <div class="article-item">
-      <div class="article-item-title">未解决问题记录</div>
-      <div class="article-item-mark">2019.1.1</div>
+    <div class="article-item act" v-for="(item, index) in articles">
+      <div class="article-item-title">{{item.title}}</div>
+      <div class="article-item-mark">{{item.createTime|timestampToTime}}~{{item.updateTime|timestampToTime}}</div>
     </div>
   </div>
 </template>
+<script>
+  import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
+  export default {
+    computed: {
+      ...mapState({
+        treeChainList: state => state.catalogs.treeChain,
+        curBook: state => state.books.curBook,
+        articleList: state => state.articles.list
+      }),
+      articles: function () {
+        console.log(this.treeChainList)
+        if(!Object.keys(this.articleList).length){
+          return []
+        }
+        const getList = this.articleList[`${this.curBook}_${this.treeChainList[this.treeChainList.length-1]}`]
+        if(!getList){
+          return []
+        }
+        return getList
+      }
+    },
+  }
+</script>
 <style lang="less" scoped="">
   .article-item{
     border-radius: 4px;

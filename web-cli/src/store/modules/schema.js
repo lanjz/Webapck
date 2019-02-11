@@ -3,9 +3,10 @@ import * as MUTATIONS from '../const/mutaions'
 import * as ACTIONS from '../const/actions'
 
 const state = {
-  list: {},
-  curSchema: 12
+  list: {}, // schemaId => schema
+  curSchema: 12,
 }
+
 
 const mutations = {
   [MUTATIONS.SCHEMA_LIST_SAVE](state, data, start) {

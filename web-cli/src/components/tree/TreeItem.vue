@@ -102,7 +102,8 @@
         catalogs: state => state.catalogs.list,
         actCatalog: state => state.catalogs.curCatalog,
         treeChainList: state => state.catalogs.treeChain,
-        schemaList: state => Object.values(state.schema.list)
+        schemaList: state => Object.values(state.schema.list),
+        curBook: state => state.books.curBook
       }),
     },
     methods: {
@@ -115,9 +116,31 @@
         ACTIONS.CATALOGS_PUT,
         ACTIONS.CATALOGS_POST,
         ACTIONS.SCHEMA_LIST_GET,
+        ACTIONS.ARTICLE_LIST_GET
       ]),
-      chooseCatalog() {
+      async chooseCatalog() {
         this.isOpen = !this.isOpen
+        if(!this.curNode._id){
+          this.$alert({
+            content: '缺少catalogId',
+            showCancel: false
+          })
+          return
+        }
+        if(!this.curBook){
+          this.$alert({
+            content: '缺少bookId',
+            showCancel: false
+          })
+          return
+        }
+        this.$showLoading()
+        await this[ACTIONS.ARTICLE_LIST_GET]({
+          bookId: this.curBook,
+          catalogId: this.curNode._id,
+          force: true
+        })
+        this.$hideLoading()
         this[MUTATIONS.CATALOGS_CUR_SAVE](
           { data: this.curNode,
             treeChain: [ ...this.treeChain]
