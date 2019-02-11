@@ -6,20 +6,33 @@ const state = {
   list: {
     root: []
   },
-  curCatalog: {},
-  treeChain: [], // 记录当前选择的node链
+  curCatalog: {}
 }
-
+const getters = {
+  treeChainList: state => {
+    const tempArr = []
+    let curTree = state.curCatalog
+    if(!curTree._id) return []
+    tempArr.unshift(curTree._id)
+    while (curTree.parentId) {
+      tempArr.unshift(curTree.parentId)
+      curTree = state.list[curTree.parentId]
+    }
+    return tempArr
+  }
+}
 const mutations = {
-  [MUTATIONS.CATALOGS_SAVE](state, { parentId, data }) {
+  [MUTATIONS.CATALOGS_SAVE](state, { curNode, data }) {
     state.list = {
       ...state.list,
-      ...{ [parentId]: data }
+      ...{ [curNode._id]: {
+          ...curNode,
+          childNodes: data
+        } }
     }
   },
-  [MUTATIONS.CATALOGS_CUR_SAVE](state, { data = {}, treeChain = [] }) {
+  [MUTATIONS.CATALOGS_CUR_SAVE](state, { data = {} }) {
     state.curCatalog = { ...data }
-    state.treeChain = [ ...treeChain ]
   },
   /**
    * 创建临时的目录
@@ -38,31 +51,21 @@ const mutations = {
       ...state.list,
       ...{ [id]: addCatalog }
     }
-    console.log('state', state)
   }
 }
-const getters = {
-  getCurTree: state => {
-/*    const arr = []
-    let curData = state.curCatalog
-    while (curData.parentId !== 'root') {
-      arr.push(curData)
-      curData = state.catalogs[curData.parentId]
-    }
-    arr.push(curData)
-    return arr*/
-  }
-}
+
 const actions = {
   async [ACTIONS.CATALOGS_GET]({ commit }, params) {
     console.log('params', JSON.stringify(params))
     const result = await fetch({
       url: '/api/catalogs',
-      data: params
+      data: {
+        parentId: params._id
+      }
     })
     const { err, data } = result
     if(!err) {
-      commit(MUTATIONS.CATALOGS_SAVE, { parentId: params.parentId, data: data.list })
+      commit(MUTATIONS.CATALOGS_SAVE, { curNode: params, data: data.list })
     }
     return result
   },

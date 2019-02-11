@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-1">
     <div class="catalog-layout">
-      {{treeChain}}
+      {{treeChainList}}
       <TreeItem @emitToAdd="todoAddCreateArticle"></TreeItem>
     </div>
     <ArticleBrief></ArticleBrief>
@@ -9,7 +9,9 @@
   </div>
 </template>
 <script>
-  import { mapState } from 'vuex'
+  import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
+  import * as MUTATIONS from '../../store/const/mutaions'
+  import * as ACTIONS from '../../store/const/actions'
   import bus from '../../global/eventBus'
   import TreeItem from '../../components/tree/index.vue'
   import ArticleBrief from './ArticleBrief.vue'
@@ -29,11 +31,12 @@
       }
     },
     computed: {
-      ...mapState({
-        treeChain: state => state.catalogs.treeChain
-      }),
+      ...mapGetters(['treeChainList']),
     },
     methods: {
+      ...mapActions([
+        ACTIONS.BOOK_LIST_GET,
+      ]),
       todoAddCreateArticle(item) {
         this.editMeta = {
           ...item,
@@ -43,9 +46,16 @@
       },
       doOpenDir() {
         this.openDir = !this.openDir
-      }
+      },
+      getBookData() {
+        this[ACTIONS.BOOK_LIST_GET]()
+      },
+      async init() {
+        this.getBookData()
+      },
     },
     mounted() {
+      this.init()
       bus.$on('emitToAdd', (item) => {
         this.todoAddCreateArticle(item)
       })

@@ -7,7 +7,15 @@ const state = {
   curBook: ''
 }
 const getters = {
-  curBookInfo: state => state.list[state.curBook]
+  curBookInfo: state => {
+    const { MOCK } = process.env
+    if(state.list[state.curBook]) {
+      return state.list[state.curBook]
+    } else if(MOCK) {
+      return Object.values(state.list)[0]
+    }
+    return ''
+  }
 }
 const mutations = {
   [MUTATIONS.BOOK_LIST_SAVE](state, data, start) {

@@ -1,7 +1,7 @@
 <template>
   <div class="article-layout">
     <input type="text" class="article-layout-input"/>
-    <div class="article-item act" v-for="(item, index) in articles">
+    <div class="article-item act" v-for="(item, index) in articles" @click="chooseArticles(item)">
       <div class="article-item-title">{{item.title}}</div>
       <div class="article-item-mark">{{item.createTime|timestampToTime}}~{{item.updateTime|timestampToTime}}</div>
     </div>
@@ -28,6 +28,11 @@
         return getList
       }
     },
+    methods: {
+      chooseArticles: function (item) {
+        this.$router.push(`/article/${item._id}`)
+      }
+    }
   }
 </script>
 <style lang="less" scoped="">

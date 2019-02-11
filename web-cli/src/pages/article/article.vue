@@ -66,6 +66,9 @@
 </template>
 
 <script>
+  import { mapState, mapGetter, mapMutations, mapActions } from 'vuex'
+  import * as MUTATIONS from '../../store/const/mutaions'
+  import * as ACTIONS from '../../store/const/actions'
   export default {
     props: {
       editMeta: {
@@ -77,6 +80,12 @@
         articleName:'',
         contents: {},
       }
+    },
+    computed: {
+      ...mapState({
+        catalogs: state => state.catalogs.list,
+        bookList: state => state.books.list,
+      })
     },
     watch: {
       editMeta: function (val) {
@@ -97,6 +106,12 @@
     components: {
     },
     methods: {
+      ...mapMutations([
+        MUTATIONS.BOOK_CUR_UPDATE
+      ]),
+      ...mapActions([
+        ACTIONS.ARTICLE_DES_GET,
+      ]),
       changeSelect(id, tar) {
         if(Object.prototype.toString.call(this.contents[id]) !== '[object Array]') {
           this.contents[id] = []
@@ -113,7 +128,27 @@
       },
       todoSave() {
         if(!this.articleName) return
+      },
+      async getData(id) {
+        this.$showLoading()
+        const result = await this[ACTIONS.ARTICLE_DES_GET]({
+          _id: id
+        })
+        if(!result.err) {
+          const { bookId, catalogId } = result.data
+          this[MUTATIONS.BOOK_CUR_UPDATE](bookId)
+        }
+        this.$hideLoading()
+      },
+      async init() {
+        const { id } = this.$route.params
+        if(id) {
+          await this.getData(id)
+        }
       }
+    },
+    mounted() {
+      this.init()
     }
   }
 </script>

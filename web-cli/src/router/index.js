@@ -16,7 +16,7 @@ const routes = [
     component: Bookshelve,
     children: [
       {
-        path: '/',
+        path: '/article',
         component: Article
       },
       {
@@ -30,6 +30,10 @@ const routes = [
       {
         path: '/Bar',
         component: Bar
+      },
+      {
+        path: '/article/:id',
+        component: Article
       }
     ]
   },

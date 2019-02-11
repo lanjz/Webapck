@@ -83,7 +83,7 @@
         this[MUTATIONS.BOOK_CUR_UPDATE](item._id)
       },
       async getData(force) {
-        const result = await this[ACTIONS.BOOK_LIST_GET](force)
+        const result = await this[ACTIONS.BOOK_LIST_GET]({force})
       },
       async init() {
         this.$showLoading()

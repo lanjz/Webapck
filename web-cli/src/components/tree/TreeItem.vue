@@ -47,14 +47,15 @@
       @emitExitNewDir="exitNewDir"
       :isNewDir="newDir.parentId === curNode['_id']"
     ></TreeItem>
-    <TreeItem
-      v-show="isOpen"
-      v-if="catalogs[curNode['_id']]"
-      v-for="(item, index) in catalogs[curNode['_id']]"
-      :key="index"
-      :curNode="item"
-      :treeChain="[...treeChain, item['_id']]"
-    ></TreeItem>
+    <div v-if="catalogs[curNode['_id']]&&catalogs[curNode['_id']].childNodes&&catalogs[curNode['_id']].childNodes.length">
+      <TreeItem
+        v-show="isOpen"
+        v-for="(item, index) in catalogs[curNode['_id']].childNodes"
+        :key="index"
+        :curNode="item"
+      ></TreeItem>
+    </div>
+
   </div>
 </template>
 <script>
@@ -75,13 +76,7 @@
         default: function () {
           return false
         }
-      },
-      treeChain: {
-        type: Array,
-        default: function () {
-          return []
-        }
-      },
+      }
     },
     data() {
       return {
@@ -101,10 +96,10 @@
       ...mapState({
         catalogs: state => state.catalogs.list,
         actCatalog: state => state.catalogs.curCatalog,
-        treeChainList: state => state.catalogs.treeChain,
         schemaList: state => Object.values(state.schema.list),
         curBook: state => state.books.curBook
       }),
+      ...mapGetters(['treeChainList'])
     },
     methods: {
       ...mapMutations([
@@ -142,9 +137,7 @@
         })
         this.$hideLoading()
         this[MUTATIONS.CATALOGS_CUR_SAVE](
-          { data: this.curNode,
-            treeChain: [ ...this.treeChain]
-          }
+          { data: this.curNode }
         )
       },
       showOperateMenu(e) {
@@ -195,7 +188,7 @@
           name,
         })
         if(!result.err) {
-          this.getDate(parentId)
+          this.getDate(item)
         }
       },
       async addCatalog(name, parentId) {
@@ -206,18 +199,19 @@
         this.$emit('emitExitNewDir')
       },
       exitNewDir() {
-        this.getDate(this.curNode.parentId)
+        this.getDate(this.curNode)
         this.newDir.parentId = ''
       },
       doCreateTemDir() {
         this.closeMenu()
         this.newDir.parentId = this.curNode['_id']
       },
-      async getDate(id){
+      async getDate(treeNode){
         console.log('ac', this.curNode['_id'])
+        const params = treeNode || this.curNode
         await Promise.all([
           this[ACTIONS.SCHEMA_LIST_GET]('-1'),
-          this[ACTIONS.CATALOGS_GET]({ parentId: id || this.curNode['_id'] })
+          this[ACTIONS.CATALOGS_GET](params)
         ])
       },
       init() {
@@ -233,7 +227,7 @@
       }
     },
     mounted() {
-      console.log('mounted', this.curNode['_id'])
+      console.log('mounted', this.curNode)
       this.init()
     }
   }

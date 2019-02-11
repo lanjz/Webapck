@@ -4,11 +4,15 @@ import * as ACTIONS from '../const/actions'
 
 const state = {
   list: {},
+  articleMap: {}
 }
 
 const mutations = {
   [MUTATIONS.ARTICLE_LIST_SAVE](state, { data, catalogId }) {
     state.list[catalogId] = data
+  },
+  [MUTATIONS.ARTICLE_DES_SAVE](state, data) {
+    state.articleMap[data._id] = data
   }
 }
 
@@ -28,6 +32,19 @@ const actions = {
     const { err, data } = result
     if(!err) {
       commit(MUTATIONS.ARTICLE_LIST_SAVE, { data: data.list, catalogId: key })
+    }
+    return result
+  },
+  async [ACTIONS.ARTICLE_DES_GET]({ state, commit }, { _id, force }) {
+    if(!force && state.articleMap[_id]) {
+      return { err: null, data: state.article[_id]}
+    }
+    const result = await fetch({
+      url: `/api/article/${_id}`
+    })
+    const { err, data } = result
+    if(!err) {
+      commit(MUTATIONS.ARTICLE_DES_SAVE, data)
     }
     return result
   }
