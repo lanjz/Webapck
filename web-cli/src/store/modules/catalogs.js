@@ -6,7 +6,7 @@ const state = {
   list: {
     root: []
   },
-  curCatalog: {}
+  curCatalog: ''
 }
 const getters = {
   treeChainList: state => {
@@ -31,8 +31,8 @@ const mutations = {
         } }
     }
   },
-  [MUTATIONS.CATALOGS_CUR_SAVE](state, { data = {} }) {
-    state.curCatalog = { ...data }
+  [MUTATIONS.CATALOGS_CUR_SAVE](state, id) {
+    state.curCatalog = id
   },
   /**
    * 创建临时的目录

@@ -5,7 +5,7 @@
       @click.left="chooseCatalog"
       @click.right.stop.prevent="(e) => showOperateMenu(e)"
       :class="{
-        'act': actCatalog['_id'] === curNode['_id'],
+        'act': actCatalog === curNode['_id'],
         'in-chain': isOpen||(isOpen&&curNode['hasChild']&&treeChainList.indexOf(curNode['_id']) > -1),
         'has-child': curNode['hasChild']
       }"
@@ -136,9 +136,7 @@
           force: true
         })
         this.$hideLoading()
-        this[MUTATIONS.CATALOGS_CUR_SAVE](
-          { data: this.curNode }
-        )
+        this[MUTATIONS.CATALOGS_CUR_SAVE](this.curNode._id)
       },
       showOperateMenu(e) {
         if(!this.curNode._id) return
