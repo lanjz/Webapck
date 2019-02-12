@@ -20,8 +20,9 @@ const mutations = {
 }
 
 const actions = {
-  async [ACTIONS.SCHEMA_LIST_GET]({ commit }, limit = 0, start = 0) {
-    if(limit === -1 && Object.keys(state.list).length){
+  async [ACTIONS.SCHEMA_LIST_GET]({ commit }, arg = {}) {
+    const { limit = 0, start = 0, force = false } = arg
+    if(!force && Object.keys(state.list).length){
       return { err: null, data: {list: Object.values(state.list)}}
     }
     const result = await fetch({

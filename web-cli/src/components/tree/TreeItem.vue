@@ -110,7 +110,6 @@
         ACTIONS.CATALOGS_GET,
         ACTIONS.CATALOGS_PUT,
         ACTIONS.CATALOGS_POST,
-        ACTIONS.SCHEMA_LIST_GET,
         ACTIONS.ARTICLE_LIST_GET
       ]),
       async chooseCatalog() {
@@ -182,7 +181,7 @@
         this.addCatalog(name, item)
       },
       async modifyCatalogName(name, item) {
-        const { _id, parentId } = item
+        const { _id } = item
         const result = await this[ACTIONS.CATALOGS_PUT]({
           id: _id,
           name,
@@ -207,12 +206,8 @@
         this.newDir.parentId = this.curNode['_id']
       },
       async getDate(treeNode){
-        console.log('ac', this.curNode['_id'])
         const params = treeNode || this.curNode
-        await Promise.all([
-          this[ACTIONS.SCHEMA_LIST_GET]('-1'),
-          this[ACTIONS.CATALOGS_GET](params)
-        ])
+        await this[ACTIONS.CATALOGS_GET](params)
       },
       init() {
         // 如果就新建文件夹则直接执行todoRename函数
@@ -227,7 +222,6 @@
       }
     },
     mounted() {
-      console.log('mounted', this.curNode)
       this.init()
     }
   }

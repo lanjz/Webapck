@@ -35,10 +35,11 @@ const mutations = {
 
 const actions = {
   /**
-   * @params <number> limit 如果为-1 如果已经有数据不需要直接获取
+   * @params <Object> force 是否强制重新获取数据
    * */
-  async [ACTIONS.BOOK_LIST_GET]({ state, commit }, limit = 0, start = 0) {
-    if(limit === -1 && Object.keys(state.list).length){
+  async [ACTIONS.BOOK_LIST_GET]({ state, commit }, arg = {}) {
+    const { limit = 0, start = 0, force = false } = arg
+    if(!force && Object.keys(state.list).length){
       return { err: null, data: { list: state.list } }
     }
     const result = await fetch({

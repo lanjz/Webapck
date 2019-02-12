@@ -1,7 +1,6 @@
 <template>
   <div class="flex flex-1">
     <div class="catalog-layout">
-      {{treeChainList}}
       <TreeItem @emitToAdd="todoAddCreateArticle"></TreeItem>
     </div>
     <ArticleBrief></ArticleBrief>
@@ -25,9 +24,8 @@
     data: function () {
       return {
         editMeta: {
-          editId: 'edit'
+          editId: 'new'
         },
-        openDir: false
       }
     },
     computed: {
@@ -39,6 +37,7 @@
     methods: {
       ...mapActions([
         ACTIONS.BOOK_LIST_GET,
+        ACTIONS.SCHEMA_LIST_GET,
       ]),
       todoAddCreateArticle(item) {
         const {
@@ -59,24 +58,22 @@
         }
 
       },
-      doOpenDir() {
-        this.openDir = !this.openDir
-      },
       getBookData() {
         this[ACTIONS.BOOK_LIST_GET]()
+        this[ACTIONS.SCHEMA_LIST_GET]()
       },
       async init() {
         this.getBookData()
+        /**
+         * @params <Object> arg 包含schemaId字段id和当前articleId(如果是添加则为'new')
+         * */
+        bus.$on('emitToAdd', (arg) => {
+          this.todoAddCreateArticle(arg)
+        })
       },
     },
     mounted() {
       this.init()
-      /**
-       * @params <Object> arg 包含schemaId字段id和当前articleId(如果是添加则为'new')
-       * */
-      bus.$on('emitToAdd', (arg) => {
-        this.todoAddCreateArticle(arg)
-      })
     }
   }
 </script>
