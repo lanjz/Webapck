@@ -131,8 +131,7 @@
         this.$showLoading()
         await this[ACTIONS.ARTICLE_LIST_GET]({
           bookId: this.curBook,
-          catalogId: this.curNode._id,
-          force: true
+          catalogId: this.curNode._id
         })
         this.$hideLoading()
         this[MUTATIONS.CATALOGS_CUR_SAVE](this.curNode._id)

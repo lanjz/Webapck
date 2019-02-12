@@ -15,7 +15,8 @@
     computed: {
       ...mapState({
         curBook: state => state.books.curBook,
-        articleList: state => state.articles.catalogMapArticles
+        articleList: state => state.articles.catalogMapArticles,
+        treeChainList: state => state.catalogs.curCatalog
       }),
       ...mapGetters(['treeChainList']),
       articles: function () {

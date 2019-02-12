@@ -24,12 +24,21 @@ const getters = {
 const mutations = {
   [MUTATIONS.CATALOGS_SAVE](state, { curNode, data }) {
     console.log('curNode', curNode, data)
+    const list = {
+      ...{ [curNode._id]: {
+        ...curNode,
+        childNodes: data
+      } }
+    }
+    data.forEach((item) => {
+      console.log('item', item)
+      list[item._id] = {
+        ...item
+      }
+    })
     state.list = {
       ...state.list,
-      ...{ [curNode._id]: {
-          ...curNode,
-          childNodes: data
-        } }
+      ...list
     }
   },
   [MUTATIONS.CATALOGS_CUR_SAVE](state, id) {

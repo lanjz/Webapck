@@ -22,6 +22,7 @@ const actions = {
     if(!force && state.catalogMapArticles[key]) {
       return { err: null, data: { list: Object.values(state.list)} }
     }
+    console.log('1')
     const result = await fetch({
       url: '/api/articles',
       data: {
