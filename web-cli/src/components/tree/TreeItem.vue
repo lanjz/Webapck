@@ -155,7 +155,9 @@
         this.renameCatalog = true
       },
       todoCreateFile(item) {
-        bus.$emit('emitToAdd', item)
+        bus.$emit('emitToAdd', {
+          schemaId: item._id
+        })
         this.closeMenu()
       },
       /**

@@ -25,12 +25,15 @@
     data: function () {
       return {
         editMeta: {
-          type: 'edit'
+          editId: 'edit'
         },
         openDir: false
       }
     },
     computed: {
+      ...mapState({
+        schemaList: state => state.schema.list
+      }),
       ...mapGetters(['treeChainList']),
     },
     methods: {
@@ -38,9 +41,21 @@
         ACTIONS.BOOK_LIST_GET,
       ]),
       todoAddCreateArticle(item) {
+        const {
+          schemaId,
+          articleId = 'new'
+        } = item
+        if(!schemaId) {
+          this.$alert({
+            title: '缺少schemaId',
+            showCancel: false
+          })
+        }
+        const { MOCK } = process.env
+        const getSchema = (articleId !== 'new' && MOCK) ? Object.values(this.schemaList)[0] : this.schemaList[schemaId]
         this.editMeta = {
-          ...item,
-          type: 'add'
+          ...getSchema,
+          editId: articleId
         }
 
       },
@@ -56,8 +71,11 @@
     },
     mounted() {
       this.init()
-      bus.$on('emitToAdd', (item) => {
-        this.todoAddCreateArticle(item)
+      /**
+       * @params <Object> arg 包含schemaId字段id和当前articleId(如果是添加则为'new')
+       * */
+      bus.$on('emitToAdd', (arg) => {
+        this.todoAddCreateArticle(arg)
       })
     }
   }

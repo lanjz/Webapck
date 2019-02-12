@@ -77,28 +77,42 @@
     },
     data: function () {
       return {
-        articleName:'',
+        articleName:'未命名',
         contents: {},
+        editId: 'new',
+        schemaId: ''
       }
     },
     computed: {
       ...mapState({
         catalogs: state => state.catalogs.list,
         bookList: state => state.books.list,
+        articles: state => state.articles.list
       })
     },
     watch: {
-      editMeta: function (val) {
-        const tempObj = {}
+      editMeta: async function (val) {
         const { MOCK } = process.env
-        if(val.fields && val.fields.length) {
-          val.fields.forEach((item) => {
-            if(MOCK && item.type === 'select') {
-              tempObj[item._id] = []
-            } else {
-              tempObj [item._id] = item.default ?　item.default :  ''
-            }
-          })
+        const { editId, fields, _id } = val
+        this.editId = editId
+        this.schemaId = _id
+        let tempObj = {}
+        if(editId === 'new' || MOCK) {
+          if(fields && fields.length) {
+            fields.forEach((item) => {
+              if(MOCK && item.type === 'select') {
+                tempObj[item._id] = []
+              } else {
+                tempObj [item._id] = item.default ?　item.default :  ''
+              }
+            })
+          }
+        } else {
+          if(!this.articles[editId]) {
+            await this.getData(editId)
+          }
+          tempObj = this.articles[editId].content
+          this.articleName = this.articles[editId].title
         }
         this.contents = tempObj
       }
@@ -111,6 +125,9 @@
       ]),
       ...mapActions([
         ACTIONS.ARTICLE_DES_GET,
+        ACTIONS.ARTICLE_POST,
+        ACTIONS.ARTICLE_PUT,
+        ACTIONS.ARTICLE_DELETE,
       ]),
       changeSelect(id, tar) {
         if(Object.prototype.toString.call(this.contents[id]) !== '[object Array]') {
@@ -124,10 +141,38 @@
         this.contents[id].push(tar.id)
       },
       todoDelete() {
-
+        this.$alert({
+          content: `你确认要删除"${this.articleName}"`,
+          showCancel: false
+        })
+          .then(async res => {
+            if(res) {
+              this.doDeleteBook(this.editId)
+            }
+          })
       },
-      todoSave() {
+      async todoSave() {
         if(!this.articleName) return
+        let result = {}
+        this.$showLoading()
+        if(this.editId === 'new') {
+          result = await this[ACTIONS.ARTICLE_POST]({
+            schemaId: this.schemaId,
+            content: this.contents,
+            title: this.articleName
+          })
+        } else {
+          result = await this[ACTIONS.ARTICLE_PUT]({
+            id: this.editId,
+            content: this.contents,
+            title: this.articleName
+          })
+        }
+        if(!result.err) {
+          const id = this.editId === 'new' ?　result.data.id : this.editId
+          await this.getData(id)
+        }
+        this.$hideLoading()
       },
       async getData(id) {
         this.$showLoading()
@@ -143,6 +188,7 @@
       async init() {
         const { id } = this.$route.params
         if(id) {
+          this.editId = id
           await this.getData(id)
         }
       }

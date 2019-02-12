@@ -9,13 +9,15 @@
 </template>
 <script>
   import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
+  import bus from '../../global/eventBus'
+
   export default {
     computed: {
       ...mapState({
-        treeChainList: state => state.catalogs.treeChain,
         curBook: state => state.books.curBook,
-        articleList: state => state.articles.list
+        articleList: state => state.articles.catalogMapArticles
       }),
+      ...mapGetters(['treeChainList']),
       articles: function () {
         console.log(this.treeChainList)
         if(!Object.keys(this.articleList).length){
@@ -30,6 +32,7 @@
     },
     methods: {
       chooseArticles: function (item) {
+        bus.$emit('emitToAdd', { schemaId: item.schemaId, articleId: item._id})
         this.$router.push(`/article/${item._id}`)
       }
     }

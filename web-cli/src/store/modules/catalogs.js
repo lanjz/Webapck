@@ -4,14 +4,14 @@ import * as ACTIONS from '../const/actions'
 
 const state = {
   list: {
-    root: []
+    root: {}
   },
   curCatalog: ''
 }
 const getters = {
   treeChainList: state => {
     const tempArr = []
-    let curTree = state.curCatalog
+    let curTree = state.list[state.curCatalog] || {}
     if(!curTree._id) return []
     tempArr.unshift(curTree._id)
     while (curTree.parentId) {
@@ -23,6 +23,7 @@ const getters = {
 }
 const mutations = {
   [MUTATIONS.CATALOGS_SAVE](state, { curNode, data }) {
+    console.log('curNode', curNode, data)
     state.list = {
       ...state.list,
       ...{ [curNode._id]: {
