@@ -2,24 +2,24 @@ import fetch from '../../util/fetch/fetch.js'
 import * as MUTATIONS from '../const/mutaions'
 import * as ACTIONS from '../const/actions'
 
+const defaultBook = {
+  default:{
+    _id: 'default',
+    name: '默认'
+  }
+}
 const state = {
-  list: {},
-  curBook: ''
+  list: defaultBook,
+  curBook: 'default'
 }
 const getters = {
   curBookInfo: state => {
-    const { MOCK } = process.env
-    if(state.list[state.curBook]) {
-      return state.list[state.curBook]
-    } else if(MOCK) {
-      return Object.values(state.list)[0]
-    }
-    return ''
+    return state.list[state.curBook]
   }
 }
 const mutations = {
-  [MUTATIONS.BOOK_LIST_SAVE](state, data, start) {
-    const newMap = start ? state.list : {}
+  [MUTATIONS.BOOK_LIST_SAVE](state, { data, start }) {
+    const newMap = start ? state.list : { ...defaultBook }
     data.forEach((item) => {
       newMap[item._id] = item
     })
@@ -39,7 +39,7 @@ const actions = {
    * */
   async [ACTIONS.BOOK_LIST_GET]({ state, commit }, arg = {}) {
     const { limit = 0, start = 0, force = false } = arg
-    if(!force && Object.keys(state.list).length){
+    if(!force && Object.keys(state.list).length > 1){
       return { err: null, data: { list: state.list } }
     }
     const result = await fetch({
@@ -51,7 +51,7 @@ const actions = {
     })
     const { err, data } = result
     if(!err) {
-      commit(MUTATIONS.BOOK_LIST_SAVE, data.list, start)
+      commit(MUTATIONS.BOOK_LIST_SAVE, { data: data.list, start })
     }
     return result
   },

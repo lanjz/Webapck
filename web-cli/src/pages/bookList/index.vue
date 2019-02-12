@@ -8,7 +8,7 @@
         :class="{'act': item._id === curBook}"
         @click.stop="todoSetCurBook(item)"
       >
-        <div class="delete-icon book-item-delete" @click.stop="todoDeleteBook(item)"></div>
+        <div class="delete-icon book-item-delete" v-if="item._id !== 'default'" @click.stop="todoDeleteBook(item)"></div>
         <div>
           <svg class="icon book-iconfont" aria-hidden="true">
             <use xlink:href="#icon-wenjianjia1"></use>
