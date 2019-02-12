@@ -172,6 +172,7 @@
     position: relative;
     vertical-align: top;
     height: 110px;
+    margin-bottom: 20px;
     .book-item-layout-edit{
       position: absolute;
       width: 100%;

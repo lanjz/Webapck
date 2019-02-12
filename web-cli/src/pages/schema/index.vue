@@ -2,15 +2,11 @@
   <div class="flex flex-1">
     <div class="catalogs-layout">
       <div
-        class="flex align-items-center catalogs-item-layout"
+        class="flex align-items-center catalogs-item-layout add-catalogs-layout"
         @click="todoAddSchema"
       >
-        <div class="iconfont">
-          <svg class="icon icon-close" aria-hidden="true">
-            <use xlink:href="#icon-wenjian2"></use>
-          </svg>
-        </div>
-        <div class="catalogs-name line-ellipsis">+add</div>
+        <i class="iconfont icon-tianjiajiahaowubiankuang"></i>
+        <div class="catalogs-name line-ellipsis">新字段</div>
       </div>
       <div
         v-if="showAddInput"
@@ -30,9 +26,7 @@
         @click="chooseSchema(item)"
       >
         <div class="iconfont">
-          <svg class="icon icon-close" aria-hidden="true">
-            <use xlink:href="#icon-wenjian2"></use>
-          </svg>
+          <i class="iconfont icon-ziduan"></i>
         </div>
         <div class="catalogs-name line-ellipsis">{{item.name}}</div>
       </div>
@@ -162,7 +156,7 @@
 
       },
       async getData(force){
-        const result = await this[ACTIONS.SCHEMA_LIST_GET](force)
+        const result = await this[ACTIONS.SCHEMA_LIST_GET]({ force })
         if(!result.err) {
 
         }
@@ -209,12 +203,12 @@
           name: this.cacheName
         })
         if(result.err) return
-        await this.getData()
+        await this.getData(true)
         this.$hideLoading()
       },
       async init(){
         this.$showLoading()
-        await this.getData(-1)
+        await this.getData()
         this.$hideLoading()
       },
       todoDelete() {
@@ -267,9 +261,6 @@
   }
 </script>
 <style lang="less">
-  .schema-layout {
-    padding: 0 7px;
-  }
 
   .schema-title {
     border-bottom: solid 1px @border-color;
@@ -282,43 +273,50 @@
     background: @bg-panel-color;
   }
 
-  .add-options-item {
-    padding: 4px 12px;
-    display: inline-block;
-    color: #fff;
-    background: #24292e;
-    border-radius: 2px;
-    margin-right: 7px;
-    margin-bottom: 7px;
-  }
-  .add-options-btn{
-    margin: 0;
-    transition: .4s;
-  }
-
-  .form-content{
-    max-width: 500px;
-  }
   .catalogs-layout{
     width: 200px;
     border-right: solid 1px @border-color;
   }
   .catalogs-item-layout{
-    padding: 5px 20px;
+    padding: 10px 20px;
     cursor: pointer;
-  }
-  .iconfont{
-    font-size: 25px;
+    font-size: 14px;
     position: relative;
+    .iconfont{
+      margin-right: 2px;
+      font-size: 22px;
+    }
   }
   .catalogs-item-layout.act{
-    background: @bg-second-color;
-    color: #fff;
+    background: @bg-panel-color;
+    .iconfont{
+      color:  @highlight-color;
+    }
+  }
+  .catalogs-item-layout.act:after{
+    content: '';
+   /* background: @bg-second-color;
+    color: #fff;*/
+    background: @highlight-color;
+    position: absolute;
+    height: 100%;
+    width: 4px;
+    right: 0;
+    top: 0;
   }
   .schema-operate{
     font-size: 15px;
   }
   .schema-title-layout{
     padding: 0 10px;
+  }
+  .add-catalogs-layout{
+    border-bottom: solid 5px @bg-panel-color;
+    padding: 16px 20px;
+    .iconfont{
+      margin-right: 2px;
+      font-size: 25px;
+      color: #398dee;
+    }
   }
 </style>

@@ -96,7 +96,7 @@
       ...mapState({
         catalogs: state => state.catalogs.list,
         actCatalog: state => state.catalogs.curCatalog,
-        schemaList: state => Object.values(state.schema.list),
+        schemaList: state => Object.values(state.schema.list).filter(item => item.fields.length),
         curBook: state => state.books.curBook
       }),
       ...mapGetters(['treeChainList'])
