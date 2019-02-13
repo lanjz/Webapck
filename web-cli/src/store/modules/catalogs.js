@@ -27,7 +27,6 @@ const getters = {
 }
 const mutations = {
   [MUTATIONS.CATALOGS_SAVE](state, { curNode, data }) {
-    console.log('curNode', curNode, data)
     const list = {
       ...{ [curNode._id]: {
         ...curNode,
@@ -35,7 +34,6 @@ const mutations = {
       } }
     }
     data.forEach((item) => {
-      console.log('item', item)
       list[item._id] = {
         ...item
       }
@@ -70,7 +68,6 @@ const mutations = {
 
 const actions = {
   async [ACTIONS.CATALOGS_GET]({ commit }, params) {
-    console.log('params', JSON.stringify(params))
     const result = await fetch({
       url: '/api/catalogs',
       data: {

@@ -7,7 +7,7 @@
     <div
       class="article-item"
       v-for="(item, index) in articles"
-      :class="{'act': index === 1}"
+      :class="{'act': item._id === cusArticle}"
       @click="chooseArticles(item)">
       <div class="article-item-title">{{item.title}}</div>
       <div class="article-item-mark">{{item.createTime | timestampToTime}}~{{item.updateTime | timestampToTime}}</div>
@@ -16,6 +16,9 @@
 </template>
 <script>
   import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
+  import * as MUTATIONS from '../../store/const/mutaions'
+  import * as ACTIONS from '../../store/const/actions'
+
   import bus from '../../global/eventBus'
   import constKey from '../../util/const'
 
@@ -29,11 +32,11 @@
       ...mapState({
         curBook: state => state.books.curBook,
         articleList: state => state.articles.catalogMapArticles,
-        treeChainList: state => state.catalogs.curCatalog
+        treeChainList: state => state.catalogs.curCatalog,
+        cusArticle: state => state.articles.cusArticle
       }),
       ...mapGetters(['treeChainList']),
       articles: function () {
-        console.log(this.treeChainList)
         if (!Object.keys(this.articleList).length) {
           return []
         }
@@ -48,9 +51,13 @@
       }
     },
     methods: {
+      ...mapMutations([
+        MUTATIONS.ARTICLE_CUS_SAVE
+      ]),
       chooseArticles: function (item) {
         bus.$emit('emitToAdd', {schemaId: item.schemaId, articleId: item._id})
         this.$router.push(`/article/${item._id}`)
+
       }
     }
   }

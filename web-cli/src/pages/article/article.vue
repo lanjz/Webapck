@@ -24,7 +24,7 @@
             <input class="form-input" v-model="contents[field._id]"/>
           </div>
           <div class="flex flex-1 align-items-center" v-if="field.type==='textarea'">
-            <textarea type="text" class="form-input"  />
+            <textarea type="text" class="form-input"/>
           </div>
           <div class="flex flex-1 align-items-center" v-if="field.type==='radio'">
             <div
@@ -55,7 +55,7 @@
                      class="form-radio"
                      :value="optionsItem.id"
                      @change="changeSelect(field._id, optionsItem)"
-                     :key="optionsItem.id" >
+                     :key="optionsItem.id">
             </div>
           </div>
         </div>
@@ -69,6 +69,7 @@
   import { mapState, mapGetter, mapMutations, mapActions } from 'vuex'
   import * as MUTATIONS from '../../store/const/mutaions'
   import * as ACTIONS from '../../store/const/actions'
+
   export default {
     props: {
       editMeta: {
@@ -77,10 +78,11 @@
     },
     data: function () {
       return {
-        articleName:'未命名',
+        articleName: '未命名',
         contents: {},
         editId: 'new',
-        schemaId: ''
+        schemaId: '',
+        catalogId: ''
       }
     },
     computed: {
@@ -93,21 +95,23 @@
     watch: {
       editMeta: async function (val) {
         const { MOCK } = process.env
-        const { editId, fields, _id } = val
+        const { editId, fields, _id, catalogId } = val
         this.editId = editId
         this.schemaId = _id
+        this.catalogId = catalogId
         let tempObj = {}
-        if(editId === 'new' || MOCK) {
+        if(editId === 'new') {
           if(fields && fields.length) {
             fields.forEach((item) => {
               if(MOCK && item.type === 'select') {
                 tempObj[item._id] = []
               } else {
-                tempObj [item._id] = item.default ?　item.default :  ''
+                tempObj [item._id] = item.default ? item.default : ''
               }
             })
           }
         } else {
+
           if(!this.articles[editId]) {
             await this.getData(editId)
           }
@@ -115,12 +119,15 @@
           this.articleName = this.articles[editId].title
         }
         this.contents = tempObj
+      },
+      editId: function (val) {
+        this[MUTATIONS.ARTICLE_CUS_SAVE](val)
       }
     },
-    components: {
-    },
+    components: {},
     methods: {
       ...mapMutations([
+        MUTATIONS.ARTICLE_CUS_SAVE,
         MUTATIONS.BOOK_CUR_UPDATE
       ]),
       ...mapActions([
@@ -158,6 +165,7 @@
         if(this.editId === 'new') {
           result = await this[ACTIONS.ARTICLE_POST]({
             schemaId: this.schemaId,
+            catalogId: this.catalogId,
             content: this.contents,
             title: this.articleName
           })
@@ -169,19 +177,24 @@
           })
         }
         if(!result.err) {
-          const id = this.editId === 'new' ?　result.data.id : this.editId
-          await this.getData(id)
+          const id = this.editId === 'new' ? result.data.id : this.editId
+          await this.getData(id, true)
         }
         this.$hideLoading()
       },
-      async getData(id) {
+      async getData(id, force = false) {
+        this.editId = id
         this.$showLoading()
         const result = await this[ACTIONS.ARTICLE_DES_GET]({
-          _id: id
+          _id: id,
+          force
         })
         if(!result.err) {
           const { bookId, catalogId } = result.data
-          this[MUTATIONS.BOOK_CUR_UPDATE](bookId)
+          const { MOCK } = process.env
+          if(!MOCK){
+            this[MUTATIONS.BOOK_CUR_UPDATE](bookId)
+          }
         }
         this.$hideLoading()
       },
@@ -198,17 +211,22 @@
     }
   }
 </script>
-<style lang="less">
-  .article-layout{
+<style lang="less" scoped>
+  .article-layout {
     padding: 0 7px;
   }
-  .article-title{
+
+  .article-title {
     border-bottom: solid 1px @border-color;
     padding: 15px;
     font-size: 18px;
   }
-  .article-content{
+
+  .article-content {
     padding: 15px;
   }
 
+  .full-input {
+    font-size: 20px;
+  }
 </style>

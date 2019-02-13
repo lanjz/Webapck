@@ -248,7 +248,6 @@
       }
     },
     beforeDestroy() {
-      console.log('beforeDestroy')
       this.field = initSchema
     }
 

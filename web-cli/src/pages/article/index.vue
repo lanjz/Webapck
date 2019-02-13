@@ -42,6 +42,7 @@
       ]),
       todoAddCreateArticle(item) {
         const {
+          catalogId,
           schemaId,
           articleId = 'new'
         } = item
@@ -55,6 +56,7 @@
         const getSchema = (articleId !== 'new' && MOCK) ? Object.values(this.schemaList)[0] : this.schemaList[schemaId]
         this.editMeta = {
           ...getSchema,
+          catalogId,
           editId: articleId
         }
 

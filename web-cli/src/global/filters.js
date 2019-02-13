@@ -1,7 +1,6 @@
 export default {
   install(Vue, options) {
     Vue.filter('timestampToTime', function (stamps, format) {
-      console.log(stamps)
       if(!stamps){
         return ''
       }

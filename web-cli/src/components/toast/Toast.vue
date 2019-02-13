@@ -9,7 +9,6 @@
       }
     },
     mounted() {
-      console.log('this', this.callback)
       setTimeout(() => {
         this.callback('abc')
       })

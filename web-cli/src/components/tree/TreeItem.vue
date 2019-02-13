@@ -175,7 +175,8 @@
       },
       todoCreateFile(item) {
         bus.$emit('emitToAdd', {
-          schemaId: item._id
+          schemaId: item._id,
+          catalogId: this.curNode._id
         })
         this.closeMenu()
       },

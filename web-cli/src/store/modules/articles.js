@@ -6,6 +6,7 @@ import * as ACTIONS from '../const/actions'
 const state = {
   catalogMapArticles: {},
   list: {},
+  cusArticle: ''
 }
 
 const mutations = {
@@ -17,7 +18,10 @@ const mutations = {
   },
   [MUTATIONS.ARTICLE_DES_SAVE](state, data) {
     state.list[data._id] = data
-  }
+  },
+  [MUTATIONS.ARTICLE_CUS_SAVE](state, data) {
+    state.cusArticle = data
+  },
 }
 
 const actions = {
@@ -62,7 +66,7 @@ const actions = {
     }
     return result
   },
-  async [ACTIONS.ARTICLE_POST]({ state, commit, rootState }, data) {
+  async [ACTIONS.ARTICLE_POST]({ state, commit, rootState, dispatch }, data) {
     const result = await fetch({
       url: '/api/article',
       method: 'post',
@@ -71,14 +75,27 @@ const actions = {
         bookId: rootState.books.curBook
       }
     })
+    if(!result.err) {
+      dispatch(ACTIONS.ARTICLE_LIST_GET, {
+        bookId: rootState.books.curBook,
+        catalogId:data.catalogId,
+        force: true
+      })
+      dispatch(ACTIONS.ARTICLE_RECENTLY_LIST_GET)
+    }
     return result
   },
-  async [ACTIONS.ARTICLE_PUT]({ state, commit }, data) {
+  async [ACTIONS.ARTICLE_PUT]({ state, commit, dispatch }, data) {
     const result = await fetch({
       url: '/api/article',
-      method: 'post',
+      method: 'put',
       data
     })
+    if(!result.err) {
+      const { bookId, catalogId } = state.list[data.id]
+      dispatch(ACTIONS.ARTICLE_LIST_GET, { bookId, catalogId, force: true })
+      dispatch(ACTIONS.ARTICLE_RECENTLY_LIST_GET)
+    }
     return result
   }
 }
