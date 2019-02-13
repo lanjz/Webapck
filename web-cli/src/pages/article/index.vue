@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-1">
-    <div class="catalog-layout box-shadow-inset">
+    <div class="catalog-layout box-shadow">
       <TreeItem @emitToAdd="todoAddCreateArticle"></TreeItem>
     </div>
     <ArticleBrief></ArticleBrief>
@@ -38,6 +38,7 @@
       ...mapActions([
         ACTIONS.BOOK_LIST_GET,
         ACTIONS.SCHEMA_LIST_GET,
+        ACTIONS.ARTICLE_RECENTLY_LIST_GET
       ]),
       todoAddCreateArticle(item) {
         const {
@@ -61,6 +62,7 @@
       getBookData() {
         this[ACTIONS.BOOK_LIST_GET]()
         this[ACTIONS.SCHEMA_LIST_GET]()
+        this[ACTIONS.ARTICLE_RECENTLY_LIST_GET]()
       },
       async init() {
         this.getBookData()
@@ -162,6 +164,6 @@
     overflow: auto;
     background: @tree-bg-color;
     color: @tree-color;
-    width: 200px;
+    width: 210px;
   }
 </style>

@@ -1,15 +1,19 @@
 import fetch from '../../util/fetch/fetch.js'
+import constKey from '../../util/const.js'
 import * as MUTATIONS from '../const/mutaions'
 import * as ACTIONS from '../const/actions'
 
 const state = {
   catalogMapArticles: {},
-  list: {}
+  list: {},
 }
 
 const mutations = {
   [MUTATIONS.ARTICLE_LIST_SAVE](state, { data, catalogId }) {
-    state.catalogMapArticles[catalogId] = data
+    state.catalogMapArticles = {
+      ...state.catalogMapArticles,
+      [catalogId]: data
+    }
   },
   [MUTATIONS.ARTICLE_DES_SAVE](state, data) {
     state.list[data._id] = data
@@ -22,7 +26,6 @@ const actions = {
     if(!force && state.catalogMapArticles[key]) {
       return { err: null, data: { list: Object.values(state.list)} }
     }
-    console.log('1')
     const result = await fetch({
       url: '/api/articles',
       data: {
@@ -33,6 +36,16 @@ const actions = {
     const { err, data } = result
     if(!err) {
       commit(MUTATIONS.ARTICLE_LIST_SAVE, { data: data.list, catalogId: key })
+    }
+    return result
+  },
+  async [ACTIONS.ARTICLE_RECENTLY_LIST_GET]({ state, commit }){
+    const result = await fetch({
+      url: '/api/recently_articles',
+    })
+    const { err, data } = result
+    if(!err) {
+      commit(MUTATIONS.ARTICLE_LIST_SAVE, { data: data.list, catalogId: constKey.recentlyArticlesKey })
     }
     return result
   },

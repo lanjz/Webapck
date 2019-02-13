@@ -38,7 +38,7 @@
       <div v-else class="catalogs-name line-ellipsis">{{curNode.name}}</div>
       <div class="operate-triangle-btn"
            @click.left.stop="(e) => showOperateMenu(e)"
-           v-if="curNode._id"
+           v-if="!curNode.icon"
       >
         <i class="iconfont icon-tianjiajiahaowubiankuang"></i>
       </div>
@@ -76,6 +76,7 @@
   import * as MUTATIONS from '../../store/const/mutaions'
   import * as ACTIONS from '../../store/const/actions'
   import bus from '../../global/eventBus'
+  import constKey from '../../util/const'
 
   export default {
     name: 'TreeItem',
@@ -123,18 +124,16 @@
         ACTIONS.CATALOGS_GET,
         ACTIONS.CATALOGS_PUT,
         ACTIONS.CATALOGS_POST,
-        ACTIONS.ARTICLE_LIST_GET
+        ACTIONS.ARTICLE_LIST_GET,
+        ACTIONS.ARTICLE_RECENTLY_LIST_GET,
       ]),
       toggleOpenDir() {
         this.isOpen = !this.isOpen
       },
       async chooseCatalog() {
         this.isOpen = true
-        if(!this.curNode._id){
-          this.$alert({
-            content: '缺少catalogId',
-            showCancel: false
-          })
+        if(this.curNode._id === constKey.recentlyArticlesKey){
+          this.getRecentlyArticles()
           return
         }
         if(!this.curBook){
@@ -152,8 +151,14 @@
         this.$hideLoading()
         this[MUTATIONS.CATALOGS_CUR_SAVE](this.curNode._id)
       },
+      async getRecentlyArticles() {
+        this.$showLoading()
+        await this[ACTIONS.ARTICLE_RECENTLY_LIST_GET]()
+        this.$hideLoading()
+        this[MUTATIONS.CATALOGS_CUR_SAVE]('recently')
+      },
       showOperateMenu(e) {
-        if(!this.curNode._id) return
+        if(this.curNode.icon) return
         const { clientX, clientY } = e
         this.operateMenuStyle = {
           top: `${clientY}px`,

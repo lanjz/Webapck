@@ -116,6 +116,9 @@
         font-size: 12px;
         border-radius: 50%;
       }
+      .iconfont{
+        font-size: 24px;
+      }
     }
     .cur-book-icon{
       position: absolute;

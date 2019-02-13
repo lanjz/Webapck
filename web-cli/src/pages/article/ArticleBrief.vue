@@ -1,7 +1,7 @@
 <template>
   <div class="article-layout box-shadow">
     <div class="article-layout-input-box align-items-center">
-      <input type="text" class="article-layout-input"/>
+      <input type="text" class="article-layout-input" v-model="filterKeys"/>
       <i class="iconfont icon-sousuo"></i>
     </div>
     <div
@@ -17,8 +17,14 @@
 <script>
   import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
   import bus from '../../global/eventBus'
+  import constKey from '../../util/const'
 
   export default {
+    data() {
+      return {
+        filterKeys: ''
+      }
+    },
     computed: {
       ...mapState({
         curBook: state => state.books.curBook,
@@ -31,7 +37,10 @@
         if (!Object.keys(this.articleList).length) {
           return []
         }
-        const getList = this.articleList[`${this.curBook}_${this.treeChainList[this.treeChainList.length - 1]}`]
+        const key = this.treeChainList[this.treeChainList.length - 1] === constKey.recentlyArticlesKey ?
+          constKey.recentlyArticlesKey :
+          `${this.curBook}_${this.treeChainList[this.treeChainList.length - 1]}`
+        const getList = this.articleList[key]
         if (!getList) {
           return []
         }

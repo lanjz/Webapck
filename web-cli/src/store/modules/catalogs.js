@@ -1,15 +1,19 @@
 import fetch from '../../util/fetch/fetch.js'
 import * as MUTATIONS from '../const/mutaions'
 import * as ACTIONS from '../const/actions'
+import constKey from '../../util/const'
 
 const state = {
   list: {
     root: {}
   },
-  curCatalog: ''
+  curCatalog: constKey.recentlyArticlesKey
 }
 const getters = {
   treeChainList: state => {
+    if(state.curCatalog === constKey.recentlyArticlesKey) {
+      return [constKey.recentlyArticlesKey]
+    }
     const tempArr = []
     let curTree = state.list[state.curCatalog] || {}
     if(!curTree._id) return []
