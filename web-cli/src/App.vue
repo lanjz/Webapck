@@ -24,7 +24,7 @@
   }
 </script>
 <style lang="less">
-  @import '//at.alicdn.com/t/font_992689_hz26bnpg2ff.css';
+  @import '//at.alicdn.com/t/font_992689_4fibscw7vu.css';
   /*@import "//at.alicdn.com/t/font_992689_pswgkexoa3.css";*/
   /*      background: @bg-color;
     }

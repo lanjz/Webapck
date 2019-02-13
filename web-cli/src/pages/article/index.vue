@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-1">
-    <div class="catalog-layout box-shadow">
+    <div class="catalog-layout box-shadow-inset">
       <TreeItem @emitToAdd="todoAddCreateArticle"></TreeItem>
     </div>
     <ArticleBrief></ArticleBrief>

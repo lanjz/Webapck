@@ -6,19 +6,27 @@
       @click.right.stop.prevent="(e) => showOperateMenu(e)"
       :class="{
         'act': actCatalog === curNode['_id'],
-        'in-chain': isOpen||(isOpen&&curNode['hasChild']&&treeChainList.indexOf(curNode['_id']) > -1),
-        'has-child': curNode['hasChild']
       }"
     >
-      <i class="iconfont" v-if="curNode.icon" :class="curNode.icon" :id="curNode._id"></i>
-      <div class="iconfont" v-else>
+      <!--左边三角-->
+      <div
+        class="has-child"
+        :class="{
+        'in-chain': isOpen||(isOpen&&curNode['hasChild']&&treeChainList.indexOf(curNode['_id']) > -1),
+      }"
+        @click.stop="toggleOpenDir"
+        v-if="curNode['hasChild']"></div>
+      <i class="iconfont" :class="curNode.icon" :id="curNode._id" v-if="curNode.icon"></i>
+      <i class="iconfont icon-wenjianjia" :class="curNode.icon" :id="curNode._id" v-else-if="treeChainList.indexOf(curNode['_id']) > -1"></i>
+      <i class="iconfont icon-wendang1" :id="curNode._id" v-else></i>
+   <!--   <div class="iconfont" v-else>
         <svg class="icon icon-close" aria-hidden="true">
           <use xlink:href="#icon-wenjian2"></use>
         </svg>
         <svg class="icon  icon-open" aria-hidden="true">
           <use xlink:href="#icon-wenjian-"></use>
         </svg>
-      </div>
+      </div>-->
       <input
         v-if="curNode.isNew||renameCatalog"
         v-model.trim="renameValue"
@@ -28,7 +36,12 @@
 
       />
       <div v-else class="catalogs-name line-ellipsis">{{curNode.name}}</div>
-      <div class="operate-triangle-btn" @click.left.stop="(e) => showOperateMenu(e)" v-if="curNode._id"></div>
+      <div class="operate-triangle-btn"
+           @click.left.stop="(e) => showOperateMenu(e)"
+           v-if="curNode._id"
+      >
+        <i class="iconfont icon-tianjiajiahaowubiankuang"></i>
+      </div>
       <div class="catalog-operate-layout" v-click-outside="closeMenu" :style="operateMenuStyle" v-if="operateMenuStyle.left !== -1">
         <div class="catalog-operate-item hadChild">
           新建文件
@@ -112,8 +125,11 @@
         ACTIONS.CATALOGS_POST,
         ACTIONS.ARTICLE_LIST_GET
       ]),
-      async chooseCatalog() {
+      toggleOpenDir() {
         this.isOpen = !this.isOpen
+      },
+      async chooseCatalog() {
+        this.isOpen = true
         if(!this.curNode._id){
           this.$alert({
             content: '缺少catalogId',
@@ -260,18 +276,20 @@
   .operate-triangle-btn{
     display: none;
     position: absolute;
-    border-left: solid 6px @tree-color;
+/*    border-left: solid 6px @tree-color;
     border-top: solid 5px transparent;
-    border-bottom: solid 5px transparent;
-    width: 0;
-    height: 0;
+    border-bottom: solid 5px transparent;*/
+    width: 16px;
+    height: 16px;
     right: 12px;
     top: 50%;
-    transform: translateY(-4px) rotate(90deg);
+    .iconfont{
+      font-size: 15px;
+    }
+    transform: translateY(-50%);
   }
   // 有子文件夹且未打开
-  .catalogs-item-layout.has-child:before{
-    content: '';
+  .catalogs-item-layout .has-child{
     position: absolute;
     border-left: solid 6px @tree-color;
     border-top: solid 5px transparent;
@@ -283,7 +301,7 @@
     transform: translateY(-6px);
   }
   // 有子目录且打开状态
-  .catalogs-item-layout.has-child.in-chain:before{
+  .catalogs-item-layout .has-child.in-chain{
     transform: translateY(-6px) rotate(90deg);
   }
 /*  .catalogs-item-layout.act.has-child:before{

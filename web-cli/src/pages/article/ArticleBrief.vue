@@ -1,6 +1,9 @@
 <template>
-  <div class="article-layout">
-    <input type="text" class="article-layout-input"/>
+  <div class="article-layout box-shadow">
+    <div class="article-layout-input-box align-items-center">
+      <input type="text" class="article-layout-input"/>
+      <i class="iconfont icon-sousuo"></i>
+    </div>
     <div
       class="article-item"
       v-for="(item, index) in articles"
@@ -52,7 +55,7 @@
     border-bottom: solid 1px #000;
     .article-item-title {
       font-size: 18px;
-      color: #afb0b1;
+      color: @tree-light-color;
     }
     .article-item-mark {
       margin-top: 7px;
@@ -60,7 +63,7 @@
     }
   }
   .article-item.act {
-    background: #484a4c;
+    background: @article-brief-light-bg;
   }
   .article-item.act:after{
     content: '';
@@ -74,19 +77,33 @@
   .article-layout {
     padding: 15px 0;
     overflow: auto;
-    background: @bg-second-color;
-    color: #6f6f6f;
+    background: @bg-color;
+    color: @tree-color;
   }
 
-  .article-layout-input {
+  .article-layout-input-box{
+    background: @tree-light-bg-color;
+    color: @tree-light-color;
     width: 90%;
-    margin: 0 auto;
     height: 40px;
-    border: none;
-    background: #afb0b1;
-    display: block;
     padding: 0 10px;
-    color: #484a4c;
+    position: relative;
+    margin: 0 auto;
+    .iconfont{
+      display: block;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+  .article-layout-input {
+    height: 100%;
+    border: none;
+    background: transparent;
+    display: inline-block;
+    color: @tree-light-color;
     outline: #fff;
+    padding-right: 46px;
   }
 </style>

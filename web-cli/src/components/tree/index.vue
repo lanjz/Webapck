@@ -19,7 +19,7 @@
       return {
         catalogList: [
           {  name: '最近文档', hasChild: false, icon: 'icon-wendang' },
-          { _id: 'root', name: '我的文件夹', hasChild: true, icon: 'icon-wenjianjia' },
+          { _id: 'root', name: '我的文件夹', hasChild: true },
         ]
       }
     },
