@@ -1,6 +1,7 @@
 <template>
   <div class="article-layout flex-1 ">
-    <div class="article-title flex">
+    <markdown-edit></markdown-edit>
+    <div v-if="false" class="article-title flex">
       <div class="flex-1 schema-title-layout relative">
         <input class="full-input" v-model.trim="articleName"/>
       </div>
@@ -11,7 +12,7 @@
         <span class="btn warn" @click="todoDelete" v-if="editId!=='new'">删除</span>
       </div>
     </div>
-    <div class="article-content">
+    <div v-if="false" class="article-content">
       <div class="form-layout theme-1" v-if="editMeta.fields&&editMeta.fields.length">
         <div class="form-group flex direction-column" v-for="(field, index) in editMeta.fields" :index="index">
           <div class="form-label-layout">
@@ -72,6 +73,7 @@
   import { mapState, mapGetter, mapMutations, mapActions } from 'vuex'
   import * as MUTATIONS from '../../store/const/mutaions'
   import * as ACTIONS from '../../store/const/actions'
+  import MarkdownEdit from '../../components/markdownEdit.vue'
 
   export default {
     props: {
@@ -87,6 +89,9 @@
         schemaId: '',
         catalogId: ''
       }
+    },
+    components: {
+      MarkdownEdit
     },
     computed: {
       ...mapState({
@@ -127,7 +132,6 @@
         this[MUTATIONS.ARTICLE_CUS_SAVE](val)
       }
     },
-    components: {},
     methods: {
       ...mapMutations([
         MUTATIONS.ARTICLE_CUS_SAVE,
@@ -227,6 +231,7 @@
   .article-layout {
     background: #eee;
     padding: 0 3px;
+    position: relative;
     .form-label-layout{
       width: 100%;
       text-align: left;

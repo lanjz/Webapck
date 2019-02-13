@@ -375,7 +375,7 @@
       position: relative;
     }
     .catalog-operate-item:not(:last-child){
-      border-bottom: solid 1px @border-color;
+      border-bottom: solid 1px rgba(255,255,255,.4);
     }
     .catalog-operate-item.hadChild:after{
       content: '';
@@ -397,7 +397,7 @@
       width: 100%;
       border-radius: 0 5px 5px 0;
       background: rgba(0,0,0,0.8);
-      border-left:solid 1px rgba(255,255,255,.5);
+      border-left:solid 1px rgba(255,255,255,.2);
       display: none
     }
   }

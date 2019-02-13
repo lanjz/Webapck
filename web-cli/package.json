@@ -37,7 +37,7 @@
     "koa-jwt": "^3.5.1",
     "koa-router": "^7.4.0",
     "koa-webpack": "^5.1.1",
-    "markdown-it-vue": "^1.0.5",
+    "markdown-it-vue": "^1.0.6",
     "mongodb": "^3.1.10",
     "mongoose": "^5.3.15",
     "mongoose-auto-increment": "^5.0.1",

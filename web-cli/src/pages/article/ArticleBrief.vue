@@ -47,6 +47,7 @@
         if (!getList) {
           return []
         }
+        this.chooseArticles(getList[0])
         return getList
       }
     },
@@ -57,7 +58,6 @@
       chooseArticles: function (item) {
         bus.$emit('emitToAdd', {schemaId: item.schemaId, articleId: item._id})
         this.$router.push(`/article/${item._id}`)
-
       }
     }
   }
