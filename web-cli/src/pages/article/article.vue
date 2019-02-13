@@ -1,5 +1,5 @@
 <template>
-  <div class="article-layout flex-1 flex direction-column">
+  <div class="article-layout flex-1 ">
     <div class="article-title flex">
       <div class="flex-1 schema-title-layout relative">
         <input class="full-input" v-model.trim="articleName"/>
@@ -8,7 +8,7 @@
         <span class="btn"
               :class="{'disable-btn': !articleName}"
               @click="todoSave">保存</span>
-        <span class="btn warn" @click="todoDelete">删除</span>
+        <span class="btn warn" @click="todoDelete" v-if="editId!=='new'">删除</span>
       </div>
     </div>
     <div class="article-content">
@@ -21,7 +21,7 @@
             <textarea type="text" class="form-input" v-model="contents[field._id]"/>
           </div>
           <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='input'">
-            <input class="form-input" v-model="contents[field._id]"/>
+            <input class="form-input" v-model="contents[field._id]" :placeholder="'填写'+field.name"/>
           </div>
           <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='textarea'">
             <textarea type="text" class="form-input"/>
@@ -40,17 +40,20 @@
                 v-model="contents[field._id]">
             </div>
           </div>
-          <div class="flex flex-1 align-items-center form-content-layout"
+          <div class=" form-content-layout form-content-layout-select"
                v-if="field.type==='select'">
             <div
-              class="add-options-item radio-style"
+              class="select-style"
               v-for="(optionsItem, optionsIndex) in field.options"
               :class="{
                 'act':Object.prototype.toString.call(contents[field._id]) === '[object Array]'&&
                 contents[field._id].indexOf(optionsItem.id) > -1
               }"
             >
-              {{optionsItem.name}}
+              <div class=" flex align-items-center">
+                <div class="select-iconfont"><i class="iconfont icon-gou"></i></div>
+                <div>{{optionsItem.name}}</div>
+              </div>
               <input type="checkBox"
                      class="form-radio"
                      :value="optionsItem.id"
@@ -147,8 +150,9 @@
         }
         const arr = [ ...this.contents[id] ]
         arr.push(tar.id)
-        // this.contents[id] = [ ...arr ]
+//         this.contents[id] = [ ...arr ]
         this.contents[id].push(tar.id)
+        this.contents = JSON.parse(JSON.stringify(this.contents))
       },
       todoDelete() {
         this.$alert({
@@ -157,9 +161,14 @@
         })
           .then(async res => {
             if(res) {
-              this.doDeleteBook(this.editId)
+              this.doDeleteArticle(this.editId)
             }
           })
+      },
+      async doDeleteArticle(id) {
+        this.$showLoading()
+        await this[ACTIONS.ARTICLE_DELETE](id)
+        this.$hideLoading()
       },
       async todoSave() {
         if(!this.articleName) return
@@ -223,10 +232,11 @@
       text-align: left;
       font-size: 12px;
       color: #adabab;
+      padding-left: 0;
     }
     .form-content-layout{
       background: #fff;
-      padding: 7px;
+      padding: 7px 20px;
     }
     .add-options-item{
       margin: 5px;
@@ -234,12 +244,29 @@
     .from-select, .form-input{
       border: none;
       outline: none;
+      padding: 0;
     }
     .form-group:not(:first-child){
       margin: 0;
     }
+    .form-content-layout-select{
+      padding-top: 18px;
+      padding-bottom: 18px;
+    }
   }
-
+  .article-layout-theme1{
+    .article-content{
+      padding: 40px;
+    }
+    .form-label-layout{
+      display: none;
+    }
+    .from-select, .form-input{
+      border: none;
+      outline: none;
+      font-size: 20px;
+    }
+  }
   .article-title {
     border-bottom: solid 1px @border-color;
     padding: 15px;
@@ -253,5 +280,6 @@
 
   .full-input {
     font-size: 20px;
+    outline: none;
   }
 </style>

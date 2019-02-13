@@ -105,6 +105,7 @@
     padding: 0 10px;
     position: relative;
     margin: 0 auto;
+    margin-bottom: 10px;
     .iconfont{
       display: block;
       position: absolute;

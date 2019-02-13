@@ -113,6 +113,48 @@ textarea.form-input{
   background: @highlight-color;
 }
 
+.select-style{
+  position: relative;
+  line-height: 20px;
+  display: block;
+  .select-iconfont{
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    background: @bg-second-color;
+    color: @tree-color;
+    text-align: center;
+    margin-right: 7px;
+  }
+  .iconfont{
+    font-size: 12px;
+    transform: scale(0.8);
+    display: none;
+    transform-origin: 50% 50%;
+    text-align: center;
+
+  }
+  .form-radio{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+  }
+}
+.select-style.act{
+  .iconfont{
+    display: block;
+  }
+}
+.select-style:not(:last-child) {
+  margin-bottom: 20px;
+}
+
 .theme-1 {
   textarea, input {
     width: 100%;

@@ -49,7 +49,9 @@ const actions = {
     })
     const { err, data } = result
     if(!err) {
-      commit(MUTATIONS.ARTICLE_LIST_SAVE, { data: data.list, catalogId: constKey.recentlyArticlesKey })
+      commit(MUTATIONS.ARTICLE_LIST_SAVE, {
+        data: data.list, catalogId: constKey.recentlyArticlesKey
+      })
     }
     return result
   },
@@ -66,7 +68,7 @@ const actions = {
     }
     return result
   },
-  async [ACTIONS.ARTICLE_POST]({ state, commit, rootState, dispatch }, data) {
+  async [ACTIONS.ARTICLE_POST]({ rootState, dispatch }, data) {
     const result = await fetch({
       url: '/api/article',
       method: 'post',
@@ -97,7 +99,20 @@ const actions = {
       dispatch(ACTIONS.ARTICLE_RECENTLY_LIST_GET)
     }
     return result
-  }
+  },
+  async [ACTIONS.ARTICLE_DELETE]({ dispatch }, id) {
+    const result = await fetch({
+      url: '/api/article',
+      method: 'delete',
+      data: id
+    })
+    if(!result.err) {
+      const { bookId, catalogId } = state.list[id]
+      dispatch(ACTIONS.ARTICLE_LIST_GET, { bookId, catalogId, force: true })
+      dispatch(ACTIONS.ARTICLE_RECENTLY_LIST_GET)
+    }
+    return result
+  },
 }
 export default {
   state,
