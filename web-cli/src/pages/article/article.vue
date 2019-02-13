@@ -13,20 +13,20 @@
     </div>
     <div class="article-content">
       <div class="form-layout theme-1" v-if="editMeta.fields&&editMeta.fields.length">
-        <div class="form-group flex" v-for="(field, index) in editMeta.fields" :index="index">
+        <div class="form-group flex direction-column" v-for="(field, index) in editMeta.fields" :index="index">
           <div class="form-label-layout">
             {{field.name}}-{{field.type}}：
           </div>
-          <div class="flex flex-1 align-items-center" v-if="field.type==='markdown'">
+          <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='markdown'">
             <textarea type="text" class="form-input" v-model="contents[field._id]"/>
           </div>
-          <div class="flex flex-1 align-items-center" v-if="field.type==='input'">
+          <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='input'">
             <input class="form-input" v-model="contents[field._id]"/>
           </div>
-          <div class="flex flex-1 align-items-center" v-if="field.type==='textarea'">
+          <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='textarea'">
             <textarea type="text" class="form-input"/>
           </div>
-          <div class="flex flex-1 align-items-center" v-if="field.type==='radio'">
+          <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='radio'">
             <div
               class="add-options-item radio-style"
               :class="{'act':optionsItem.id === contents[field._id]}"
@@ -40,7 +40,7 @@
                 v-model="contents[field._id]">
             </div>
           </div>
-          <div class="flex flex-1 align-items-center"
+          <div class="flex flex-1 align-items-center form-content-layout"
                v-if="field.type==='select'">
             <div
               class="add-options-item radio-style"
@@ -145,6 +145,9 @@
           this.contents[id].splice(findIndex, 1)
           return
         }
+        const arr = [ ...this.contents[id] ]
+        arr.push(tar.id)
+        // this.contents[id] = [ ...arr ]
         this.contents[id].push(tar.id)
       },
       todoDelete() {
@@ -213,17 +216,39 @@
 </script>
 <style lang="less" scoped>
   .article-layout {
-    padding: 0 7px;
+    background: #eee;
+    padding: 0 3px;
+    .form-label-layout{
+      width: 100%;
+      text-align: left;
+      font-size: 12px;
+      color: #adabab;
+    }
+    .form-content-layout{
+      background: #fff;
+      padding: 7px;
+    }
+    .add-options-item{
+      margin: 5px;
+    }
+    .from-select, .form-input{
+      border: none;
+      outline: none;
+    }
+    .form-group:not(:first-child){
+      margin: 0;
+    }
   }
 
   .article-title {
     border-bottom: solid 1px @border-color;
     padding: 15px;
     font-size: 18px;
+    background: #fff;
   }
 
   .article-content {
-    padding: 15px;
+    padding: 7px;
   }
 
   .full-input {
