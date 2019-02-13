@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-1">
-    <div class="catalog-layout">
+    <div class="catalog-layout box-shadow">
       <TreeItem @emitToAdd="todoAddCreateArticle"></TreeItem>
     </div>
     <ArticleBrief></ArticleBrief>
@@ -158,8 +158,10 @@
     margin-bottom: 10px;
   }
   .catalog-layout{
-    border-right:solid 1px #eee;
-    padding: 15px 0;
+    padding: 15px 2px;
     overflow: auto;
+    background: @tree-bg-color;
+    color: @tree-color;
+    width: 200px;
   }
 </style>

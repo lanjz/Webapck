@@ -260,7 +260,7 @@
   .operate-triangle-btn{
     display: none;
     position: absolute;
-    border-left: solid 6px #d4d4d4;
+    border-left: solid 6px @tree-color;
     border-top: solid 5px transparent;
     border-bottom: solid 5px transparent;
     width: 0;
@@ -273,7 +273,7 @@
   .catalogs-item-layout.has-child:before{
     content: '';
     position: absolute;
-    border-left: solid 6px @bg-second-color;
+    border-left: solid 6px @tree-color;
     border-top: solid 5px transparent;
     border-bottom: solid 5px transparent;
     width: 0;
@@ -282,25 +282,27 @@
     top: 50%;
     transform: translateY(-6px);
   }
-  // 月子目录且打开状态
+  // 有子目录且打开状态
   .catalogs-item-layout.has-child.in-chain:before{
     transform: translateY(-6px) rotate(90deg);
   }
-  .catalogs-item-layout.act.has-child:before{
-    border-left: solid 6px #fff;
-  }
+/*  .catalogs-item-layout.act.has-child:before{
+    border-left: solid 6px @tree-light-color;
+  }*/
   .catalogs-item-layout:hover{
-    background: @border-color
+    background: @tree-hover-bg-color;
+    color: @tree-light-color;
   }
   .catalogs-item-layout:hover .operate-triangle-btn{
     display: block;
+    color: @tree-light-color;
   }
   .catalogs-item-layout:hover:after{
-    background: @border-color;
+    background: @tree-hover-bg-color;
   }
   .catalogs-item-layout.act{
-    background: @bg-second-color;
-    color: #fff;
+    background: @tree-light-bg-color;
+    color: @tree-light-color;
     .icon-open{
       display: block;
     }
@@ -309,13 +311,13 @@
     }
   }
   .catalogs-item-layout.act:hover{
-    background: @bg-second-color;
+    background: @tree-light-bg-color;
   }
   .catalogs-item-layout.act:hover:after{
-    background: @bg-second-color;
+    background: @tree-light-bg-color;
   }
   .catalogs-item-layout.act:after{
-    background: @bg-second-color;
+    background: @tree-light-bg-color;
   }
   .catalogs-name{
     position: relative;

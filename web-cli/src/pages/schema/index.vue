@@ -260,7 +260,7 @@
     }
   }
 </script>
-<style lang="less">
+<style lang="less" scoped>
 
   .schema-title {
     border-bottom: solid 1px @border-color;
