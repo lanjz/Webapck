@@ -8,10 +8,18 @@
       <div class="tags-item-2 default-btn" @click="editAndPre":class="{'act': editMode === 3}" >Edit | Pre</div>
     </div>-->
     <div class="flex-1 flex relative" :class="{'hideSplit': editMode !== 3}">
-      <div class="flex-1">
+      <div class="flex-1 relative" v-if="isEdit">
+        <div class="markdown-operate-layout">
+          <div class="icon-layout" @click="toggleEdit"  :class="{'act': isEdit}"><i class="iconfont icon-bianji2" ></i></div>
+          <div class="icon-layout" @click="togglePreview" :class="{'act': isPreview}"><i class="iconfont icon-yulan"  ></i></div>
+        </div>
         <textarea class="markdown-edit-box box-shadow-inset" v-model="markDownValue"></textarea>
       </div>
-      <div class="flex-1 md-body-layout edit-layout">
+      <div class="flex-1 md-body-layout edit-layout relative" v-if="isPreview">
+        <div class="markdown-operate-layout">
+          <div class="icon-layout" @click="toggleEdit" :class="{'act': isEdit}" ><i class="iconfont icon-bianji2" ></i></div>
+          <div class="icon-layout" @click="togglePreview" :class="{'act': isPreview}" ><i class="iconfont icon-yulan" ></i></div>
+        </div>
         <markdown-it-vue class="md-body" :content="markDownValue"/>
       </div>
     </div>
@@ -33,7 +41,9 @@
       return {
         split: 0.5,
         markDownValue: '23',
-        editMode: 1 // 编辑模式
+        editMode: 1, // 编辑模式
+        isEdit: true,
+        isPreview: true
       }
     },
     components: {
@@ -42,21 +52,17 @@
     computed: {
     },
     methods: {
-      editMirror() {
-        this.split = 1
-        this.editMode = 1
-      },
-      editAndPre() {
-        if (this.editMode === 3) {
-          this.editMirror()
-          return
+      toggleEdit() {
+        this.isEdit = !this.isEdit
+        if(!this.isEdit) {
+          this.isPreview = true
         }
-        this.split = 0.5
-        this.editMode = 3
       },
-      prviewsMirror() {
-        this.split = 0
-        this.editMode = 2
+      togglePreview() {
+        this.isPreview = !this.isPreview
+        if(!this.isPreview) {
+          this.isEdit = true
+        }
       }
     },
     mounted() {
@@ -138,6 +144,24 @@
       padding: 20px;
       background: #e7eaef;
       box-shadow: 0 0 4px 1px #e7eaef inset;
+    }
+    .markdown-operate-layout{
+      position: absolute;
+      z-index: 2;
+      right: 20px;
+      top: 10px;
+      color: #fff;
+      .icon-layout{
+        display: inline-block;
+        background: rgba(0,0,0,0.7);
+        padding: 3px 5px;
+        cursor: pointer;
+        border-radius: 3px;
+        text-align: center;
+      }
+      .icon-layout.act{
+        background: rgba(57,141,238,0.7);
+      }
     }
   }
 </style>
