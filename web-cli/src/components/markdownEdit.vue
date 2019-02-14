@@ -13,6 +13,7 @@
           <div class="icon-layout" @click="toggleEdit"  :class="{'act': isEdit}"><i class="iconfont icon-bianji2" ></i></div>
           <div class="icon-layout" @click="togglePreview" :class="{'act': isPreview}"><i class="iconfont icon-yulan"  ></i></div>
         </div>
+
         <textarea class="markdown-edit-box box-shadow-inset" v-model="markDownValue"></textarea>
       </div>
       <div class="flex-1 md-body-layout edit-layout relative" v-if="isPreview">
@@ -31,16 +32,16 @@
 
   export default {
     model: {
-      prop: 'value',
-      event: 'input'
+      prop: 'data',
+      event: 'update'
     },
     props: {
-      value: String
+      data: String
     },
     data() {
       return {
         split: 0.5,
-        markDownValue: '23',
+        markDownValue: '',
         editMode: 1, // 编辑模式
         isEdit: true,
         isPreview: true
@@ -49,7 +50,10 @@
     components: {
       MarkdownItVue
     },
-    computed: {
+    watch: {
+      markDownValue: function (val) {
+        this.$emit('update', val)
+      }
     },
     methods: {
       toggleEdit() {
@@ -66,7 +70,8 @@
       }
     },
     mounted() {
-
+      console.log('this.values', this.data)
+      this.markDownValue = this.data
     }
   }
 </script>

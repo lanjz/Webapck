@@ -46,7 +46,7 @@
         <div class="catalog-operate-item hadChild">
           新建文件
           <div class="operate-item-child">
-            <div class="catalog-operate-item" v-for="(item, index) in schemaList" @click.stop="todoCreateFile(item)">{{item.name}}</div>
+            <div class="catalog-operate-item" :class="{'builtIn': item.builtIn}" v-for="(item, index) in schemaList" @click.stop="todoCreateFile(item)">{{item.name}}</div>
           </div>
         </div>
         <div class="catalog-operate-item" @click.stop="doCreateTemDir">新建文件夹</div>
@@ -375,7 +375,7 @@
       position: relative;
     }
     .catalog-operate-item:not(:last-child){
-      border-bottom: solid 1px rgba(255,255,255,.4);
+      border-bottom: solid 1px rgba(255,255,255,.2);
     }
     .catalog-operate-item.hadChild:after{
       content: '';
@@ -398,7 +398,10 @@
       border-radius: 0 5px 5px 0;
       background: rgba(0,0,0,0.8);
       border-left:solid 1px rgba(255,255,255,.2);
-      display: none
+      /*display: none*/
+    }
+    .catalog-operate-item.builtIn{
+      border-bottom: solid 1px rgba(255,255,255,.6);
     }
   }
   #hello_recent{
