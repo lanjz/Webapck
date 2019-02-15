@@ -83,13 +83,14 @@ body{
 .form-label-layout{
   text-align: right;
   width: 100px;
-  padding: 5px 10px;
+  padding: 8px 10px;
 }
 .from-select, .form-input{
-  width: 250px;
-  height: 30px;
+  width: 350px;
+  height: 40px;
   border-radius: 4px;
   border: solid 1px @form-color;
+  -webkit-box-shadow: 0 0 0 1000px #fff inset;
 }
 .form-input{
   padding: 0 7px;
@@ -99,6 +100,7 @@ textarea.form-input{
 }
 .radio-style{
   position: relative;
+  padding-left: 25px;
   .form-radio{
     position: absolute;
     width: 100%;
@@ -108,12 +110,29 @@ textarea.form-input{
     margin: 0;
     padding: 0;
     opacity: 0;
+    z-index: 1;
   }
 }
-.radio-style.act{
-  background: @highlight-color;
+.radio-style:not(:last-child){
+  margin-right: 20px;
 }
+.radio-style:after{
+  content: '';
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  background: @font-primary-color;
+  top: 50%;
+  border: solid 4px @font-primary-color;
+  transform: translateY(-50%);
+  left: 0;
+}
+.radio-style.act:after{
 
+  background: #fff;
+}
 .select-style{
   position: relative;
   line-height: 20px;
@@ -145,6 +164,7 @@ textarea.form-input{
     margin: 0;
     padding: 0;
     opacity: 0;
+    z-index: 1;
   }
 }
 .select-style.act{

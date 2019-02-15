@@ -25,3 +25,7 @@ export const ARTICLE_CUR_SAVE = 'ARTICLE_CUR_SAVE'
 export const ARTICLE_POST = 'ARTICLE_POST'
 export const ARTICLE_PUT = 'ARTICLE_PUT'
 export const ARTICLE_DELETE = 'ARTICLE_DELETE'
+
+
+export const LOGIN_POST = 'LOGIN_POST'
+export const USER_POST = 'USER_POST'

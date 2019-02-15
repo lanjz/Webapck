@@ -253,7 +253,7 @@
 
   }
 </script>
-<style lang="less">
+<style lang="less" scoped="">
   .field-layout {
     padding: 0 7px;
   }

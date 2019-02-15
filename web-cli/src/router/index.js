@@ -4,6 +4,7 @@ import Bookshelve from '../pages/bookshelve.vue'
 import Article from '../pages/article/index.vue'
 import Schema from '../pages/schema/index.vue'
 import BookList from '../pages/bookList/index.vue'
+import Login from '../pages/login.vue'
 
 const Foo = { template: '<div>foo</div>' }
 const Bar = { template: '<div>bar</div>' }
@@ -39,6 +40,10 @@ const routes = [
   },
   { path: '/github', alias: 'Github', icon: 'ios-navigate', component: Foo },
   { path: '/qa', alias: 'Q&A', icon: 'ios-keypad', component: Bar },
+  {
+    path: '/login',
+    component: Login
+  },
 ]
 
 Vue.use(Router)

@@ -8,10 +8,22 @@
         <router-link to="/">书架</router-link>
         <router-link to="/github">Github</router-link>
       </div>
-      <div class="user-avatar-layout"></div>
+      <router-link to="/login" class="user-avatar-layout">
+        <img :src="userName.avatar" v-if="userName.avatar">
+      </router-link>
     </div>
   </div>
 </template>
+<script>
+  import { mapState, mapGetter, mapMutations, mapActions } from 'vuex'
+  export default {
+    computed:{
+      ...mapState({
+        userName: state => state.user.userInfo
+      })
+    }
+  }
+</script>
 <style lang="less" scoped>
   .head{
     padding: 15px;
@@ -45,5 +57,9 @@
     border-radius: 5px;
     overflow: hidden;
     background: #fff;
+    img{
+      width: 100%;
+      height: 100%;
+    }
   }
 </style>
