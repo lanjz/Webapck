@@ -14,6 +14,7 @@ const routes = [
     alias: '首页',
     icon: 'ios-analytics',
     name: 'Bookshelve',
+    redirect: '/article',
     component: Bookshelve,
     children: [
       {
