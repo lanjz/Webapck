@@ -64,8 +64,6 @@
             </div>
           </div>
         </div>
-        <div>{{test}}</div>
-        <div v-if="Object.values(contents)">{{contents}}</div>
       </div>
     </div>
   </div>
@@ -286,6 +284,7 @@
     padding: 15px;
     font-size: 18px;
     background: #fff;
+
   }
 
   .article-content {
@@ -295,6 +294,7 @@
   .full-input {
     font-size: 20px;
     outline: none;
+    color: @tree-light-bg-color;
   }
 
   .markdown{
@@ -306,7 +306,9 @@
     }
     .article-content{
       padding: 0;
-      padding-top: 7px;
+    }
+    .scroll-box{
+      overflow: hidden;
     }
     .form-group, .form-layout{
       height: 100%;

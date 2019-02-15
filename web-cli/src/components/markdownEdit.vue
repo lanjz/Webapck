@@ -8,19 +8,14 @@
       <div class="tags-item-2 default-btn" @click="editAndPre":class="{'act': editMode === 3}" >Edit | Pre</div>
     </div>-->
     <div class="flex-1 flex relative" :class="{'hideSplit': editMode !== 3}">
+      <div class="markdown-operate-layout">
+        <div class="icon-layout" @click="toggleEdit" :class="{'act': isEdit}" ><i class="iconfont icon-bianji2" ></i></div>
+        <div class="icon-layout" @click="togglePreview" :class="{'act': isPreview}" ><i class="iconfont icon-yulan" ></i></div>
+      </div>
       <div class="flex-1 relative" v-if="isEdit">
-        <div class="markdown-operate-layout">
-          <div class="icon-layout" @click="toggleEdit"  :class="{'act': isEdit}"><i class="iconfont icon-bianji2" ></i></div>
-          <div class="icon-layout" @click="togglePreview" :class="{'act': isPreview}"><i class="iconfont icon-yulan"  ></i></div>
-        </div>
-
         <textarea class="markdown-edit-box box-shadow-inset" v-model="markDownValue"></textarea>
       </div>
       <div class="flex-1 md-body-layout edit-layout relative" v-if="isPreview">
-        <div class="markdown-operate-layout">
-          <div class="icon-layout" @click="toggleEdit" :class="{'act': isEdit}" ><i class="iconfont icon-bianji2" ></i></div>
-          <div class="icon-layout" @click="togglePreview" :class="{'act': isPreview}" ><i class="iconfont icon-yulan" ></i></div>
-        </div>
         <markdown-it-vue class="md-body" :content="markDownValue"/>
       </div>
     </div>
