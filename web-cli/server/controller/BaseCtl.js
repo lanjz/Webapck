@@ -51,7 +51,9 @@ class BaseCtl {
         ctx.send(2, ctx.request.body, helloRes.err.message)
       } else {
         const result = await this.Model.save(helloRes.data)
-        ctx.send(1, { id: result._id }, '')
+        const infoResult = await this.Model.findById(result._id)
+        ctx.send(1, infoResult, '')
+        // ctx.send(1, { id: result._id }, '')
       }
     } catch (e) {
       ctx.send(2, '', hello.dealError(e, ctx.request.body.username))
@@ -203,23 +205,23 @@ class BaseCtl {
         console.log('表单字段数据 [' + fieldname + ']: value: ' + util.inspect(val));
         result.formData[fieldname] = util.inspect(val);
       });
-  
+
       // 解析结束事件
       busboy.on('finish', function( ) {
         console.log('文件上结束')
         res.data = result
         resolve(res)
       })
-  
+
       // 解析错误事件
       busboy.on('error', function(err) {
         res.err = err
         resolve(res)
       })
-  
+
       ctx.req.pipe(busboy)
     })
-    
+
   }
 }
 

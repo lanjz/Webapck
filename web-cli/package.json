@@ -10,7 +10,7 @@
     "build": "webpack --config webpack/webpack.prod.js ",
     "http": "http-server dist",
     "dev": "cross-env DEV=1 MOCK=1 node server/app.js",
-    "server": "cross-env MOCK=1 ts-node ./server/app.ts",
+    "server": "cross-env ts-node ./server/app.ts",
     "watch-server": "nodemon --watch server/* -e ts,tsx --exec ts-node ./server/app.ts",
     "startTs": "tsc && node --inspect dist/app.js",
     "inspect": "ts-node --inspect ./server/app.ts"

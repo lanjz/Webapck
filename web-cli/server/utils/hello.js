@@ -117,13 +117,13 @@ async function checkAuth(ctx, next) {
     }
     const { clientUser, clientPass } = decodeLoginTypeJwt(getHelloToken)
     if(!clientUser || !clientPass) {
-      ctx.send(2, '', 'token无效请重新登录')
+      ctx.send(4, '', 'token无效请重新登录')
       return
     }
     try{
       const result = await userCtrl.userAuth({ username: clientUser, password: clientPass })
       if(!result) {
-        ctx.send(2, result, `${clientUser}无效请重新登录`)
+        ctx.send(4, result, `${clientUser}无效请重新登录`)
         return
       }
       ctx.state.curUser = result

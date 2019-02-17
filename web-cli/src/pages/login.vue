@@ -64,15 +64,25 @@
             </div>
           </div>
         </div>
-
+        <div class="form-group flex" >
+          <div class="form-label-layout"></div>
+          <div class="flex flex-1 align-items-center other-label" @click="toggleTag(true)">前往登录</div>
+        </div>
         <div class="form-group submit-layout">
           <div class="btn" @click="todoRegister">保存</div>
           <div class="btn second-btn" @click="doReset">重置</div>
         </div>
       </div>
-      <div class="form-group" v-else>
-        <div class="login-btn" @click="todoLogin">登录</div>
+      <div v-else>
+        <div class="form-group flex" >
+          <div class="form-label-layout"></div>
+          <div class="flex flex-1 align-items-center other-label" @click="toggleTag(false)">注册</div>
+        </div>
+        <div class="form-group" >
+          <div class="login-btn" @click="todoLogin">登录</div>
+        </div>
       </div>
+
       <div class="show-err" v-if="errMsg">{{errMsg}}</div>
     </div>
   </div>
@@ -91,7 +101,7 @@
     rePassword: '',
     sex: 1,
     avatar: '',
-    isLogin: false,
+    isLogin: true,
   }
   export default {
     data() {
@@ -130,7 +140,7 @@
           data[item] = this[item]
         })
         this.$showLoading()
-        const result = await this[ACTIONS.LOGIN_POST](data)
+        const result = await this[ACTIONS.USER_POST](data)
         this.$hideLoading()
         if(!result.err){
           this.$router.push('/article')
@@ -156,6 +166,9 @@
         Object.keys(defaultData).forEach(item => {
           this[item] = ''
         })
+      },
+      toggleTag(bol) {
+        this.isLogin = bol
       }
     }
   }
@@ -198,5 +211,10 @@
   .show-err{
     color: @warn-color;
     text-align: right;
+  }
+  .other-label{
+    margin-top: 20px;
+    color: @highlight-color;
+    cursor: pointer;
   }
 </style>

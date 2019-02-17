@@ -1,14 +1,21 @@
 import axios from 'axios'
+import Vue from '../../main'
 import helloAlert from '../../components/messageBox/index'
 import { HOST_CONFIG as hostConfig } from './fetchConifg'
 import LoadingLine from './loadingLine'
 const loadingLine = new LoadingLine()
 
 const { MOCK } = process.env
-function dealRetCode(response) {
+function dealRetCode(response = {}) {
   const res = { err: null, data: response.data }
-  if(response.errmsg || response.retCode !== 0) {
-    res.err = new Error(response.errmsg)
+  if(response.retCode === 4){
+    Vue.$router.push('/login')
+    res.notAlert = true
+    res.err = new Error('未登录')
+    return res
+  }
+  if(response.retMsg || response.retCode !== 1) {
+    res.err = new Error(response.retMsg)
   }
   return res
 }
@@ -26,7 +33,7 @@ function fetchData(options) {
     url = `http://67.209.187.22:3000/mock/15${url}`
   } else {
     const env = process.DEV
-    url = `${hostConfig[env]}${url}`
+    url = `${url}`
   }
   options.url = url
   options.method = options.method || 'get'
@@ -55,10 +62,12 @@ const doFetchData = function (options) {
         const result = dealRetCode(response.data)
         if(result.err) {
           res.err = result.err
-          helloAlert({
-            content: res.err.message,
-            showCancel: false
-          })
+          if(!result.notAlert) {
+            helloAlert({
+              content: res.err.message,
+              showCancel: false
+            })
+          }
           resolve(res)
           return
         }

@@ -17,10 +17,12 @@ Vue.prototype.$showLoading = helloLoading.show
 Vue.prototype.$hideLoading = helloLoading.hide
 
 /* eslint-disable no-new */
-new Vue({
+const instance = new Vue({
   el: '#app',
   router,
   store,
   template: '<App/>',
   components: { App }
 })
+
+export default instance
