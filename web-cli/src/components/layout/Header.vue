@@ -5,8 +5,8 @@
     </div>
     <div class="flex flex-1 align-items-center justify-content-end">
       <div class="head-nav flex">
-        <router-link to="/">书架</router-link>
-        <router-link to="/github">Github</router-link>
+        <!--<router-link to="/">书架</router-link>-->
+        <!--<router-link to="/github">Github</router-link>-->
       </div>
       <router-link to="/login" class="user-avatar-layout">
         <img :src="userName.avatar" v-if="userName.avatar">
