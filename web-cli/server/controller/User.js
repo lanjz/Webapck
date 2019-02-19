@@ -18,8 +18,18 @@ class UserCtl extends BaseCtl {
   dbQuery() {
     return {}
   }
-  userAuth({ username, password }) {
-    return this.Model.findOne({ username, password })
+  userAuth(id) {
+    return this.Model.findById(id)
+  }
+  setUserCookie(ctx, result) {
+    const userTokenInfo = { clientUser: result._id, }
+    ctx.cookies.set(
+      'helloToken',
+      hello.encodeLoginTypeJwt(userTokenInfo),
+      {
+        path: '/'
+      }
+    )
   }
   async login(ctx, next) {
     const { username, password } = ctx.request.body
@@ -32,21 +42,11 @@ class UserCtl extends BaseCtl {
       return
     }
     try {
-      const result = await this.userAuth({ username, password })
+      const result = await this.findOne({ username, password })
       if(!result) {
         ctx.send(3, '', '登录失败：账号或密码错误')
       } else {
-        const userTokenInfo = {
-          clientUser: result.username,
-          clientPass: result.password
-        }
-        ctx.cookies.set(
-          'helloToken',
-          hello.encodeLoginTypeJwt(userTokenInfo),
-          {
-            path: '/'
-          }
-        )
+        this.setUserCookie(ctx, result)
         ctx.send(1, '', '登录成功')
       }
     } catch (e) {
@@ -54,6 +54,11 @@ class UserCtl extends BaseCtl {
     } finally {
       next()
     }
+  }
+  async doAfterAdd(ctx, next, result) {
+    const infoResult = await this.Model.findById(result._id)
+    this.setUserCookie(ctx, infoResult)
+    ctx.send(1, infoResult, '')
   }
 }
 
