@@ -108,9 +108,21 @@ function decodeLoginTypeJwt(token) {
   return decoded
 }
 
+function passValidAuth(ctx = {}) {
+  const passPath = {
+    get: [''],
+    post: ['/api/login', '/api/user']
+  }
+  const getMethod = ctx.method.toLowerCase()
+  if(!getMethod) {
+    return true
+  }
+  return passPath[getMethod].indexOf(ctx.url) > -1 ? true : false
+}
+
 async function checkAuth(ctx, next) {
-  if(ctx.url!=='/api/login'&&ctx.url!=='/api/user'&&ctx.url.indexOf('/api') > -1) {
-    const getHelloToken = ctx.cookies.get('helloToken') || 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjbGllbnRVc2VyIjoibGFubGFuMiIsImNsaWVudFBhc3MiOiJsYW5sYW4ifQ.e9ZdIOH-4Km2aiBt4CoVPcnpP9_AMQKfxCGca0odtic'
+  if(!passValidAuth(ctx)) {
+    const getHelloToken = ctx.cookies.get('helloToken')
     if(!getHelloToken) {
       ctx.send(4, '', '请登录')
       return

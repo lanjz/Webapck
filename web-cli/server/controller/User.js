@@ -42,7 +42,7 @@ class UserCtl extends BaseCtl {
       return
     }
     try {
-      const result = await this.findOne({ username, password })
+      const result = await this.Model.findOne({ username, password })
       if(!result) {
         ctx.send(3, '', '登录失败：账号或密码错误')
       } else {
