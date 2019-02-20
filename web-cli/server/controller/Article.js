@@ -157,14 +157,16 @@ class ArticleCtl extends BaseCtl {
       return res
     }
     // 查看Book
-    const findBook = bookCtl.Model.findById(bookId, this.dbQuery(ctx))
+    const findBook = bookId === bookCtl.defaultBook._id ?
+      bookCtl.defaultBook :
+      bookCtl.Model.findById(bookId, this.dbQuery(ctx))
     // 查找catalog
     const findCatalogParams = { bookId, _id: catalogId, ...this.dbQuery(ctx) }
     const findCatalog = catalogCtl.Model.findOne(findCatalogParams)
     // 查看schema
-    const isDefaultSchema = schemaId.indexOf('is_') && this.defaultSchema
-    const findSchema = isDefaultSchema ?
-      Promise.resolve(true) :
+    const findBuiltInSchema = schematasCtl.buitInSchema.find(item => item._id === schemaId)
+    const findSchema = findBuiltInSchema ?
+      Promise.resolve(findBuiltInSchema) :
       schematasCtl.Model.findById(schemaId, this.dbQuery(ctx))
     const response = await Promise.all([findBook, findCatalog, findSchema])
     if(!response[0]) {

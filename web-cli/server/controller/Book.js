@@ -41,7 +41,7 @@ class BookCtl extends BaseCtl {
       let bookList = result[0] || []
       bookList.unshift(this.defaultBook)
       ctx.send(1, {
-        data: result[0],
+        data: bookList,
         count: result[1] + 1
       }, '')
     } catch (e) {

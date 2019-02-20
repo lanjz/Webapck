@@ -21,6 +21,14 @@ class SchematasCtl extends BaseCtl {
       radio: this.radioConValid,
       select: this.selectConValid
     }
+    this.buitInSchema = [
+      {
+        name: 'markdown文档',
+        builtIn: 1,
+        _id: 'markdown',
+        fields: [{_id: 'markdown',type:'markdown',name:'markdown'}]
+      }
+    ]
   }
   getAlias() {
     return '字段'
@@ -289,6 +297,11 @@ class SchematasCtl extends BaseCtl {
         ctx.send(2, '', hello.dealError(err))
         return
       }
+      let findInSchema = this.buitInSchema.find(item => item._id === schemataId)
+      if(findInSchema) {
+        ctx.send(2, '',  `${schemataId}不可修改`)
+        return
+      }
       const findSchema = await this.Model.findById(schemataId)
       if(!findSchema) {
         ctx.send(2, '',  `${schemataId}不存在`)
@@ -327,6 +340,11 @@ class SchematasCtl extends BaseCtl {
   async modifyField(ctx, next) {
     try{
       const { schemataId, field } = ctx.request.body
+      let findInSchema = this.buitInSchema.find(item => item._id === schemataId)
+      if(findInSchema) {
+        ctx.send(2, '',  `${schemataId}不可修改`)
+        return
+      }
       if(!schemataId) {
         ctx.send(2, '',  'schemataId不能为空')
         return
@@ -434,6 +452,25 @@ class SchematasCtl extends BaseCtl {
       ctx.send(1, result, '删除成功')
     }catch(e) {
       ctx.send(2, '', hello.dealError(e, ctx.request.body))
+    }finally {
+      await next()
+    }
+  }
+  async find(ctx, next) {
+    const { start = 0, limit = 0 } = ctx.request.query
+    const dbQuery = this.dbQuery(ctx)
+    // 如果没有提供start和limit则查找全部
+    const findFn = this.Model.listWithPagingLean(start, limit, dbQuery)
+    try{
+      const result = await Promise.all([findFn, this.Model.listCount(dbQuery)])
+      let bookList = result[0] || []
+      bookList = [ ...this.buitInSchema, ...bookList]
+      ctx.send(1, {
+        data: bookList,
+        count: result[1] + 1
+      }, '')
+    } catch (e) {
+      ctx.send(2, '', hello.dealError(e))
     }finally {
       await next()
     }
