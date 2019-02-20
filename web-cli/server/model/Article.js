@@ -3,17 +3,17 @@ import baseModel from './BaseModel'
 class ArticleModel extends baseModel {
   constructor() {
     super()
-    this.assectPath = '_id bookId catalogId schemaId name content createTime updateTime'
+    this.assectPath = '_id bookId catalogId schemaId name contents createTime updateTime'
   }
-  
+
   getName() {
     return 'articles'
   }
-  
+
   banUpdateFields() {
     return ['userId']
   }
-  
+
   getSchema() {
     return {
       userId: {
@@ -36,7 +36,7 @@ class ArticleModel extends baseModel {
         type: String,
         required: true
       },
-      content: Array,
+      contents: Array,
       ...this.baseModel()
     }
   }

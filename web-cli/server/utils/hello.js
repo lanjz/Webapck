@@ -148,7 +148,7 @@ async function checkAuth(ctx, next) {
   }
 }
 
-function createObjectId() {
+function createObjectId () {
   return mongoose.Types.ObjectId()
 }
 

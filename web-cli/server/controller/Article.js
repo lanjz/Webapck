@@ -13,6 +13,7 @@ class ArticleCtl extends BaseCtl {
     this.dateConValid = this.dateConValid.bind(this)
     this.radioConValid = this.radioConValid.bind(this)
     this.selectConValid = this.selectConValid.bind(this)
+    this.addContent = this.addContent.bind(this)
     this.contentValidator = {
       input: this.stringConValid,
       date: this.dateConValid,
@@ -230,16 +231,80 @@ class ArticleCtl extends BaseCtl {
         ctx.send(2, ctx.request.body, err.message)
         return
       }
-      const helloRes = await hello.filterParams(getParams, this.Model.getSchema())
+      const helloRes = await hello.filterParams(getParams, {
+        ...this.Model.getSchema(),
+        content: {}
+      })
       if(helloRes.err) {
         ctx.send(2, ctx.request.body, helloRes.err.message)
       } else {
+        if(helloRes.data.content) {
+          helloRes.data.content._id = hello.createObjectId()
+          helloRes.data.content.createTime = (new Date()).getTime()
+          helloRes.data.content.updateTime = (new Date()).getTime()
+        }
+        helloRes.data.contents = helloRes.data.content ? [helloRes.data.content] : []
         const result = await this.Model.save(helloRes.data)
         // const infoResult = await this.Model.findById(result._id)
         // ctx.send(1, infoResult, '')
         // ctx.send(1, { id: result._id }, '')
         await this.doAfterAdd(ctx, next, result)
       }
+    } catch (e) {
+      ctx.send(2, '', hello.dealError(e, ctx.request.body.username))
+    }finally {
+      await next()
+    }
+  }
+  async addContentBefore(ctx, next) {},
+  async addContent(ctx, next) {
+    try{
+      const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
+      const isObj = validator.isObjectType(merge.content)
+      if(isObj.err) {
+        ctx.send(2, '', hello.dealError(isObj.err))
+      }
+      if(!Object.keys(merge.content).length){
+        ctx.send(2, '', 'content无内容')
+        return
+      }
+      if(!merge._id) {
+        ctx.send(2, '', '缺少_id(article)')
+        return
+      }
+      const findArticle = await this.Model.findById(merge._id)
+      if(!findArticle) {
+        ctx.send(2, '', `${merge._id}不存在`)
+        return
+      }
+      const findBuiltInSchema = schematasCtl.buitInSchema
+        .find(item => item._id === findArticle.schemaId)
+      const findSchema = findBuiltInSchema ? findBuiltInSchema :
+        await schematasCtl.Model.findById(findArticle.schemaId, this.dbQuery(ctx))
+      const { err, data: getParams } = await this.filterCon(merge.content, findSchema.fields)
+      if(err) {
+        ctx.send(2, '', hello.dealError(err))
+        return
+      }
+      getParams._id = hello.createObjectId()
+      getParams.createTime = (new Date()).getTime()
+      getParams.updateTime = (new Date()).getTime()
+
+      const result = await this.Model.update(
+        {
+          _id: merge._id,
+          ...this.dbQuery(ctx)
+        },
+        {
+          $push: {
+            contents: getParams
+          }
+        }
+      )
+      if(!result.ok) {
+        ctx.send(2, result, '添加失败')
+      }
+      ctx.send(1, result, '添加成功')
     } catch (e) {
       ctx.send(2, '', hello.dealError(e, ctx.request.body.username))
     }finally {

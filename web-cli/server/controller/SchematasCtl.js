@@ -216,7 +216,7 @@ class SchematasCtl extends BaseCtl {
       return res
     }
     const filterSchemata = this.filterSchemata(fields)
-  
+
     if(filterSchemata.err) {
       res.err = filterSchemata.err
       return res
@@ -297,14 +297,14 @@ class SchematasCtl extends BaseCtl {
         ctx.send(2, '', hello.dealError(err))
         return
       }
-      let findInSchema = this.buitInSchema.find(item => item._id === schemataId)
+      const findInSchema = this.buitInSchema.find(item => item._id === schemataId)
       if(findInSchema) {
-        ctx.send(2, '',  `${schemataId}不可修改`)
+        ctx.send(2, '', `${schemataId}不可修改`)
         return
       }
       const findSchema = await this.Model.findById(schemataId)
       if(!findSchema) {
-        ctx.send(2, '',  `${schemataId}不存在`)
+        ctx.send(2, '', `${schemataId}不存在`)
         return
       }
       const findFieldInSchema = await this.Model.findOne({
