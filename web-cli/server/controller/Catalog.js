@@ -32,7 +32,9 @@ class CatalogCtl extends BaseCtl {
     const { userId } = arg
     return new Promise(async (resolve) => {
       try{
-        const findBook = bookCtl.findOneByQuery({ _id: bookId, userId }) // 查询是否存在本子
+        const findBook = bookId === bookCtl.defaultBook._id ?
+          Promise.resolve(true) :
+          bookCtl.findOneByQuery({ _id: bookId, userId }) // 查询是否存在本子
         const findParentCatalog = parentId === 'root' ? // 查询是否存在父级目录
           Promise.resolve('root') :
           this.findOneByQuery({ _id: parentId, userId })
@@ -44,7 +46,7 @@ class CatalogCtl extends BaseCtl {
           return
         }
         if(!result[1]){
-          resolve({ err: new Error(`不存在parentId为${bookId}的目录`) })
+          resolve({ err: new Error(`不存在parentId为${parentId}的目录`) })
           return
         }
         if(result[2]){

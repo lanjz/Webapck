@@ -114,7 +114,7 @@ function passValidAuth(ctx = {}) {
     post: ['/api/login', '/api/user']
   }
   const getMethod = ctx.method.toLowerCase()
-  if(!getMethod) {
+  if(!getMethod || !passPath[getMethod]) {
     return true
   }
   return passPath[getMethod].indexOf(ctx.url) > -1 ? true : false
