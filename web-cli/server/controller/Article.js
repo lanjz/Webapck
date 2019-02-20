@@ -222,6 +222,30 @@ class ArticleCtl extends BaseCtl {
       await next()
     }
   }
+  async add(ctx, next) {
+    try{
+      const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
+      const { err, data: getParams } = await this.todoPreAdd(merge, ctx)
+      if(err) {
+        ctx.send(2, ctx.request.body, err.message)
+        return
+      }
+      const helloRes = await hello.filterParams(getParams, this.Model.getSchema())
+      if(helloRes.err) {
+        ctx.send(2, ctx.request.body, helloRes.err.message)
+      } else {
+        const result = await this.Model.save(helloRes.data)
+        // const infoResult = await this.Model.findById(result._id)
+        // ctx.send(1, infoResult, '')
+        // ctx.send(1, { id: result._id }, '')
+        await this.doAfterAdd(ctx, next, result)
+      }
+    } catch (e) {
+      ctx.send(2, '', hello.dealError(e, ctx.request.body.username))
+    }finally {
+      await next()
+    }
+  }
 }
 const articleCtl = new ArticleCtl()
 

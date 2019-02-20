@@ -36,7 +36,7 @@ class ArticleModel extends baseModel {
         type: String,
         required: true
       },
-      content: Object,
+      content: Array,
       ...this.baseModel()
     }
   }
