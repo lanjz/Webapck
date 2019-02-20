@@ -14,6 +14,7 @@ class ArticleCtl extends BaseCtl {
     this.radioConValid = this.radioConValid.bind(this)
     this.selectConValid = this.selectConValid.bind(this)
     this.addContent = this.addContent.bind(this)
+    this.addContentBefore = this.addContentBefore.bind(this)
     this.contentValidator = {
       input: this.stringConValid,
       date: this.dateConValid,
@@ -256,32 +257,43 @@ class ArticleCtl extends BaseCtl {
       await next()
     }
   }
-  async addContentBefore(ctx, next) {},
+  async addContentBefore(ctx) {
+    const res = { err: null, data: '' }
+    const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
+    const isObj = validator.isObjectType(merge.content)
+    if(isObj.err) {
+      res.err = isObj.err
+      return res
+    }
+    if(!Object.keys(merge.content).length){
+      res.err = new Error('content无内容')
+      return res
+    }
+    if(!merge._id) {
+      res.err = new Error('缺少_id(article)')
+      return res
+    }
+    const findArticle = await this.Model.findById(merge._id)
+    if(!findArticle) {
+      res.err = new Error(`${merge._id}不存在`)
+      return res
+    }
+    const findBuiltInSchema = schematasCtl.buitInSchema
+      .find(item => item._id === findArticle.schemaId)
+    const findSchema = findBuiltInSchema ? findBuiltInSchema :
+      await schematasCtl.Model.findById(findArticle.schemaId, this.dbQuery(ctx))
+    const { err, data } = await this.filterCon(merge.content, findSchema.fields)
+    if(err) {
+      res.err = err
+      return res
+    }
+    res.data = data
+    return res
+  }
   async addContent(ctx, next) {
     try{
       const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
-      const isObj = validator.isObjectType(merge.content)
-      if(isObj.err) {
-        ctx.send(2, '', hello.dealError(isObj.err))
-      }
-      if(!Object.keys(merge.content).length){
-        ctx.send(2, '', 'content无内容')
-        return
-      }
-      if(!merge._id) {
-        ctx.send(2, '', '缺少_id(article)')
-        return
-      }
-      const findArticle = await this.Model.findById(merge._id)
-      if(!findArticle) {
-        ctx.send(2, '', `${merge._id}不存在`)
-        return
-      }
-      const findBuiltInSchema = schematasCtl.buitInSchema
-        .find(item => item._id === findArticle.schemaId)
-      const findSchema = findBuiltInSchema ? findBuiltInSchema :
-        await schematasCtl.Model.findById(findArticle.schemaId, this.dbQuery(ctx))
-      const { err, data: getParams } = await this.filterCon(merge.content, findSchema.fields)
+      const { err, data: getParams } = await this.addContentBefore(ctx)
       if(err) {
         ctx.send(2, '', hello.dealError(err))
         return
