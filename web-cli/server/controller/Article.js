@@ -323,6 +323,57 @@ class ArticleCtl extends BaseCtl {
       await next()
     }
   }
+  async modifyContent(ctx, next) {
+    try{
+      const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
+      const { err, data: getParams } = await this.addContentBefore(ctx)
+      if(err) {
+        ctx.send(2, '', hello.dealError(err))
+        return
+      }
+      if(!merge.content._id) {
+        ctx.send(2, '', '缺少_id(content)')
+        return
+      }
+      const findContent = await this.Model.findOne({
+        _id: merge._id,
+        contents: { $elemMatch: { _id: merge.content._id }},
+        ...this.dbQuery(ctx)
+      },
+        { "contents.$": 1 }
+        )
+      if(!findContent) {
+        ctx.send(2, '',  `${merge.content._id}不存在`)
+        return
+      }
+      const mergeContent = {
+        ...findContent,
+        ...merge.content
+      }
+      mergeContent.updateTime = (new Date()).getTime()
+      
+      const result = await this.Model.update(
+        {
+          _id: merge._id,
+          "fields": {
+            $elemMatch: {_id: merge.content._id}
+          },
+          ...this.dbQuery(ctx)
+        },
+        {
+          $set: mergeContent
+        }
+      )
+      if(!result.ok) {
+        ctx.send(2, result, '没有需要修改的数据'))
+      }
+      ctx.send(1, result, '修改成功')
+    } catch (e) {
+      ctx.send(2, '', hello.dealError(e, ctx.request.body.username))
+    }finally {
+      await next()
+    }
+  }
 }
 const articleCtl = new ArticleCtl()
 
