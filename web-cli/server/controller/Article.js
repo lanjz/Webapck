@@ -15,6 +15,7 @@ class ArticleCtl extends BaseCtl {
     this.selectConValid = this.selectConValid.bind(this)
     this.addContent = this.addContent.bind(this)
     this.addContentBefore = this.addContentBefore.bind(this)
+    this.modifyContent = this.modifyContent.bind(this)
     this.contentValidator = {
       input: this.stringConValid,
       date: this.dateConValid,
@@ -335,28 +336,30 @@ class ArticleCtl extends BaseCtl {
         ctx.send(2, '', '缺少_id(content)')
         return
       }
+      console.log('this.dbQuery(ctx)', this.dbQuery(ctx))
       const findContent = await this.Model.findOne({
         _id: merge._id,
-        contents: { $elemMatch: { _id: merge.content._id }},
+        contents: { $elemMatch: { _id: hello.strToObjectId(merge.content._id) }},
         ...this.dbQuery(ctx)
       },
         { "contents.$": 1 }
         )
+      console.log('findContent', findContent)
       if(!findContent) {
         ctx.send(2, '',  `${merge.content._id}不存在`)
         return
       }
       const mergeContent = {
-        ...findContent,
-        ...merge.content
+        ...getParams
       }
+      console.log('mergeContent', mergeContent)
       mergeContent.updateTime = (new Date()).getTime()
       
       const result = await this.Model.update(
         {
           _id: merge._id,
-          "fields": {
-            $elemMatch: {_id: merge.content._id}
+          contents: {
+            $elemMatch: {_id: hello.strToObjectId(merge.content._id)}
           },
           ...this.dbQuery(ctx)
         },
@@ -365,7 +368,7 @@ class ArticleCtl extends BaseCtl {
         }
       )
       if(!result.ok) {
-        ctx.send(2, result, '没有需要修改的数据'))
+        ctx.send(2, result, '没有需要修改的数据')
       }
       ctx.send(1, result, '修改成功')
     } catch (e) {
@@ -376,5 +379,6 @@ class ArticleCtl extends BaseCtl {
   }
 }
 const articleCtl = new ArticleCtl()
+
 
 export default articleCtl

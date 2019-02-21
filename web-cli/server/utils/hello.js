@@ -115,7 +115,7 @@ function passValidAuth(ctx = {}) {
   }
   const getMethod = ctx.method.toLowerCase()
   if(!getMethod || !passPath[getMethod]) {
-    return true
+    return false
   }
   return passPath[getMethod].indexOf(ctx.url) > -1 ? true : false
 }
@@ -152,6 +152,10 @@ function createObjectId () {
   return mongoose.Types.ObjectId()
 }
 
+function strToObjectId (str) {
+  return mongoose.Types.ObjectId(str)
+}
+
 function promiseToAwait(fn) {
   const res = { err: null, data: '' }
   return new Promise((resolve, reject) => {
@@ -176,6 +180,7 @@ export default {
   decodeLoginTypeJwt,
   checkAuth,
   createObjectId,
+  strToObjectId,
   promiseToAwait,
   mkdirsSync
 }
