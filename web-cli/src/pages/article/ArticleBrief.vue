@@ -1,5 +1,5 @@
 <template>
-  <div class="article-layout box-shadow">
+  <div class="article-layout box-shadow" :class="{'hidden-article': hiddenArticleLayout}">
     <div class="article-layout-input-box align-items-center">
       <input type="text" class="article-layout-input" v-model="filterKeys"/>
       <i class="iconfont icon-sousuo"></i>
@@ -12,6 +12,10 @@
       <div class="article-item-title">{{item.title}}</div>
       <div class="article-item-mark">{{item.createTime | timestampToTime}}~{{item.updateTime | timestampToTime}}</div>
     </div>
+    <div
+      class="article-layout-fixed controller-layout-fixed"
+      @click.stop="hiddenArticleLayout = !hiddenArticleLayout"
+      :class="{'act' : !hiddenArticleLayout}">简介</div>
   </div>
 </template>
 <script>
@@ -25,7 +29,8 @@
   export default {
     data() {
       return {
-        filterKeys: ''
+        filterKeys: '',
+        hiddenArticleLayout: false
       }
     },
     computed: {
@@ -95,6 +100,11 @@
     overflow: auto;
     background: @bg-color;
     color: @tree-color;
+    max-width: 500px;
+    transition: .5s;
+  }
+  .article-layout.hidden-article{
+    max-width: 0;
   }
 
   .article-layout-input-box{
@@ -122,5 +132,8 @@
     color: @tree-light-color;
     outline: #fff;
     padding-right: 46px;
+  }
+  .article-layout-fixed{
+    bottom: 100px;;
   }
 </style>
