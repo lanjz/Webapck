@@ -431,7 +431,6 @@ class ArticleCtl extends BaseCtl {
           }
         }
       )
-      console.log('resul2t', result)
       ctx.send(1, result, '')
     } catch (e){
       ctx.send(2, '', hello.dealError(e, ctx.request.body.username))

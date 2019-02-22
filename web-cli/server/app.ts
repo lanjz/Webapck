@@ -2,18 +2,21 @@ import * as Koa from 'koa'
 import middleware from './middleware/index.js'
 
 import  mon from './db/test/mon.js'
-
-const webpack = require('webpack')
-const devMiddleware = require('./middleware/webpackConfig');
-const hotMiddleware = require('./middleware/hotMiddleware')
-const config = process.env.DEV === '1' ? require('../webpack/webpack.dev') : require('../webpack/webpack.prod')
-const compiler = webpack(config)
 const app = new Koa()
 
-app.use(devMiddleware(compiler, {
-  publicPath: config.output.publicPath
-}))
-app.use(hotMiddleware(compiler))
+if(!process.env.JUSTNODE) {
+  console.log('JUSTNOD')
+  const webpack = require('webpack')
+  const devMiddleware = require('./middleware/webpackConfig');
+  const hotMiddleware = require('./middleware/hotMiddleware')
+  const config = process.env.DEV === '1' ? require('../webpack/webpack.dev') : require('../webpack/webpack.prod')
+  const compiler = webpack(config)
+  app.use(devMiddleware(compiler, {
+    publicPath: config.output.publicPath
+  }))
+  app.use(hotMiddleware(compiler))
+}
+
 
 middleware(app)
 // mon()
