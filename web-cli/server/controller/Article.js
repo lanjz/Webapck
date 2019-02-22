@@ -18,6 +18,7 @@ class ArticleCtl extends BaseCtl {
     this.modifyContent = this.modifyContent.bind(this)
     this.findContent = this.findContent.bind(this)
     this.delContent = this.delContent.bind(this)
+    this.contentCount = this.contentCount.bind(this)
     this.contentValidator = {
       input: this.stringConValid,
       date: this.dateConValid,
@@ -27,30 +28,35 @@ class ArticleCtl extends BaseCtl {
       select: this.selectConValid
     }
   }
+
   getAlias() {
     return '文章'
   }
+
   getModel() {
     return contentModel
   }
+
   stringConValid(con, schema) {
     return this.validType(con, schema, validator.isStringType)
   }
+
   dateConValid(con, schema) {
     return this.validType(con, schema, validator.isTypeNumber)
   }
+
   radioConValid(con, schema) {
-    const res = { err: null, data: con }
-    const { err } = this.validType(con, schema, validator.isStringType)
-    if(err) {
+    const res = {err: null, data: con}
+    const {err} = this.validType(con, schema, validator.isStringType)
+    if (err) {
       res.err = err
       return res
     }
-    if(!schema.options && !schema.options.length) {
+    if (!schema.options && !schema.options.length) {
       res.err = `未找到${schema.name}的options选项`
       return res
     }
-    if(con) {
+    if (con) {
       const itemRes = schema.options.some(inItem => (inItem.id === con))
       if (!itemRes) {
         res.err = new Error(`${schema.name}的options${JSON.stringify(schema.options)}没找到${con}`)
@@ -59,23 +65,24 @@ class ArticleCtl extends BaseCtl {
     }
     return res
   }
+
   selectConValid(con = [], schema) {
-    const res = { err: null, data: con }
-    const { err } = this.validType(con, schema, validator.isArrayType)
-    if(err) {
+    const res = {err: null, data: con}
+    const {err} = this.validType(con, schema, validator.isArrayType)
+    if (err) {
       res.err = err
       return res
     }
-    if(!schema.options && !schema.options.length) {
+    if (!schema.options && !schema.options.length) {
       res.err = `未找到${schema.name}的options选项`
       return res
     }
     const isArrayValid = validator.isArrayType(con)
-    if(!isArrayValid.err) {
+    if (!isArrayValid.err) {
       res.err = `${schema.name}${isArrayValid.err}`
       return res
     }
-    if(con && con.length) {
+    if (con && con.length) {
       con.every((item) => {
         const itemRes = schema.options.some(inItem => (inItem.id === item))
         if (itemRes) {
@@ -88,14 +95,15 @@ class ArticleCtl extends BaseCtl {
         return false
       })
     }
-    if(res.err){
+    if (res.err) {
       return res
     }
     return res
   }
+
   validType(con, schema, validFn) {
-    const res = { err: null, data: con }
-    const { err, data } = validFn(con)
+    const res = {err: null, data: con}
+    const {err, data} = validFn(con)
     if (err) {
       res.err = err
       return res
@@ -103,6 +111,7 @@ class ArticleCtl extends BaseCtl {
     res.data = data
     return res
   }
+
   /**
    * 根据Book的schemata来验证con的内容是否正确
    * @param <Object> con
@@ -110,12 +119,12 @@ class ArticleCtl extends BaseCtl {
    * */
   content(con, schemata = []) {
     const obj = {}
-    const res = { err: null, data: con }
+    const res = {err: null, data: con}
     schemata.every((item) => {
-      if(con[item._id]) {
+      if (con[item._id]) {
         const tempFn = this.contentValidator[item.type]
-        const { err, data } = tempFn(con[item._id], item)
-        if(err) {
+        const {err, data} = tempFn(con[item._id], item)
+        if (err) {
           res.err = err
           return false
         }
@@ -126,33 +135,36 @@ class ArticleCtl extends BaseCtl {
     res.data = obj
     return res
   }
+
   async filterCon(con, getSchemata) {
     let filterData = con
     return new Promise(async (resolve) => {
-      try{
+      try {
         filterData = await this.content(con, getSchemata)
-        resolve({ err: filterData.err, data: filterData.data })
+        resolve({err: filterData.err, data: filterData.data})
       } catch (e) {
-        resolve({ err: e, data: filterData })
+        resolve({err: e, data: filterData})
       }
     })
   }
+
   async todoPreModify(arg, ctx) {
     return this.todoPreAdd(arg, ctx)
   }
-  async todoPreAdd(arg, ctx){
-    const res = { err: null, data: '' }
+
+  async todoPreAdd(arg, ctx) {
+    const res = {err: null, data: ''}
     const getParams = JSON.parse(JSON.stringify(arg))
-    const { bookId, catalogId, schemaId } = getParams
-    if(!bookId) {
+    const {bookId, catalogId, schemaId} = getParams
+    if (!bookId) {
       res.err = new Error('bookId不能为空')
       return res
     }
-    if(!catalogId) {
+    if (!catalogId) {
       res.err = new Error('catalogId不能为空')
       return res
     }
-    if(!schemaId) {
+    if (!schemaId) {
       res.err = new Error('schemaId不能为空')
       return res
     }
@@ -161,7 +173,7 @@ class ArticleCtl extends BaseCtl {
       bookCtl.defaultBook :
       bookCtl.Model.findById(bookId, this.dbQuery(ctx))
     // 查找catalog
-    const findCatalogParams = { bookId, _id: catalogId, ...this.dbQuery(ctx) }
+    const findCatalogParams = {bookId, _id: catalogId, ...this.dbQuery(ctx)}
     const findCatalog = catalogCtl.Model.findOne(findCatalogParams)
     // 查看schema
     const findBuiltInSchema = schematasCtl.buitInSchema.find(item => item._id === schemaId)
@@ -169,32 +181,32 @@ class ArticleCtl extends BaseCtl {
       Promise.resolve(findBuiltInSchema) :
       schematasCtl.Model.findById(schemaId, this.dbQuery(ctx))
     const response = await Promise.all([findBook, findCatalog, findSchema])
-    if(!response[0]) {
+    if (!response[0]) {
       res.err = new Error('未找到对应的Book')
-    } else if(!response[1]) {
+    } else if (!response[1]) {
       res.err = new Error(`${response[0].name}下未找到对应的目录`)
-    } else if(!response[2]) {
+    } else if (!response[2]) {
       res.err = new Error('未找到对应的Schema')
     }
-    if(res.err) {
+    if (res.err) {
       return res
     }
-    if(!getParams.name) {
+    if (!getParams.name) {
       res.err = new Error('name不能为空')
       return res
     }
-    if(!getParams.content) {
+    if (!getParams.content) {
       getParams.content = {}
     }
     const isObj = validator.isObjectType(getParams.content)
-    if(isObj.err) {
+    if (isObj.err) {
       res.err = isObj.err
       return res
     }
     const con = JSON.parse(JSON.stringify(getParams.content))
     const getSchemata = response[2].fields
-    const { err, data } = await this.filterCon(con, getSchemata)
-    if(err) {
+    const {err, data} = await this.filterCon(con, getSchemata)
+    if (err) {
       res.err = err
       return res
     }
@@ -202,16 +214,17 @@ class ArticleCtl extends BaseCtl {
     res.data = getParams
     return res
   }
+
   async findById(ctx, next) {
-    const { id } = ctx.params
-    if(!id) {
+    const {id} = ctx.params
+    if (!id) {
       ctx.send(2, '', 'id不能为空')
       return
     }
-    try{
+    try {
       const dbQuery = this.dbQuery(ctx)
-      const result = await this.Model.findByIdLean(id, dbQuery)
-      if(result.schemaId) {
+      const result = await this.Model.findById(id, dbQuery, true)
+      if (result.schemaId) {
         const findSchema = await schematasCtl.Model.findById(result.schemaId, this.dbQuery(ctx))
         result.schema = findSchema
       }
@@ -222,11 +235,12 @@ class ArticleCtl extends BaseCtl {
       await next()
     }
   }
+
   async add(ctx, next) {
-    try{
-      const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
-      const { err, data: getParams } = await this.todoPreAdd(merge, ctx)
-      if(err) {
+    try {
+      const merge = {...ctx.request.body, ...this.dbQuery(ctx)}
+      const {err, data: getParams} = await this.todoPreAdd(merge, ctx)
+      if (err) {
         ctx.send(2, ctx.request.body, err.message)
         return
       }
@@ -234,10 +248,10 @@ class ArticleCtl extends BaseCtl {
         ...this.Model.getSchema(),
         content: {}
       })
-      if(helloRes.err) {
+      if (helloRes.err) {
         ctx.send(2, ctx.request.body, helloRes.err.message)
       } else {
-        if(helloRes.data.content) {
+        if (helloRes.data.content) {
           helloRes.data.content._id = hello.createObjectId()
           helloRes.data.content.createTime = (new Date()).getTime()
           helloRes.data.content.updateTime = (new Date()).getTime()
@@ -251,28 +265,29 @@ class ArticleCtl extends BaseCtl {
       }
     } catch (e) {
       ctx.send(2, '', hello.dealError(e, ctx.request.body.username))
-    }finally {
+    } finally {
       await next()
     }
   }
+
   async addContentBefore(ctx) {
-    const res = { err: null, data: '' }
-    const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
+    const res = {err: null, data: ''}
+    const merge = {...ctx.request.body, ...this.dbQuery(ctx)}
     const isObj = validator.isObjectType(merge.content)
-    if(isObj.err) {
+    if (isObj.err) {
       res.err = isObj.err
       return res
     }
-    if(!Object.keys(merge.content).length){
+    if (!Object.keys(merge.content).length) {
       res.err = new Error('content无内容')
       return res
     }
-    if(!merge._id) {
+    if (!merge._id) {
       res.err = new Error('缺少_id(article)')
       return res
     }
     const findArticle = await this.Model.findById(merge._id)
-    if(!findArticle) {
+    if (!findArticle) {
       res.err = new Error(`${merge._id}不存在`)
       return res
     }
@@ -280,19 +295,20 @@ class ArticleCtl extends BaseCtl {
       .find(item => item._id === findArticle.schemaId)
     const findSchema = findBuiltInSchema ? findBuiltInSchema :
       await schematasCtl.Model.findById(findArticle.schemaId, this.dbQuery(ctx))
-    const { err, data } = await this.filterCon(merge.content, findSchema.fields)
-    if(err) {
+    const {err, data} = await this.filterCon(merge.content, findSchema.fields)
+    if (err) {
       res.err = err
       return res
     }
     res.data = data
     return res
   }
+
   async addContent(ctx, next) {
-    try{
-      const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
-      const { err, data: getParams } = await this.addContentBefore(ctx)
-      if(err) {
+    try {
+      const merge = {...ctx.request.body, ...this.dbQuery(ctx)}
+      const {err, data: getParams} = await this.addContentBefore(ctx)
+      if (err) {
         ctx.send(2, '', hello.dealError(err))
         return
       }
@@ -311,39 +327,41 @@ class ArticleCtl extends BaseCtl {
           }
         }
       )
-      if(!result.ok) {
+      if (!result.ok) {
         ctx.send(2, result, '添加失败')
       }
       ctx.send(1, result, '添加成功')
     } catch (e) {
       ctx.send(2, '', hello.dealError(e, ctx.request.body.username))
-    }finally {
+    } finally {
       await next()
     }
   }
+
   async modifyContent(ctx, next) {
-    try{
-      const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
-      const { err, data: getParams } = await this.addContentBefore(ctx)
-      if(err) {
+    try {
+      const merge = {...ctx.request.body, ...this.dbQuery(ctx)}
+      const {err, data: getParams} = await this.addContentBefore(ctx)
+      if (err) {
         ctx.send(2, '', hello.dealError(err))
         return
       }
-      if(!merge.content._id) {
+      if (!merge.content._id) {
         ctx.send(2, '', '缺少_id(content)')
         return
       }
       console.log('this.dbQuery(ctx)', this.dbQuery(ctx))
-      const findContent = await this.Model.findOne({
-        _id: merge._id,
-        contents: { $elemMatch: { _id: hello.strToObjectId(merge.content._id) }},
-        ...this.dbQuery(ctx)
-      },
-        { "contents.$": 1 }
-        )
+      const findContent = await this.Model.findOne(
+        {
+          _id: merge._id,
+          contents: { $elemMatch: { _id: hello.strToObjectId(merge.content._id) } },
+          ...this.dbQuery(ctx)
+        },
+        {"contents.$": 1}
+      )
       console.log('findContent', findContent)
-      if(!findContent) {
-        ctx.send(2, '',  `${merge.content._id}不存在`)
+      if (!findContent) {
+        ctx.send(2, '', `${merge.content._id}不存在`)
         return
       }
       const mergeContent = {
@@ -352,14 +370,14 @@ class ArticleCtl extends BaseCtl {
       }
       console.log('mergeContent', mergeContent)
       mergeContent.updateTime = (new Date()).getTime()
-      
+
       const projection = {}
       Object.keys(mergeContent).forEach(item => {
-        if(item !== '_id') {
+        if (item !== '_id') {
           projection[`contents.$.${item}`] = mergeContent[item]
         }
       })
-      
+
       const result = await this.Model.update(
         {
           _id: merge._id,
@@ -372,25 +390,26 @@ class ArticleCtl extends BaseCtl {
           $set: projection
         }
       )
-      if(!result.ok) {
+      if (!result.ok) {
         ctx.send(2, result, '没有需要修改的数据')
       }
       ctx.send(1, result, '修改成功')
     } catch (e) {
       ctx.send(2, '', hello.dealError(e, ctx.request.body.username))
-    }finally {
+    } finally {
       await next()
     }
   }
+
   async delContent(ctx, next) {
-    try{
-      const { articleId, contentId } = ctx.request.body
-      if(!articleId) {
-        ctx.send(2, '',  'articleId is request')
+    try {
+      const {articleId, contentId} = ctx.request.body
+      if (!articleId) {
+        ctx.send(2, '', 'articleId is request')
         return
       }
-      if(!contentId) {
-        ctx.send(2, '',  'contentId is request')
+      if (!contentId) {
+        ctx.send(2, '', 'contentId is request')
         return
       }
       const result = await this.Model.update(
@@ -400,28 +419,30 @@ class ArticleCtl extends BaseCtl {
         },
         {
           $pull: {
-            "contents": { _id: contentId }
+            contents: {_id: contentId}
           }
         })
-      if(result && !result.ok) {
+      if (result && !result.ok) {
         ctx.send(2, result, '没有需要删除的数据')
         return
       }
       ctx.send(1, result, '删除成功')
-    }catch(e) {
+    } catch (e) {
       ctx.send(2, '', hello.dealError(e, ctx.request.body))
-    }finally {
+    } finally {
       await next()
     }
   }
+
   async findContent(ctx, next) {
-    try{
-      const { _id, start = 0, limit = 50 } = ctx.request.query
-      if(!_id) {
+    try {
+      const { _id, start = 0, limit = 20 } = ctx.request.query
+      if (!_id) {
         ctx.send(2, '', '缺少_id')
         return
       }
-      const result = await this.Model.listQuery({
+      const findContent = this.Model.list(
+        {
           _id,
           ...this.dbQuery(ctx)
         },
@@ -431,14 +452,30 @@ class ArticleCtl extends BaseCtl {
           }
         }
       )
-      ctx.send(1, result, '')
-    } catch (e){
+      const findCount = this.contentCount(hello.strToObjectId(_id))
+      const result = await Promise.all([findContent, findCount])
+      const getCount = (result[1] && result[1].length) ? result[1][0].count : 0
+      ctx.send(1, {
+        data: result[0],
+        count: getCount
+      }, '')
+    } catch (e) {
       ctx.send(2, '', hello.dealError(e, ctx.request.body.username))
     } finally {
       await next()
     }
   }
+  contentCount(articleId) {
+    return this.Model.doAggregate([
+      {
+        $match: { _id: articleId },
+      },
+      {
+        $project: { _id: 0, count: { $size: '$contents' } }
+      }
+    ])
+  }
 }
-const articleCtl = new ArticleCtl()
 
+const articleCtl = new ArticleCtl()
 export default articleCtl

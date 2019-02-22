@@ -35,10 +35,11 @@ class BookCtl extends BaseCtl {
     const { start = 0, limit = 0 } = ctx.request.query
     const dbQuery = this.dbQuery(ctx)
     // 如果没有提供start和limit则查找全部
-    const findFn = this.Model.listWithPagingLean(start, limit, dbQuery)
+    const findFn = this.Model.listWithPaging(start, limit, dbQuery)
     try{
       const result = await Promise.all([findFn, this.Model.listCount(dbQuery)])
       let bookList = result[0] || []
+      console.log('bookList', bookList)
       bookList.unshift(this.defaultBook)
       ctx.send(1, {
         data: bookList,

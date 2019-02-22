@@ -83,18 +83,19 @@ class baseModel {
     return this.Model.findOneAndUpdate({ _id: id, ...query }, data, { new: true })
       .select(this.assectPath).exec();
   }
-  list(query = {}) {
-    return this.Model.find(query).select(this.assectPath).exec()
+  list(...args) {
+    return this.Model.find(...args).select(this.assectPath).exec()
   }
-  listQuery() {
-    return this.Model.find(...arguments)
+  listLean(...args) {
+    return this.Model.find(...args).lean().select(this.assectPath).exec()
   }
-  listLean(query = {}) {
-    return this.Model.find(query).lean().select(this.assectPath).exec()
-  }
-  listWithPaging(start = 0, limit = 0, query = {}) {
+  listWithPaging(start = 0, limit = 0, query = {}, addLean = false) {
     start = parseInt(start);
     limit = parseInt(limit);
+/*    let fn = this.Model.find(query)
+    if(addLean){
+      fn = fn.lean()
+    }*/
     return this.Model.find(query)
       .sort({ _id: -1 })
       .skip(start)
@@ -102,28 +103,22 @@ class baseModel {
       .select(this.assectPath)
       .exec()
   }
-  listWithPagingLean(start = 0, limit = 0, query = {}) {
-    start = parseInt(start);
-    limit = parseInt(limit);
-    return this.Model.find(query)
-      .lean()
-      .sort({ _id: -1 })
-      .skip(start)
-      .limit(limit)
-      .select(this.assectPath)
-      .exec()
-  }
-  findById(id, query) {
-    return this.Model.findOne({ _id: id, ...query }).select(this.assectPath).exec()
-  }
-  findByIdLean(id, query) {
-    return this.Model.findOne({ _id: id, ...query }).lean().select(this.assectPath).exec()
+
+  findById(id, query, addLean) {
+    let fn = this.Model.find({ _id: id, ...query })
+    if(addLean){
+      fn = fn.lean()
+    }
+    return fn.select(this.assectPath).exec()
   }
   del(id, query) {
     return this.Model.deleteOne({ _id: Object(id), ...query })
   }
   delMany(ids, query) {
     return this.Model.deleteMany({ _id: { $in: ids }, ...query })
+  }
+  doAggregate(...query) {
+    return this.Model.aggregate(...query)
   }
 }
 
