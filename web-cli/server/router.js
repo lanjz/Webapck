@@ -46,6 +46,8 @@ router.put('/article', articleCtl.modify)
 router.post('/article', articleCtl.add)
 router.post('/articleContent', articleCtl.addContent)
 router.put('/articleContent', articleCtl.modifyContent)
+router.delete('/articleContent', articleCtl.delContent)
+router.get('/articleContent', articleCtl.findContent)
 
 router.post('/uploadImg', baseCtl.uploadImg)
 

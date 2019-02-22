@@ -16,6 +16,8 @@ class ArticleCtl extends BaseCtl {
     this.addContent = this.addContent.bind(this)
     this.addContentBefore = this.addContentBefore.bind(this)
     this.modifyContent = this.modifyContent.bind(this)
+    this.findContent = this.findContent.bind(this)
+    this.delContent = this.delContent.bind(this)
     this.contentValidator = {
       input: this.stringConValid,
       date: this.dateConValid,
@@ -23,11 +25,6 @@ class ArticleCtl extends BaseCtl {
       markdown: this.stringConValid,
       radio: this.radioConValid,
       select: this.selectConValid
-    }
-    this.defaultSchema = {
-      is_markdown: {
-
-      }
     }
   }
   getAlias() {
@@ -350,10 +347,18 @@ class ArticleCtl extends BaseCtl {
         return
       }
       const mergeContent = {
+        ...findContent.contents[0],
         ...getParams
       }
       console.log('mergeContent', mergeContent)
       mergeContent.updateTime = (new Date()).getTime()
+      
+      const projection = {}
+      Object.keys(mergeContent).forEach(item => {
+        if(item !== '_id') {
+          projection[`contents.$.${item}`] = mergeContent[item]
+        }
+      })
       
       const result = await this.Model.update(
         {
@@ -364,7 +369,7 @@ class ArticleCtl extends BaseCtl {
           ...this.dbQuery(ctx)
         },
         {
-          $set: mergeContent
+          $set: projection
         }
       )
       if(!result.ok) {
@@ -377,8 +382,64 @@ class ArticleCtl extends BaseCtl {
       await next()
     }
   }
+  async delContent(ctx, next) {
+    try{
+      const { articleId, contentId } = ctx.request.body
+      if(!articleId) {
+        ctx.send(2, '',  'articleId is request')
+        return
+      }
+      if(!contentId) {
+        ctx.send(2, '',  'contentId is request')
+        return
+      }
+      const result = await this.Model.update(
+        {
+          _id: articleId,
+          ...this.dbQuery(ctx)
+        },
+        {
+          $pull: {
+            "contents": { _id: contentId }
+          }
+        })
+      if(result && !result.ok) {
+        ctx.send(2, result, '没有需要删除的数据')
+        return
+      }
+      ctx.send(1, result, '删除成功')
+    }catch(e) {
+      ctx.send(2, '', hello.dealError(e, ctx.request.body))
+    }finally {
+      await next()
+    }
+  }
+  async findContent(ctx, next) {
+    try{
+      const { _id, start = 0, limit = 50 } = ctx.request.query
+      if(!_id) {
+        ctx.send(2, '', '缺少_id')
+        return
+      }
+      const result = await this.Model.listQuery({
+          _id,
+          ...this.dbQuery(ctx)
+        },
+        {
+          contents: {
+            $slice: [parseInt(start), parseInt(limit)]
+          }
+        }
+      )
+      console.log('resul2t', result)
+      ctx.send(1, result, '')
+    } catch (e){
+      ctx.send(2, '', hello.dealError(e, ctx.request.body.username))
+    } finally {
+      await next()
+    }
+  }
 }
 const articleCtl = new ArticleCtl()
-
 
 export default articleCtl

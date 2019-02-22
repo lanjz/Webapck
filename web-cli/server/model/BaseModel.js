@@ -86,6 +86,9 @@ class baseModel {
   list(query = {}) {
     return this.Model.find(query).select(this.assectPath).exec()
   }
+  listQuery() {
+    return this.Model.find(...arguments)
+  }
   listLean(query = {}) {
     return this.Model.find(query).lean().select(this.assectPath).exec()
   }
