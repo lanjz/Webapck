@@ -325,7 +325,7 @@ class ArticleCtl extends BaseCtl {
           $push: {
             contents: {
               $each: [getParams],
-              $position: 0
+              $position: 0  // 插入到首位
             }
           },
         }
