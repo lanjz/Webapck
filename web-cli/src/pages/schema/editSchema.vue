@@ -76,14 +76,14 @@
             </div>
             <div class="flex flex-1 align-items-center">
               <div
-                class="add-options-item radio-style"
+                class="radio-style"
                 :class="{'act':!field.default}"
                 @click="field.default = ''"
               >
                 无
               </div>
               <div
-                class="add-options-item radio-style"
+                class="radio-style"
                 v-for="(item, index) in field.options"
                 :class="{'act':item.id === field.default}"
               >
@@ -98,7 +98,7 @@
             </div>
             <div class="flex flex-1 align-items-center">
               <div
-                class="add-options-item radio-style"
+                class="add-options-item cursor"
                 v-for="(item, index) in field.options"
                 :class="{'act':field.arrDefault.indexOf(item.id) > -1}"
               >
@@ -108,7 +108,7 @@
           </div>
           <div class="form-group submit-layout">
             <div class="btn" @click="todoSaveSchema">提交</div>
-            <div class="btn second-btn" @click="todoCloseEdit">返回</div>
+            <div class="btn second-btn" @click="todoCloseEdit(false)">返回</div>
           </div>
         </div>
       </div>
@@ -134,7 +134,7 @@
           return {}
         }
       },
-      curSchemataId: {
+      curSchemataInfo: {
         type: Object,
         default: function () {
           return {}
@@ -221,22 +221,28 @@
         this.$showLoading()
         if(this.field._id) {
           result = await this[ACTIONS.SCHEMA_FIELD_PUT]({
-            schemataId: this.curSchemataId._id,
+            schemataId: this.curSchemataInfo._id,
             _id: this.field._id,
-            fields: this.field
+            field: this.field
           })
         } else {
-          result = await this[ACTIONS.SCHEMA_FIELD_POST](this.field)
+          result = await this[ACTIONS.SCHEMA_FIELD_POST]({
+            schemataId: this.curSchemataInfo._id,
+            field: this.field
+          })
         }
         this.$hideLoading()
         if(result.err) {
-          alert(result.err.message)
+          this.$alert({
+            title: result.err.message
+          })
           return
         }
-        this.todoCloseEdit()
+        this.field = { ...initSchema }
+        this.todoCloseEdit(true)
       },
-      todoCloseEdit() {
-        this.$emit('emitCloseEdit')
+      todoCloseEdit(force = false) {
+        this.$emit('emitCloseEdit', force)
       },
       todoOptionRename(e, index){
         this.field.options[index].name = e.target.innerText
@@ -246,14 +252,11 @@
       if(this.curField._id) {
         this.field = { ...this.field, ...this.curField }
       }
-    },
-    beforeDestroy() {
-      this.field = initSchema
     }
 
   }
 </script>
-<style lang="less" scoped="">
+<style lang="less" scoped>
   .field-layout {
     padding: 0 7px;
   }
@@ -276,10 +279,15 @@
     border-radius: 2px;
     margin-right: 7px;
     margin-bottom: 7px;
+    position: relative;
+  }
+  .add-options-item.act{
+    background: @highlight-color;
   }
   .add-options-btn{
     margin: 0;
     transition: .4s;
+    cursor: pointer;
   }
 
   .add-options-input {

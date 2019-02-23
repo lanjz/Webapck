@@ -45,10 +45,6 @@ const actions = {
       method: 'post',
       data
     })
-    if(result.err) {
-
-    }
-    await dispatch(ACTIONS.SCHEMA_LIST_GET)
     return result
   },
   async [ACTIONS.SCHEMA_PUT]({ commit }, data) {
@@ -86,8 +82,8 @@ const actions = {
       return res
     }
     curSchema.fields.some((item, index) => {
-      if(item._id !== data.fields._id && item.name === data.fields.name) {
-        res.err = new Error(`${data.fields.name}已存在`)
+      if(item._id !== data.field._id && item.name === data.field.name) {
+        res.err = new Error(`${data.field.name}已存在`)
         return true
       }
       return false

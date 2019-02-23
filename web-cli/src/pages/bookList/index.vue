@@ -30,7 +30,7 @@
     </div>
     <div class="modal-mark-bg" v-if="showModal">
       <div class="modal-layout">
-        <div class="modal-title">title <div class="modal-title-close" @click="doCloseModal"></div></div>
+        <div class="modal-title">{{curId? '编辑':'添加'}} <div class="modal-title-close" @click="doCloseModal"></div></div>
         <div class="form-bg bg-fff">
           <div class="form-layout">
             <div class="form-group flex">

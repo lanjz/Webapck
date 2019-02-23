@@ -6,7 +6,7 @@
         @click="todoAddSchema"
       >
         <i class="iconfont icon-tianjiajiahaowubiankuang"></i>
-        <div class="catalogs-name line-ellipsis">新字段</div>
+        <div class="catalogs-name line-ellipsis">新字段组</div>
       </div>
       <div
         v-if="showAddInput"
@@ -83,7 +83,7 @@
         <div class="panel-bg flex flex-1" v-if="curField">
           <EditField
             :curField="curField"
-            :curSchemataId="actSchemaObj"
+            :curSchemataInfo="actSchemaObj"
             @emitCloseEdit="doHideEdit"
           ></EditField>
         </div>
@@ -115,7 +115,7 @@
         schemaList: state => state.schema.list
       }),
       schemaListArr: function () {
-        return Object.values(this.schemaList)
+        return Object.values(this.schemaList).filter(item => item._id !== 'markdown')
       },
       actSchemaObj: function () {
         return this.schemaList[this.actSchema] || {}
@@ -130,10 +130,11 @@
         ACTIONS.SCHEMA_FIELD_DELETE
       ]),
       todoAddSchema() {
-        let tempName = '未命名'
-        let i = 1
+        let tempName = ''
+        let i = 0
         do{
-          tempName += i
+          ++i
+          tempName = '未命名' + i
         } while ((this.schemaListArr.find(item => item.name === tempName)))
         this.newSchemaName = tempName
         this.showAddInput = true
@@ -141,7 +142,9 @@
       async toAddSchema() {
         const isReatName = this.schemaListArr.find(item => item.name === this.newSchemaName)
         if(isReatName){
-          alert(`${this.newSchemaName}不存在`)
+          this.$alert({
+            title: `${this.newSchemaName}不存在`
+          })
           return
         }
         this.$showLoading()
@@ -152,27 +155,29 @@
         )
         this.showAddInput = false
         this.newSchemaName = ''
+        await this.getData()
+        this.initCurSchema()
         this.$hideLoading()
-
       },
-      async getData(force){
+      initCurSchema() {
+        if(this.schemaListArr.length) {
+          this.actSchema = this.schemaListArr[0]._id
+          this.cacheName = this.schemaListArr[0].name
+        }
+      },
+      async getData(force = true){
         const result = await this[ACTIONS.SCHEMA_LIST_GET]({ force })
-        if(!result.err) {
-
-        }
-        if(result.data.list.length) {
-          this.actSchema = result.data.list[0]._id
-          this.cacheName = result.data.list[0].name
-        }
       },
       /**
        * tar有值则为编辑，否则是添加
        * */
       doShowEdit(tar) {
-        this.curField = tar || {}
+        this.curField = JSON.parse(JSON.stringify(tar)) || {}
       },
-      doHideEdit() {
+      doHideEdit(force) {
+        console.log('force', force)
         this.curField = null
+        this.getData(force)
       },
       chooseSchema(item) {
         this.actSchema = item._id
@@ -203,19 +208,19 @@
           name: this.cacheName
         })
         if(result.err) return
-        await this.getData(true)
+        await this.getData()
         this.$hideLoading()
       },
       async init(){
         this.$showLoading()
-        await this.getData()
+        await this.getData(false)
+        this.initCurSchema()
         this.$hideLoading()
       },
       todoDelete() {
         this.$alert({
           title: '弹窗测试',
           content: `你确认要删除"${this.cacheName}"`,
-          showCancel: false
         })
           .then(async res => {
             if(res) {
@@ -227,7 +232,8 @@
         this.$showLoading()
         const result = await this[ACTIONS.SCHEMA_DELETE]({ _id: this.actSchemaObj._id })
         if(!result.err) {
-          await this.getData()
+          await this.getData(true)
+          this.initCurSchema()
         }
         this.$hideLoading()
       },
@@ -246,11 +252,11 @@
       async doDeleteField(item) {
         this.$showLoading()
         const result = this[ACTIONS.SCHEMA_FIELD_DELETE]({
-          fieldId: this.actSchemaObj._id,
-          schemataId: item._id
+          schemataId: this.actSchemaObj._id,
+          fieldId: item._id
         })
         if(!result.err) {
-          await this.getData()
+          await this.getData(true)
         }
         this.$hideLoading()
       }

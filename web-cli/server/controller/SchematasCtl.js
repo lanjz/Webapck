@@ -210,10 +210,12 @@ class SchematasCtl extends BaseCtl {
       res.err = isObjResult.err
       return res
     }
-    const isUniqueName = validator.isUniqueInArr(fields, 'name', false)
-    if(isUniqueName.err) {
-      res.err = new RangeError(`options:${isUniqueName.err.message}`)
-      return res
+    if(fields.length) {
+      const isUniqueName = validator.isUniqueInArr(fields, 'name', false)
+      if(isUniqueName.err) {
+        res.err = new RangeError(`options:${isUniqueName.err.message}`)
+        return res
+      }
     }
     const filterSchemata = this.filterSchemata(fields)
 
