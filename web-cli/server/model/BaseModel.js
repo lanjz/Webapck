@@ -36,7 +36,10 @@ class baseModel {
   getSchema() {
     console.log('Model Class need getSchema function', 'error');
   }
-
+  
+  /**
+   * 获取collection的Model名称
+   */
   getName() {
     console.log('Model Class need name', 'error');
   }
@@ -68,8 +71,20 @@ class baseModel {
     return model.save()
   }
 
+  /**
+   * 查找符合条件的一条记录，没有则返回null
+   * @param <Object> query 查询条件
+   * @param <Object> projection 返回结果过滤
+   * */
   findOne(query, projection = null) {
     return this.Model.findOne(query, projection)
+  }
+  findById(id, query, addLean) {
+    let fn = this.Model.findOne({ _id: id, ...query })
+    if(addLean){
+      fn = fn.lean()
+    }
+    return fn.select(this.assectPath).exec()
   }
   update(query, projection = null) {
     return this.Model.update(
@@ -92,25 +107,18 @@ class baseModel {
   listWithPaging(start = 0, limit = 0, query = {}, addLean = false) {
     start = parseInt(start);
     limit = parseInt(limit);
-/*    let fn = this.Model.find(query)
+    let fn = this.Model.find(query)
     if(addLean){
       fn = fn.lean()
-    }*/
-    return this.Model.find(query)
+    }
+    return fn
       .sort({ _id: -1 })
       .skip(start)
       .limit(limit)
       .select(this.assectPath)
       .exec()
   }
-
-  findById(id, query, addLean) {
-    let fn = this.Model.find({ _id: id, ...query })
-    if(addLean){
-      fn = fn.lean()
-    }
-    return fn.select(this.assectPath).exec()
-  }
+  
   del(id, query) {
     return this.Model.deleteOne({ _id: Object(id), ...query })
   }

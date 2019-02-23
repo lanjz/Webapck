@@ -54,9 +54,6 @@ class BaseCtl {
         ctx.send(2, ctx.request.body, helloRes.err.message)
       } else {
         const result = await this.Model.save(helloRes.data)
-        // const infoResult = await this.Model.findById(result._id)
-        // ctx.send(1, infoResult, '')
-        // ctx.send(1, { id: result._id }, '')
         await this.doAfterAdd(ctx, next, result)
       }
     } catch (e) {
