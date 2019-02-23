@@ -32,9 +32,7 @@ const actions = {
     const result = await fetch({
       url: '/api/login',
       method: 'post',
-      data: {
-        ...data
-      }
+      data
     })
     if(!result.err) {
       commit(MUTATIONS.USER_SAVE, result.data)

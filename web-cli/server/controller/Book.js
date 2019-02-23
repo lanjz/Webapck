@@ -42,7 +42,7 @@ class BookCtl extends BaseCtl {
       console.log('bookList', bookList)
       bookList.unshift(this.defaultBook)
       ctx.send(1, {
-        data: bookList,
+        list: bookList,
         count: result[1] + 1
       }, '')
     } catch (e) {

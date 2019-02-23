@@ -41,6 +41,25 @@
                 <input class="form-input" v-model.strim="editBookName">
               </div>
             </div>
+            <div class="form-group flex">
+              <div class="form-label-layout">
+                公开：
+              </div>
+              <div class="flex flex-1 align-items-center">
+                <div
+                  class="add-options-item radio-style"
+                  :class="{'act':isPrivate === 1}"
+                >
+                  <input type="radio" class="form-radio" :value=1 v-model="isPrivate">是
+                </div>
+                <div
+                  class="add-options-item radio-style"
+                  :class="{'act':isPrivate === 0}"
+                >
+                  <input type="radio" class="form-radio" :value=0  v-model="isPrivate">否
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="modal-operate">
@@ -60,7 +79,8 @@
       return {
         editBookName: '',
         showModal: false,
-        curId: ''
+        curId: '',
+        isPrivate: 0
       }
     },
     computed: {
@@ -82,7 +102,7 @@
       todoSetCurBook(item) {
         this[MUTATIONS.BOOK_CUR_UPDATE](item._id)
       },
-      async getData(force) {
+      async getData(force = true) {
         const result = await this[ACTIONS.BOOK_LIST_GET]({force})
       },
       async init() {
@@ -124,6 +144,7 @@
         this.curId = item._id
         this.editBookName = item.name
         this.showModal = true
+        this.isPrivate = item.isPrivate
       },
       async doSaveBook() {
         if(!this.editBookName){
@@ -135,12 +156,14 @@
         let result
         if(!this.curId) {
           result = await this[ACTIONS.BOOK_LIST_POST]({
-            name: this.editBookName
+            name: this.editBookName,
+            isPrivate: this.isPrivate
           })
         } else {
           result = await this[ACTIONS.BOOK_LIST_PUT]({
             _id: this.curId,
-            name: this.editBookName
+            name: this.editBookName,
+            isPrivate: this.isPrivate
           })
         }
         this.$showLoading()

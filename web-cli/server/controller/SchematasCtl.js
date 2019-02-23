@@ -466,7 +466,7 @@ class SchematasCtl extends BaseCtl {
       let bookList = result[0] || []
       bookList = [ ...this.buitInSchema, ...bookList]
       ctx.send(1, {
-        data: bookList,
+        list: bookList,
         count: result[1] + 1
       }, '')
     } catch (e) {

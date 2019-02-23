@@ -70,7 +70,7 @@ class BaseCtl {
     try{
       const result = await Promise.all([findFn, this.Model.listCount(dbQuery)])
       ctx.send(1, {
-        data: result[0],
+        list: result[0],
         count: result[1]
       }, '')
     } catch (e) {
@@ -96,21 +96,21 @@ class BaseCtl {
     }
   }
   async deleteById(ctx, next) {
-    const { id } = ctx.request.body
+    const { _id } = ctx.request.body
     const dbQuery = this.dbQuery(ctx)
-    if(!id) {
+    if(!_id) {
       ctx.send(2, '', 'id不能为空')
       return
     }
     try{
-      const result = await this.Model.del(id, dbQuery)
+      const result = await this.Model.del(_id, dbQuery)
       if(result.n){
         ctx.send(1, '', '删除成功')
       } else {
         ctx.send(2, '', `没有要删除的${this.alias}`)
       }
     } catch (e) {
-      ctx.send(2, '', hello.dealError(e, id))
+      ctx.send(2, '', hello.dealError(e, _id))
     } finally {
       await next()
     }
@@ -133,9 +133,9 @@ class BaseCtl {
     }
   }
   async modify(ctx, next) {
-    const { id } = ctx.request.body
-    if(!id){
-      ctx.send(2, '', 'id不能为空')
+    const { _id } = ctx.request.body
+    if(!_id){
+      ctx.send(2, '', '_id不能为空')
       return
     }
     try {
@@ -147,14 +147,14 @@ class BaseCtl {
       }
       const getParams = data
       const dbQuery = this.dbQuery(ctx)
-      const result = await this.Model.findOneAndUpdate(id, getParams, dbQuery)
+      const result = await this.Model.findOneAndUpdate(_id, getParams, dbQuery)
       if (!result) {
         ctx.send(2, '', `没有要修改的${this.alias}`)
       } else {
         ctx.send(1, result, '')
       }
     } catch (e) {
-      ctx.send(2, '', hello.dealError(e, id))
+      ctx.send(2, '', hello.dealError(e, _id))
     } finally {
       await next()
     }

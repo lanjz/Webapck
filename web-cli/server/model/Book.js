@@ -26,7 +26,6 @@ class BookModel extends baseModel{
       },
       isPrivate: {
         type: Number,
-        required: true,
         default: 1,
         validate: definedValidate(validator.numBoolean)
       },

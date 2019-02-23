@@ -5,7 +5,6 @@ import  mon from './db/test/mon.js'
 const app = new Koa()
 
 if(!process.env.JUSTNODE) {
-  console.log('JUSTNOD')
   const webpack = require('webpack')
   const devMiddleware = require('./middleware/webpackConfig');
   const hotMiddleware = require('./middleware/hotMiddleware')

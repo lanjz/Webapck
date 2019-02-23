@@ -156,7 +156,10 @@
           return
         }
         this.$showLoading()
-        const result = await this[ACTIONS.LOGIN_POST](data)
+        const result = await this[ACTIONS.LOGIN_POST]({
+          username: this.username,
+          password: this.password
+        })
         this.$hideLoading()
         if(!result.err){
           this.$router.push('/article')

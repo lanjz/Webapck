@@ -76,7 +76,7 @@ const actions = {
     })
     const { err, data } = result
     if(!err) {
-      commit(MUTATIONS.CATALOGS_SAVE, { curNode: params, data: data.list })
+      commit(MUTATIONS.CATALOGS_SAVE, { curNode: params, data: data })
     }
     return result
   },

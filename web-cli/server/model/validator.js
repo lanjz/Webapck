@@ -2,7 +2,7 @@ import valid from '../utils/validator'
 
 function numBoolean(val) {
   const result = valid.numBoolean(val)
-  return result ? val : false
+  return result ? true : false
 }
 function email(val) {
   const result = valid.email(val)

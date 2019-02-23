@@ -13,6 +13,7 @@
     "server": "cross-env DEV=1 MOCK=1 JUSTNODE=1  ts-node ./server/app.ts",
     "watch-server": "nodemon --watch server/* -e ts,tsx --exec ts-node ./server/app.ts",
     "startTs": "tsc && cross-env DEV=1 JUSTNODE=1  node --inspect dist/app.js",
+    "startFETs": "tsc && cross-env DEV=1 node --inspect dist/app.js",
     "inspect": "ts-node --inspect ./server/app.ts"
   },
   "dependencies": {

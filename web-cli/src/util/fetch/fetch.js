@@ -14,7 +14,7 @@ function dealRetCode(response = {}) {
     res.err = new Error('未登录')
     return res
   }
-  if(response.retMsg || response.retCode !== 1) {
+  if(response.retCode !== 1) {
     res.err = new Error(response.retMsg)
   }
   return res
