@@ -46,17 +46,8 @@
                 公开：
               </div>
               <div class="flex flex-1 align-items-center">
-                <div
-                  class="add-options-item radio-style"
-                  :class="{'act':isPrivate === 1}"
-                >
-                  <input type="radio" class="form-radio" :value=1 v-model="isPrivate">是
-                </div>
-                <div
-                  class="add-options-item radio-style"
-                  :class="{'act':isPrivate === 0}"
-                >
-                  <input type="radio" class="form-radio" :value=0  v-model="isPrivate">否
+                <div class="switch-layout" :class="{'act': isPrivate}">
+                  <input type="checkbox" class="form-radio" v-model="isPrivate"/>
                 </div>
               </div>
             </div>
@@ -107,7 +98,7 @@
       },
       async init() {
         this.$showLoading()
-        await this.getData(-1)
+        await this.getData(false)
         this.$hideLoading()
       },
       todoDeleteBook(item) {
