@@ -323,8 +323,11 @@ class ArticleCtl extends BaseCtl {
         },
         {
           $push: {
-            contents: getParams
-          }
+            contents: {
+              $each: [getParams],
+              $position: 0
+            }
+          },
         }
       )
       if (!result.ok) {

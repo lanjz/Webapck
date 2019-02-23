@@ -69,7 +69,6 @@ class BaseCtl {
     const findFn = this.Model.listWithPaging(start, limit, dbQuery)
     try{
       const result = await Promise.all([findFn, this.Model.listCount(dbQuery)])
-      console.log('result', result)
       ctx.send(1, {
         data: result[0],
         count: result[1]

@@ -134,7 +134,6 @@ async function checkAuth(ctx, next) {
     }
     try{
       const result = await userCtrl.userAuth(clientUser)
-      console.log('result1', result)
       if(!result) {
         ctx.send(4, result, `请重新登录`)
         return
