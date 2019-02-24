@@ -107,7 +107,7 @@
             </div>
           </div>
           <div class="form-group submit-layout">
-            <div class="btn" @click="todoSaveSchema">提交</div>
+            <div class="btn" :class="{'disable-btn': disableBtn}"  @click="todoSaveSchema">提交</div>
             <div class="btn second-btn" @click="todoCloseEdit(false)">返回</div>
           </div>
         </div>
@@ -154,7 +154,16 @@
           {alias: '日期', name: 'time', type: 'String'},
           {alias: '标签', name: 'label', type: 'Array'},
         ],
-        newOptionValue: ''
+        newOptionValue: '',
+        originData: JSON.stringify(initSchema)
+      }
+    },
+    computed: {
+      disableBtn: function () {
+        if(!this.field.name||JSON.stringify(this.field) === this.originData){
+          return true
+        }
+        return false
       }
     },
     methods: {
@@ -185,6 +194,7 @@
         this.newOptionValue = ''
       },
       todoSaveSchema() {
+        if(this.disableBtn) return
         if(!this.field.name) {
           window.alert('请输入别名')
           return
@@ -211,7 +221,13 @@
             break
         }
         if(validErr) {
-          window.alert(validErr.message)
+          this.$alert({
+            title: validErr.message
+          })
+          return
+        }
+        if(JSON.stringify(this.field) === this.originData) {
+          this.todoCloseEdit()
           return
         }
         this.doSaveSchema()
@@ -251,6 +267,7 @@
     mounted() {
       if(this.curField._id) {
         this.field = { ...this.field, ...this.curField }
+        this.originData = JSON.stringify(this.field)
       }
     }
 

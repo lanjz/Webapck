@@ -31,7 +31,7 @@
         <div class="catalogs-name line-ellipsis">{{item.name}}</div>
       </div>
     </div>
-    <div class="flex flex-1 direction-column">
+    <div class="flex flex-1 direction-column" v-if="actSchema">
       <div class="schema-title flex justify-content-space-between">
         <div class="flex-1 schema-title-layout relative">
           <input class="full-input" v-model="cacheName" @blur="todoSchemaRename"/>
@@ -41,7 +41,7 @@
           <span class="btn warn" @click="todoDelete">删除</span>
         </div>
       </div>
-      <div class="schema-content flex-1 flex">
+      <div class="schema-content flex-1 flex" v-if="actSchemaObj">
         <div class="panel-bg flex-1 flex" v-if="!curField">
           <table class="table-layout" v-if="actSchemaObj.fields">
             <thead>
@@ -89,6 +89,9 @@
         </div>
 
       </div>
+    </div>
+    <div class="flex flex-1 direction-column align-items-center justify-content-center no-data-cue-bg" v-else>
+      <div class="no-data-cue">暂无数据</div>
     </div>
   </div>
 </template>
@@ -163,6 +166,8 @@
         if(this.schemaListArr.length) {
           this.actSchema = this.schemaListArr[0]._id
           this.cacheName = this.schemaListArr[0].name
+        } else {
+          this.actSchema = ''
         }
       },
       async getData(force = true){
@@ -219,8 +224,7 @@
       },
       todoDelete() {
         this.$alert({
-          title: '弹窗测试',
-          content: `你确认要删除"${this.cacheName}"`,
+          title: `你确认要删除"${this.cacheName}"`,
         })
           .then(async res => {
             if(res) {
@@ -239,8 +243,7 @@
       },
       todoDeleteField(item) {
         this.$alert({
-          title: '弹窗测试',
-          content: '你确认要删除此字段',
+          title: '你确认要删除此字段',
           showCancel: false
         })
           .then(res => {

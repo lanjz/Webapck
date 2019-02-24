@@ -16,7 +16,7 @@
         </div>
         {{item.name}}
         <div class="book-item-layout-edit">
-          <div class="book-item-layout-in-edit" @click.stop="todoEditBool(item)">编辑</div>
+          <div class="book-item-layout-in-edit" @click.stop="todoEditBook(item)">编辑</div>
         </div>
       </div>
       <div class="book-item-layout" style="padding-top: 25px">
@@ -54,7 +54,7 @@
           </div>
         </div>
         <div class="modal-operate">
-          <div class="btn" @click="doSaveBook">确定</div>
+          <div class="btn" :class="{'disable-btn': disableBtn}" @click="doSaveBook">确定</div>
           <div class="btn second-btn" @click="doCloseModal">取消</div>
         </div>
       </div>
@@ -71,7 +71,8 @@
         editBookName: '',
         showModal: false,
         curId: '',
-        isPrivate: 0
+        isPrivate: 0,
+        originData: ''
       }
     },
     computed: {
@@ -79,6 +80,14 @@
         bookList: state => Object.values(state.books.list),
         curBook: state => state.books.curBook
       }),
+      disableBtn: function () {
+        if(this.curId && this.originData === `${this.editBookName}${this.isPrivate}`){
+          return true
+        } else if(!this.curId && !this.editBookName) {
+          return true
+        }
+        return false
+      }
     },
     methods: {
       ...mapMutations([
@@ -131,13 +140,15 @@
         this.curId = ''
         this.showModal = true
       },
-      todoEditBool(item) {
+      todoEditBook(item) {
         this.curId = item._id
         this.editBookName = item.name
         this.showModal = true
         this.isPrivate = item.isPrivate
+        this.originData = `${item.name}${item.isPrivate}`
       },
       async doSaveBook() {
+        if(this.disableBtn) return
         if(!this.editBookName){
           this.$alert({
             content: '名称不能为空'
