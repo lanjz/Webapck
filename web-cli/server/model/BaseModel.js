@@ -36,7 +36,6 @@ class baseModel {
   getSchema() {
     console.log('Model Class need getSchema function', 'error');
   }
-  
   /**
    * 获取collection的Model名称
    */
@@ -118,7 +117,6 @@ class baseModel {
       .select(this.assectPath)
       .exec()
   }
-  
   del(id, query) {
     return this.Model.deleteOne({ _id: Object(id), ...query })
   }
