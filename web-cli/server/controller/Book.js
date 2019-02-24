@@ -39,7 +39,6 @@ class BookCtl extends BaseCtl {
     try{
       const result = await Promise.all([findFn, this.Model.listCount(dbQuery)])
       let bookList = result[0] || []
-      console.log('bookList', bookList)
       bookList.unshift(this.defaultBook)
       ctx.send(1, {
         list: bookList,
