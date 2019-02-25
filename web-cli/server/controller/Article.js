@@ -189,8 +189,8 @@ class ArticleCtl extends BaseCtl {
     if (res.err) {
       return res
     }
-    if (!getParams.name) {
-      res.err = new Error('name不能为空')
+    if (!getParams.title) {
+      res.err = new Error('title不能为空')
       return res
     }
     if (!getParams.content) {
