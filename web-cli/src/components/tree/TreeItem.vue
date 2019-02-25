@@ -388,7 +388,7 @@
       transform: translateY(-50%);
     }
     .catalog-operate-item:hover .operate-item-child{
-      display: block;
+      display: none;
     }
     .operate-item-child{
       position: absolute;

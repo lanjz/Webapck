@@ -19,6 +19,7 @@ class ArticleCtl extends BaseCtl {
     this.findContent = this.findContent.bind(this)
     this.delContent = this.delContent.bind(this)
     this.contentCount = this.contentCount.bind(this)
+    this.findSchema = this.findSchema.bind(this)
     this.contentValidator = {
       input: this.stringConValid,
       date: this.dateConValid,
@@ -176,10 +177,7 @@ class ArticleCtl extends BaseCtl {
     const findCatalogParams = {bookId, _id: catalogId, ...this.dbQuery(ctx)}
     const findCatalog = catalogCtl.Model.findOne(findCatalogParams)
     // 查看schema
-    const findBuiltInSchema = schematasCtl.buitInSchema.find(item => item._id === schemaId)
-    const findSchema = findBuiltInSchema ?
-      Promise.resolve(findBuiltInSchema) :
-      schematasCtl.Model.findById(schemaId, this.dbQuery(ctx))
+    const findSchema = this.findSchema(ctx, schemaId)
     const response = await Promise.all([findBook, findCatalog, findSchema])
     if (!response[0]) {
       res.err = new Error('未找到对应的Book')
@@ -214,7 +212,13 @@ class ArticleCtl extends BaseCtl {
     res.data = getParams
     return res
   }
-
+  async findSchema(ctx, schemaId) {
+    const findBuiltInSchema = schematasCtl.buitInSchema.find(item => item._id === schemaId)
+    const findResult = findBuiltInSchema ?
+      Promise.resolve(findBuiltInSchema) :
+      schematasCtl.Model.findById(schemaId, this.dbQuery(ctx))
+    return findResult
+  }
   async findById(ctx, next) {
     const {id} = ctx.params
     if (!id) {
@@ -225,7 +229,7 @@ class ArticleCtl extends BaseCtl {
       const dbQuery = this.dbQuery(ctx)
       const result = await this.Model.findById(id, dbQuery, true)
       if (result.schemaId) {
-        const findSchema = await schematasCtl.Model.findById(result.schemaId, this.dbQuery(ctx))
+        const findSchema = await this.findSchema(ctx, result.schemaId)
         result.schema = findSchema
       }
       ctx.send(1, result, '')
