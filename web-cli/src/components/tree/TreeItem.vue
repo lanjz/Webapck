@@ -51,7 +51,7 @@
         </div>
         <div class="catalog-operate-item" @click.stop="doCreateTemDir">新建文件夹</div>
         <div class="catalog-operate-item" @click.stop="todoRename" v-if="curNode._id !== 'root'">重命名</div>
-        <div class="catalog-operate-item" @click.stop="" v-if="curNode._id !== 'root'">删除</div>
+        <div class="catalog-operate-item" @click.stop="todoDelete" v-if="curNode._id !== 'root'">删除</div>
       </div>
     </div>
     <TreeItem
@@ -126,6 +126,7 @@
         ACTIONS.CATALOGS_POST,
         ACTIONS.ARTICLE_LIST_GET,
         ACTIONS.ARTICLE_RECENTLY_LIST_GET,
+        ACTIONS.CATALOGS_DELETE
       ]),
       toggleOpenDir() {
         this.isOpen = !this.isOpen
@@ -180,6 +181,24 @@
         })
         this.closeMenu()
       },
+      todoDelete() {
+        this.$alert({
+          title: `你确认要删除"${this.curNode.name}"`
+        })
+          .then(async res => {
+            this.doDeleteCatalog()
+          })
+      },
+      async doDeleteCatalog() {
+        this.$showLoading()
+        const result = await this[ACTIONS.CATALOGS_DELETE]({
+          _id: this.curNode._id
+        })
+        if(!result.err) {
+          await this.getDate(this.curNode, true)
+        }
+        this.$hideLoading()
+      },
       /**
        * 重命名input失去焦点时
        * */
@@ -202,10 +221,11 @@
         this.addCatalog(name, item)
       },
       async modifyCatalogName(name, item) {
-        const { _id } = item
+        const { _id, parentId } = item
         const result = await this[ACTIONS.CATALOGS_PUT]({
           _id: _id,
           name,
+          parentId
         })
         if(!result.err) {
           this.getDate(item, true)

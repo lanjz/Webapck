@@ -157,16 +157,16 @@ class CatalogCtl extends BaseCtl {
     })
   }
   async deleteById(ctx, next) {
-    const { id } = ctx.request.body
+    const { _id } = ctx.request.body
     const dbQuery = this.dbQuery(ctx)
-    if(!id) {
-      ctx.send(2, '', 'id不能为空')
+    if(!_id) {
+      ctx.send(2, '', '_id不能为空')
       return
     }
     try{
       this.findAllCatalog = []
-      this.findAllCatalog.push()
-      await this.findAllCatalogs(ctx, next, id)
+      this.findAllCatalog.push(_id)
+      await this.findAllCatalogs(ctx, next, _id)
       const result = await this.Model.delMany(this.findAllCatalog, dbQuery)
       if(result.n){
         ctx.send(1, result, this.findAllCatalog.join()+'已经删除')
