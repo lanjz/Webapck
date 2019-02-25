@@ -15,7 +15,49 @@ class CatalogCtl extends BaseCtl {
     return new Catalog()
   }
   async todoPreModify(arg, ctx) {
-    return this.todoPreAdd(arg, ctx)
+    return new Promise(async (resolve) => {
+      try{
+        const getParams = JSON.parse(JSON.stringify(arg))
+        const { bookId, parentId, name } = getParams
+        const { userId } = arg
+        if(!name) {
+          return Promise.resolve({ err: new Error('name不能为空') })
+        }
+        let promiseArr = []
+        // 查询当前目录下是否已经存要添加的目录
+        const findCatalog = this.findOneByQuery({ name, userId, parentId })
+        promiseArr.push(findCatalog)
+        if(bookId) {
+          const findBook = bookId === bookCtl.defaultBook._id ?
+            Promise.resolve(true) :
+            bookCtl.findOneByQuery({ _id: bookId, userId }) // 查询是否存在本子
+          promiseArr.push(findBook)
+        }
+        if(parentId) {
+          const findParentCatalog = parentId === 'root' ? // 查询是否存在父级目录
+            Promise.resolve('root') :
+            this.findOneByQuery({ _id: parentId, userId })
+          promiseArr.push(findParentCatalog)
+        }
+        
+        const result = await Promise.all(promiseArr)
+        if(result[0]){
+          resolve({ err: new Error(`当前目录已经存在'${name}'`) })
+          return
+        }
+        if(bookId&&!result[1]){
+          resolve({ err: new Error(`不存在id为${bookId}的本子`) })
+          return
+        }
+        if(parentId&&!result[2]){
+          resolve({ err: new Error(`不存在parentId为${parentId}的目录`) })
+          return
+        }
+        resolve({ err: null, data: getParams })
+      } catch (e) {
+        resolve({ err: e, data: '' })
+      }
+    })
   }
   async todoPreAdd(arg, ctx) {
     const getParams = JSON.parse(JSON.stringify(arg))

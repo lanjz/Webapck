@@ -28,7 +28,7 @@ const getters = {
 const mutations = {
   [MUTATIONS.CATALOGS_SAVE](state, { curNode, data }) {
     const list = {
-      ...{ [curNode._id]: {
+      ...{ [curNode.parentId]: {
         ...curNode,
         childNodes: data
       } }
@@ -68,11 +68,10 @@ const mutations = {
 
 const actions = {
   async [ACTIONS.CATALOGS_GET]({ commit }, params) {
+    console.log('params', params)
     const result = await fetch({
       url: '/api/catalogs',
-      data: {
-        parentId: params._id
-      }
+      data: params
     })
     const { err, data } = result
     if(!err) {

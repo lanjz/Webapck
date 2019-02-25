@@ -204,17 +204,18 @@
       async modifyCatalogName(name, item) {
         const { _id } = item
         const result = await this[ACTIONS.CATALOGS_PUT]({
-          id: _id,
+          _id: _id,
           name,
         })
         if(!result.err) {
-          this.getDate(item)
+          this.getDate(item, true)
         }
       },
       async addCatalog(name, parentId) {
         const result = await this[ACTIONS.CATALOGS_POST]({
           parentId,
-          name
+          name,
+          bookId: this.curBook
         })
         this.$emit('emitExitNewDir')
       },
@@ -226,9 +227,12 @@
         this.closeMenu()
         this.newDir.parentId = this.curNode['_id']
       },
-      async getDate(treeNode){
+      async getDate(treeNode, isParentId){
         const params = treeNode || this.curNode
-        await this[ACTIONS.CATALOGS_GET](params)
+        await this[ACTIONS.CATALOGS_GET]({
+          parentId: isParentId ? params.parentId : params._id,
+          bookId: this.curBook
+        })
       },
       init() {
         // 如果就新建文件夹则直接执行todoRename函数
