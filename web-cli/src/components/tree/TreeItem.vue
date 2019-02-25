@@ -6,6 +6,7 @@
       @click.right.stop.prevent="(e) => showOperateMenu(e)"
       :class="{
         'act': actCatalog === curNode['_id'],
+        'catalogs-item-hover': !(isNewDir || renameCatalog)
       }"
     >
       <!--左边三角-->
@@ -46,7 +47,7 @@
         <div class="catalog-operate-item hadChild">
           新建文件
           <div class="operate-item-child">
-            <div class="catalog-operate-item" :class="{'builtIn': item.builtIn}" v-for="(item, index) in schemaList" @click.stop="todoCreateFile(item)">{{item.name}}</div>
+            <div class="catalog-operate-item" :class="{'builtIn': item.builtIn}" v-for="(item, index) in schemaList" @click.stop="todoCreateFile(item)">{{renameCatalog}}{{item.name}}</div>
           </div>
         </div>
         <div class="catalog-operate-item" @click.stop="doCreateTemDir">新建文件夹</div>
@@ -54,12 +55,6 @@
         <div class="catalog-operate-item" @click.stop="todoDelete" v-if="curNode._id !== 'root'">删除</div>
       </div>
     </div>
-    <TreeItem
-      v-if="newDir.parentId === curNode['_id']"
-      :curNode="newDir"
-      @emitExitNewDir="exitNewDir"
-      :isNewDir="newDir.parentId === curNode['_id']"
-    ></TreeItem>
     <div v-if="catalogs[curNode['_id']]&&catalogs[curNode['_id']].childNodes&&catalogs[curNode['_id']].childNodes.length">
       <TreeItem
         v-show="isOpen"
@@ -68,7 +63,12 @@
         :curNode="item"
       ></TreeItem>
     </div>
-
+    <TreeItem
+      v-if="newDir.parentId === curNode['_id']"
+      :curNode="newDir"
+      @emitExitNewDir="exitNewDir"
+      :isNewDir="newDir.parentId === curNode['_id']"
+    ></TreeItem>
   </div>
 </template>
 <script>
@@ -115,6 +115,14 @@
       }),
       ...mapGetters(['treeChainList'])
     },
+    watch: {
+      curNode: {
+        handler() {
+          this.getDate()
+        },
+        deep: true
+      }
+    },
     methods: {
       ...mapMutations([
         MUTATIONS.CATALOGS_CUR_SAVE,
@@ -132,6 +140,7 @@
         this.isOpen = !this.isOpen
       },
       async chooseCatalog() {
+        return
         this.isOpen = true
         if(this.curNode._id === constKey.recentlyArticlesKey){
           this.getRecentlyArticles()
@@ -182,6 +191,7 @@
         this.closeMenu()
       },
       todoDelete() {
+        this.closeMenu()
         this.$alert({
           title: `你确认要删除"${this.curNode.name}"`
         })
@@ -240,17 +250,19 @@
         this.$emit('emitExitNewDir')
       },
       exitNewDir() {
-        this.getDate(this.curNode)
+        this.getDate(this.curNode, true)
         this.newDir.parentId = ''
       },
       doCreateTemDir() {
+        this.isOpen = true
         this.closeMenu()
         this.newDir.parentId = this.curNode['_id']
+        this.newDir.parentParentId = this.curNode['parentId']
       },
       async getDate(treeNode, isParentId){
         const params = treeNode || this.curNode
         await this[ACTIONS.CATALOGS_GET]({
-          parentId: isParentId ? params.parentId : params._id,
+          parentId: isParentId ? params.parentId || 'root' : params._id,
           bookId: this.curBook
         })
       },
@@ -329,6 +341,7 @@
     left: 12px;
     top: 50%;
     transform: translateY(-6px);
+    transition: .2s;
   }
   // 有子目录且打开状态
   .catalogs-item-layout .has-child.in-chain{
@@ -337,15 +350,15 @@
 /*  .catalogs-item-layout.act.has-child:before{
     border-left: solid 6px @tree-light-color;
   }*/
-  .catalogs-item-layout:hover{
+  .catalogs-item-hover:hover{
     background: @tree-hover-bg-color;
     color: @tree-light-color;
   }
-  .catalogs-item-layout:hover .operate-triangle-btn{
+  .catalogs-item-hover:hover .operate-triangle-btn{
     display: block;
     color: @tree-light-color;
   }
-  .catalogs-item-layout:hover:after{
+  .catalogs-item-hover:hover:after{
     background: @tree-hover-bg-color;
   }
   .catalogs-item-layout.act{
@@ -412,7 +425,7 @@
       transform: translateY(-50%);
     }
     .catalog-operate-item:hover .operate-item-child{
-      display: none;
+      display: block;
     }
     .operate-item-child{
       position: absolute;
@@ -422,7 +435,7 @@
       border-radius: 0 5px 5px 0;
       background: rgba(0,0,0,0.8);
       border-left:solid 1px rgba(255,255,255,.2);
-      /*display: none*/
+      display: none
     }
     .catalog-operate-item.builtIn{
       border-bottom: solid 1px rgba(255,255,255,.6);

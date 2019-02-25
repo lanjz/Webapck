@@ -23,7 +23,7 @@ class CatalogCtl extends BaseCtl {
         if(!name) {
           return Promise.resolve({ err: new Error('name不能为空') })
         }
-        let promiseArr = []
+        const promiseArr = [Promise.resolve(true), Promise.resolve('root')]
         // 查询当前目录下是否已经存要添加的目录
         const findCatalog = this.findOneByQuery({ name, userId, parentId })
         promiseArr.push(findCatalog)
@@ -31,27 +31,26 @@ class CatalogCtl extends BaseCtl {
           const findBook = bookId === bookCtl.defaultBook._id ?
             Promise.resolve(true) :
             bookCtl.findOneByQuery({ _id: bookId, userId }) // 查询是否存在本子
-          promiseArr.push(findBook)
+          promiseArr[0] = findBook
         }
         if(parentId) {
           const findParentCatalog = parentId === 'root' ? // 查询是否存在父级目录
             Promise.resolve('root') :
             this.findOneByQuery({ _id: parentId, userId })
-          promiseArr.push(findParentCatalog)
+          promiseArr[1] = (findParentCatalog)
         }
-        
         const result = await Promise.all(promiseArr)
-        if(result[0]){
-          resolve({ err: new Error(`当前目录已经存在'${name}'`) })
-          return
-        }
-        if(bookId&&!result[1]){
+        if(bookId && !result[0]){
           resolve({ err: new Error(`不存在id为${bookId}的本子`) })
-          return
+          return false
         }
-        if(parentId&&!result[2]){
+        if(parentId && !result[1]){
           resolve({ err: new Error(`不存在parentId为${parentId}的目录`) })
-          return
+          return false
+        }
+        if(result[2]){
+          resolve({ err: new Error(`当前目录已经存在'${name}'`) })
+          return false
         }
         resolve({ err: null, data: getParams })
       } catch (e) {

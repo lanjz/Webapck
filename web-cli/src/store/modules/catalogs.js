@@ -30,6 +30,7 @@ const mutations = {
     const list = {
       ...{ [curNode.parentId]: {
         ...curNode,
+        updateTime: (new Date()).getTime(),
         childNodes: data
       } }
     }
