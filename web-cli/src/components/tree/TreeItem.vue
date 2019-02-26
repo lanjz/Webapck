@@ -13,10 +13,10 @@
       <div
         class="has-child"
         :class="{
-        'in-chain': isOpen||(isOpen&&curNode['hasChild']&&treeChainList.indexOf(curNode['_id']) > -1),
+        'in-chain': isOpen||(isOpen&&hasChild&&treeChainList.indexOf(curNode['_id']) > -1),
       }"
         @click.stop="toggleOpenDir"
-        v-if="curNode['hasChild']"></div>
+        v-if="catalogs[curNode['_id']]&&hasChild"></div>
       <i class="iconfont" :class="curNode.icon" :id="curNode._id" v-if="curNode.icon"></i>
       <i class="iconfont icon-wenjianjia" :class="curNode.icon" :id="curNode._id" v-else-if="treeChainList.indexOf(curNode['_id']) > -1"></i>
       <i class="iconfont icon-wendang1" :id="curNode._id" v-else></i>
@@ -113,7 +113,12 @@
         schemaList: state => Object.values(state.schema.list).filter(item => item.fields.length),
         curBook: state => state.books.curBook
       }),
-      ...mapGetters(['treeChainList'])
+      ...mapGetters(['treeChainList']),
+      hasChild() {
+        return this.catalogs[this.curNode['_id']]
+          && this.catalogs[this.curNode['_id']]['childNodes']
+          && this.catalogs[this.curNode['_id']]['childNodes'].length
+      }
     },
     watch: {
       curNode: {
@@ -342,6 +347,15 @@
     top: 50%;
     transform: translateY(-6px);
     transition: .2s;
+  }
+  .catalogs-item-layout .has-child:after{
+    content: '';
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
   // 有子目录且打开状态
   .catalogs-item-layout .has-child.in-chain{
