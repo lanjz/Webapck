@@ -175,7 +175,9 @@ class ArticleCtl extends BaseCtl {
       bookCtl.Model.findById(bookId, this.dbQuery(ctx))
     // 查找catalog
     const findCatalogParams = {bookId, _id: catalogId, ...this.dbQuery(ctx)}
-    const findCatalog = catalogCtl.Model.findOne(findCatalogParams)
+    const findCatalog = catalogId === 'root' ?
+      Promise.resolve('root') :
+      catalogCtl.Model.findOne(findCatalogParams)
     // 查看schema
     const findSchema = this.findSchema(ctx, schemaId)
     const response = await Promise.all([findBook, findCatalog, findSchema])
