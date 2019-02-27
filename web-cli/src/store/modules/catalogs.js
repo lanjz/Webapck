@@ -5,7 +5,11 @@ import constKey from '../../util/const'
 
 const state = {
   list: {
-    root: {}
+    root: {
+      _id: 'root',
+      parentId: '',
+      bookId: 'default'
+    }
   },
   curCatalog: constKey.recentlyArticlesKey
 }
@@ -29,9 +33,9 @@ const mutations = {
   [MUTATIONS.CATALOGS_SAVE](state, { curNode, data }) {
     const list = {
       ...{ [curNode.parentId]: {
-        ...curNode,
-        updateTime: (new Date()).getTime(),
-        childNodes: data
+          ...state.list[curNode.parentId],
+          updateTime: (new Date()).getTime(),
+          childNodes: data
       } }
     }
     data.forEach((item) => {

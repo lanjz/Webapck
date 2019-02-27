@@ -145,7 +145,6 @@
         this.isOpen = !this.isOpen
       },
       async chooseCatalog() {
-        return
         this.isOpen = true
         if(this.curNode._id === constKey.recentlyArticlesKey){
           this.getRecentlyArticles()
@@ -164,6 +163,7 @@
           catalogId: this.curNode._id
         })
         this.$hideLoading()
+        console.log('this.curNode', this.curNode)
         this[MUTATIONS.CATALOGS_CUR_SAVE](this.curNode._id)
       },
       async getRecentlyArticles() {
