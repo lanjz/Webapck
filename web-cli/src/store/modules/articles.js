@@ -38,7 +38,7 @@ const actions = {
       }
     })
     const { err, data } = result
-    if(!err) {
+    if(!err && data.list.length) {
       commit(MUTATIONS.ARTICLE_LIST_SAVE, { data: data.list, catalogId: key })
     }
     return result
@@ -80,7 +80,7 @@ const actions = {
     if(!result.err) {
       dispatch(ACTIONS.ARTICLE_LIST_GET, {
         bookId: rootState.books.curBook,
-        catalogId:data.catalogId,
+        catalogId: data.catalogId,
         force: true
       })
       dispatch(ACTIONS.ARTICLE_RECENTLY_LIST_GET)
@@ -94,7 +94,7 @@ const actions = {
       data
     })
     if(!result.err) {
-      const { bookId, catalogId } = state.list[data.id]
+      const { bookId, catalogId } = state.list[data._id]
       dispatch(ACTIONS.ARTICLE_LIST_GET, { bookId, catalogId, force: true })
       dispatch(ACTIONS.ARTICLE_RECENTLY_LIST_GET)
     }

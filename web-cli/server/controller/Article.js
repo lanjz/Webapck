@@ -154,33 +154,44 @@ class ArticleCtl extends BaseCtl {
   }
 
   async todoPreAdd(arg, ctx) {
-    const res = {err: null, data: ''}
+    const isPost = ctx.method.toUpperCase() === 'POST'
+    const res = { err: null, data: ''}
     const getParams = JSON.parse(JSON.stringify(arg))
-    const {bookId, catalogId, schemaId} = getParams
-    if (!bookId) {
+    const { bookId, catalogId, schemaId } = getParams
+    const tempPromise = [Promise.resolve(true), Promise.resolve(true), Promise.resolve(true)]
+    if (isPost && !bookId) {
       res.err = new Error('bookId不能为空')
       return res
     }
-    if (!catalogId) {
+    if(bookId) {
+      // 查看Book
+      const findBook = bookId === bookCtl.defaultBook._id ?
+        bookCtl.defaultBook :
+        bookCtl.Model.findById(bookId, this.dbQuery(ctx))
+      tempPromise[0] = findBook
+    }
+    if (isPost && !catalogId) {
       res.err = new Error('catalogId不能为空')
       return res
     }
-    if (!schemaId) {
+    if(catalogId) {
+      // 查找catalog
+      const findCatalogParams = { bookId, _id: catalogId, ...this.dbQuery(ctx) }
+      const findCatalog = catalogId === 'root' ?
+        Promise.resolve('root') :
+        catalogCtl.Model.findOne(findCatalogParams)
+      tempPromise[1] = findCatalog
+    }
+    if (isPost && !schemaId) {
       res.err = new Error('schemaId不能为空')
       return res
     }
-    // 查看Book
-    const findBook = bookId === bookCtl.defaultBook._id ?
-      bookCtl.defaultBook :
-      bookCtl.Model.findById(bookId, this.dbQuery(ctx))
-    // 查找catalog
-    const findCatalogParams = {bookId, _id: catalogId, ...this.dbQuery(ctx)}
-    const findCatalog = catalogId === 'root' ?
-      Promise.resolve('root') :
-      catalogCtl.Model.findOne(findCatalogParams)
-    // 查看schema
-    const findSchema = this.findSchema(ctx, schemaId)
-    const response = await Promise.all([findBook, findCatalog, findSchema])
+    if(schemaId) {
+      // 查看schema
+      const findSchema = this.findSchema(ctx, schemaId)
+      tempPromise[2] = findSchema
+    }
+    const response = await Promise.all(tempPromise)
     if (!response[0]) {
       res.err = new Error('未找到对应的Book')
     } else if (!response[1]) {
@@ -195,22 +206,26 @@ class ArticleCtl extends BaseCtl {
       res.err = new Error('title不能为空')
       return res
     }
-    if (!getParams.content) {
-      getParams.content = {}
+    if(isPost){
+      if (!getParams.content) {
+        getParams.content = {}
+      }
+      const isObj = validator.isObjectType(getParams.content)
+      if (isObj.err) {
+        res.err = isObj.err
+        return res
+      }
+      const con = JSON.parse(JSON.stringify(getParams.content))
+      const getSchemata = response[2].fields
+      const { err, data } = await this.filterCon(con, getSchemata)
+      if (err) {
+        res.err = err
+        return res
+      }
+      getParams.content = data
+    } else {
+      delete getParams.contents
     }
-    const isObj = validator.isObjectType(getParams.content)
-    if (isObj.err) {
-      res.err = isObj.err
-      return res
-    }
-    const con = JSON.parse(JSON.stringify(getParams.content))
-    const getSchemata = response[2].fields
-    const {err, data} = await this.filterCon(con, getSchemata)
-    if (err) {
-      res.err = err
-      return res
-    }
-    getParams.content = data
     res.data = getParams
     return res
   }
@@ -442,7 +457,30 @@ class ArticleCtl extends BaseCtl {
       await next()
     }
   }
-
+  async find(ctx, next) {
+    const { start = 0, limit = 0, catalogId } = ctx.request.query
+    if(!catalogId) {
+      ctx.send(2, '', '缺少catalogId')
+      return
+    }
+    const dbQuery = {
+      ...this.dbQuery(ctx),
+      catalogId
+    }
+    // 如果没有提供start和limit则查找全部
+    const findFn = this.Model.listWithPaging(start, limit, dbQuery)
+    try{
+      const result = await Promise.all([findFn, this.Model.listCount(dbQuery)])
+      ctx.send(1, {
+        list: result[0],
+        count: result[1]
+      }, '')
+    } catch (e) {
+      ctx.send(2, '', hello.dealError(e))
+    }finally {
+      await next()
+    }
+  }
   async findContent(ctx, next) {
     try {
       const { _id, start = 0, limit = 20 } = ctx.request.query

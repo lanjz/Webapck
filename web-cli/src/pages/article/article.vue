@@ -19,7 +19,7 @@
               {{field.name}}-{{field.type}}：
             </div>
             <div class="flex flex-1 align-items-center form-content-layout markdown-layout" v-if="field.type==='markdown'">
-              <markdown-edit v-model="test"></markdown-edit>
+              <markdown-edit v-model="contents[field._id]"></markdown-edit>
             </div>
             <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='input'">
               <input class="form-input" v-model="contents[field._id]" :placeholder="'填写'+field.name"/>
@@ -188,7 +188,7 @@
           })
         } else {
           result = await this[ACTIONS.ARTICLE_PUT]({
-            id: this.editId,
+            _id: this.editId,
             content: this.contents,
             title: this.articleName
           })
