@@ -189,7 +189,7 @@
         this.renameCatalog = true
       },
       todoCreateFile(item) {
-        bus.$emit('emitToAdd', {
+        bus.$emit('emitArticle', {
           schemaId: item._id,
           catalogId: this.curNode._id
         })

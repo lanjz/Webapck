@@ -61,7 +61,7 @@
         MUTATIONS.ARTICLE_CUS_SAVE
       ]),
       chooseArticles: function (item) {
-        bus.$emit('emitToAdd', {schemaId: item.schemaId, articleId: item._id})
+        bus.$emit('emitArticle', {schemaId: item.schemaId, articleId: item._id, catalogId: item.catalogId})
         this.$router.push(`/article/${item._id}`)
       }
     }

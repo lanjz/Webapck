@@ -124,7 +124,10 @@
           if(!this.articles[editId]) {
             await this.getData(editId)
           }
-          tempObj = this.articles[editId].content
+          if(this.articles[editId].contents && this.articles[editId].contents.length){
+            tempObj = this.articles[editId].contents[0]
+          }
+
           this.articleName = this.articles[editId].title
         }
         this.contents = tempObj

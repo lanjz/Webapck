@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-1">
     <div class="catalog-layout box-shadow">
-      <TreeItem @emitToAdd="todoAddCreateArticle"></TreeItem>
+      <TreeItem @emitArticle="todoAddCreateArticle"></TreeItem>
     </div>
     <ArticleBrief></ArticleBrief>
     <articles :editMeta="editMeta"></articles>
@@ -71,7 +71,7 @@
         /**
          * @params <Object> arg 包含schemaId字段id和当前articleId(如果是添加则为'new')
          * */
-        bus.$on('emitToAdd', (arg) => {
+        bus.$on('emitArticle', (arg) => {
           this.todoAddCreateArticle(arg)
         })
       },

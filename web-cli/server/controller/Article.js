@@ -54,7 +54,7 @@ class ArticleCtl extends BaseCtl {
       return res
     }
     if (!schema.options && !schema.options.length) {
-      res.err = `未找到${schema.name}的options选项`
+      res.err = new Error(`未找到${schema.name}的options选项`)
       return res
     }
     if (con) {
@@ -75,11 +75,11 @@ class ArticleCtl extends BaseCtl {
       return res
     }
     if (!schema.options && !schema.options.length) {
-      res.err = `未找到${schema.name}的options选项`
+      res.err = new Error(`未找到${schema.name}的options选项`)
       return res
     }
     const isArrayValid = validator.isArrayType(con)
-    if (!isArrayValid.err) {
+    if (isArrayValid.err) {
       res.err = `${schema.name}${isArrayValid.err}`
       return res
     }
