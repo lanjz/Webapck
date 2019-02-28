@@ -4,7 +4,8 @@
       <TreeItem @emitArticle="todoAddCreateArticle"></TreeItem>
     </div>
     <ArticleBrief></ArticleBrief>
-    <articles :editMeta="editMeta"></articles>
+    <div class="flex-1" v-show="noData"></div>
+    <articles :editMeta="editMeta" v-show="!noData"></articles>
   </div>
 </template>
 <script>
@@ -26,6 +27,7 @@
         editMeta: {
           editId: 'new'
         },
+        noData: true
       }
     },
     computed: {
@@ -41,6 +43,11 @@
         ACTIONS.ARTICLE_RECENTLY_LIST_GET
       ]),
       todoAddCreateArticle(item) {
+        if(!item) {
+          this.noData = true
+          return
+        }
+        this.noData = false
         const {
           catalogId,
           schemaId,

@@ -43,6 +43,7 @@
       ...mapGetters(['treeChainList']),
       articles: function () {
         if (!Object.keys(this.articleList).length) {
+          bus.$emit('emitArticle', null)
           return []
         }
         const key = this.treeChainList[this.treeChainList.length - 1] === constKey.recentlyArticlesKey ?
@@ -50,6 +51,7 @@
           `${this.curBook}_${this.treeChainList[this.treeChainList.length - 1]}`
         const getList = this.articleList[key]
         if (!getList) {
+          bus.$emit('emitArticle', null)
           return []
         }
         this.chooseArticles(getList[0])
