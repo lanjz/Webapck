@@ -188,7 +188,8 @@
         this.closeMenu()
         this.renameCatalog = true
       },
-      todoCreateFile(item) {
+      async todoCreateFile(item) {
+        await this.chooseCatalog()
         bus.$emit('emitArticle', {
           schemaId: item._id,
           catalogId: this.curNode._id

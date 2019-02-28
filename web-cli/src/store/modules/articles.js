@@ -104,7 +104,9 @@ const actions = {
     const result = await fetch({
       url: '/api/article',
       method: 'delete',
-      data: id
+      data: {
+        _id: id
+      }
     })
     if(!result.err) {
       const { bookId, catalogId } = state.list[id]

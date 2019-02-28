@@ -13,8 +13,10 @@
     </div>
     <div class="article-content relative flex-1">
       <div class="scroll-box">
-        <div class="form-layout theme-1" v-if="editMeta.fields&&editMeta.fields.length">
-          <div class="form-group flex direction-column" v-for="(field, index) in editMeta.fields" :index="index">
+        <div>{{fields}}</div>
+        <div>{{contents}}</div>
+        <div class="form-layout theme-1" v-if="fields&&fields.length">
+          <div class="form-group flex direction-column" v-for="(field, index) in fields" :index="index">
             <div class="form-label-layout">
               {{field.name}}-{{field.type}}：
             </div>
@@ -88,7 +90,8 @@
         editId: 'new',
         schemaId: '',
         catalogId: '',
-        test: '123'
+        test: '123',
+        fields: []
       }
     },
     components: {
@@ -127,10 +130,13 @@
           if(this.articles[editId].contents && this.articles[editId].contents.length){
             tempObj = this.articles[editId].contents[0]
           }
-
-          this.articleName = this.articles[editId].title
         }
-        this.contents = tempObj
+        this.fields = []
+        setTimeout(() =>{
+          this.articleName = this.articles[editId].title
+          this.fields = [ ...fields ]
+          this.contents = tempObj
+        })
       },
       editId: function (val) {
         this[MUTATIONS.ARTICLE_CUS_SAVE](val)
