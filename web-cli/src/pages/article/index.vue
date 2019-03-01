@@ -90,7 +90,7 @@
         if(this.curArticleList && this.curArticleList.length) {
           this.chooseCurArticle({
             ...this.curArticleList[0],
-            articleId
+            articleId: articleId || this.curArticleList[0]._id
           })
         }
       },
