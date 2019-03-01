@@ -2,7 +2,7 @@
   <div class="catalogs-layout">
     <div
       class="flex align-items-center catalogs-item-layout"
-      @click.left="chooseCatalog"
+      @click.left="chooseCatalog(null)"
       @click.right.stop.prevent="(e) => showOperateMenu(e)"
       :class="{
         'act': actCatalog === curNode['_id'],
@@ -137,34 +137,19 @@
         ACTIONS.CATALOGS_GET,
         ACTIONS.CATALOGS_PUT,
         ACTIONS.CATALOGS_POST,
-        ACTIONS.ARTICLE_LIST_GET,
         ACTIONS.ARTICLE_RECENTLY_LIST_GET,
         ACTIONS.CATALOGS_DELETE
       ]),
       toggleOpenDir() {
         this.isOpen = !this.isOpen
       },
-      async chooseCatalog() {
+      async chooseCatalog(item) {
         this.isOpen = true
-        if(this.curNode._id === constKey.recentlyArticlesKey){
-          this.getRecentlyArticles()
-          return
-        }
-        if(!this.curBook){
-          this.$alert({
-            content: '缺少bookId',
-            showCancel: false
-          })
-          return
-        }
-        this.$showLoading()
-        await this[ACTIONS.ARTICLE_LIST_GET]({
-          bookId: this.curBook,
+        this[MUTATIONS.CATALOGS_CUR_SAVE](this.curNode._id)
+        bus.$emit('emitFromCatalog', item || {
+          ...this.curNode,
           catalogId: this.curNode._id
         })
-        this.$hideLoading()
-        console.log('this.curNode', this.curNode)
-        this[MUTATIONS.CATALOGS_CUR_SAVE](this.curNode._id)
       },
       async getRecentlyArticles() {
         this.$showLoading()
@@ -188,11 +173,11 @@
         this.closeMenu()
         this.renameCatalog = true
       },
-      async todoCreateFile(item) {
-        await this.chooseCatalog()
-        bus.$emit('emitArticle', {
+      todoCreateFile(item) {
+        this.chooseCatalog({
           schemaId: item._id,
-          catalogId: this.curNode._id
+          catalogId: this.curNode._id,
+          isNew: true
         })
         this.closeMenu()
       },

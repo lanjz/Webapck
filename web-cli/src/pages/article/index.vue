@@ -1,11 +1,19 @@
 <template>
   <div class="flex flex-1">
     <div class="catalog-layout box-shadow">
-      <TreeItem @emitArticle="todoAddCreateArticle"></TreeItem>
+      <TreeItem></TreeItem>
     </div>
-    <ArticleBrief></ArticleBrief>
-    <div class="flex-1" v-show="noData"></div>
-    <articles :editMeta="editMeta" v-show="!noData"></articles>
+    <ArticleBrief
+      @emitToChooseCurArticle="chooseCurArticle"
+      :list="curArticleList"
+      :cusArticle="cusArticle"
+    ></ArticleBrief>
+    <div class="flex-1" v-show="!editMeta.editId"></div>
+    <articles
+      :editMeta="editMeta"
+      v-show="editMeta.editId"
+      @emitUpdateArticle="doEditArticle"
+    ></articles>
   </div>
 </template>
 <script>
@@ -16,6 +24,8 @@
   import TreeItem from '../../components/tree/index.vue'
   import ArticleBrief from './ArticleBrief.vue'
   import articles from './article.vue'
+  import constKey from '../../util/const'
+
   export default {
     components: {
       TreeItem,
@@ -25,34 +35,70 @@
     data: function () {
       return {
         editMeta: {
-          editId: 'new'
+          editId: ''
         },
-        noData: true
+        curArticleList: [],
+        cusArticle: ''
       }
     },
     computed: {
       ...mapState({
-        schemaList: state => state.schema.list
+        schemaList: state => state.schema.list,
+        articleList: state => state.articles.catalogMapArticles,
+        curBook: state => state.books.curBook,
       }),
       ...mapGetters(['treeChainList']),
     },
     methods: {
+      ...mapMutations([
+        MUTATIONS.CATALOGS_CUR_SAVE,
+      ]),
       ...mapActions([
         ACTIONS.BOOK_LIST_GET,
         ACTIONS.SCHEMA_LIST_GET,
-        ACTIONS.ARTICLE_RECENTLY_LIST_GET
+        ACTIONS.ARTICLE_RECENTLY_LIST_GET,
+        ACTIONS.ARTICLE_LIST_GET,
       ]),
-      todoAddCreateArticle(item) {
-        if(!item) {
-          this.noData = true
-          return
+      getBookData() {
+        this[ACTIONS.BOOK_LIST_GET]()
+        this[ACTIONS.SCHEMA_LIST_GET]()
+        this[ACTIONS.ARTICLE_RECENTLY_LIST_GET]()
+      },
+      /**
+       *  获取文章详情 设置编辑内容 editId设为articleId
+       *  @param <String> catalogId
+       *  @param <String> schemaId
+       *  @param <String> articleId
+       *  */
+      async chooseCurArticle(arg) {
+        const { articleId } = arg
+        this.cusArticle = articleId
+        this.$router.push(`/article/${articleId}`)
+        this.setEditMeta(arg, articleId)
+      },
+      /**
+       * 创建新文章时， editId设为new
+       * */
+      async doCreateArticle(arg) {
+        const { catalogId } = arg
+        await this.getArticleByCatalogId(catalogId)
+        this.setEditMeta(arg, 'new')
+      },
+      async doEditArticle(arg) {
+        const { catalogId, articleId } = arg
+        await this.getArticleByCatalogId(catalogId)
+        if(this.curArticleList && this.curArticleList.length) {
+          this.chooseCurArticle({
+            ...this.curArticleList[0],
+            articleId
+          })
         }
-        this.noData = false
+      },
+      setEditMeta(arg, editId) {
         const {
           catalogId,
-          schemaId,
-          articleId = 'new'
-        } = item
+          schemaId
+        } = arg
         if(!schemaId) {
           this.$alert({
             title: '缺少schemaId',
@@ -60,26 +106,70 @@
           })
         }
         const { MOCK } = process.env
-        const getSchema = (articleId !== 'new' && MOCK) ? Object.values(this.schemaList)[0] : this.schemaList[schemaId]
+        const getSchema = (editId !== 'new' && MOCK) ? Object.values(this.schemaList)[0] : this.schemaList[schemaId]
         this.editMeta = {
           ...getSchema,
           catalogId,
-          editId: articleId
+          editId: editId
         }
-
+        this.cusArticle = editId
       },
-      getBookData() {
-        this[ACTIONS.BOOK_LIST_GET]()
-        this[ACTIONS.SCHEMA_LIST_GET]()
-        this[ACTIONS.ARTICLE_RECENTLY_LIST_GET]()
+      /* 根据catalogId获取文章列表 */
+      async getArticleByCatalogId(catalogId) {
+        if(this.catalogId === constKey.recentlyArticlesKey){
+          // this.getRecentlyArticles()
+          return
+        }
+        if(!this.curBook){
+          this.$alert({
+            content: '缺少bookId',
+            showCancel: false
+          })
+          return
+        }
+        this.$showLoading()
+        const result = await this[ACTIONS.ARTICLE_LIST_GET]({
+          bookId: this.curBook,
+          catalogId: catalogId
+        })
+        this.setArticleBrief()
+        this.$hideLoading()
+        return result
+      },
+      setArticleBrief() {
+        if (!Object.keys(this.articleList).length) {
+          this.curArticleList = []
+          this.editMeta.editId = ''
+          return
+        }
+        const curCatalog = this.treeChainList[this.treeChainList.length - 1]
+        const key = curCatalog === constKey.recentlyArticlesKey ?
+          constKey.recentlyArticlesKey :
+          `${this.curBook}_${curCatalog}`
+        const getList = this.articleList[key]
+        if (!getList) {
+          this.curArticleList = []
+          this.editMeta.editId = ''
+          return
+        }
+        this.curArticleList = getList
       },
       async init() {
         this.getBookData()
         /**
          * @params <Object> arg 包含schemaId字段id和当前articleId(如果是添加则为'new')
          * */
-        bus.$on('emitArticle', (arg) => {
-          this.todoAddCreateArticle(arg)
+        bus.$on('emitToCreateArticle', (arg) => {
+          this.doCreateArticle(arg)
+        })
+        bus.$on('emitFromCatalog', (arg) => {
+          const { isNew } = arg
+          if(isNew) {
+            this.doCreateArticle(arg)
+          } else {
+            this.doEditArticle(arg)
+          }
+
         })
       },
     },

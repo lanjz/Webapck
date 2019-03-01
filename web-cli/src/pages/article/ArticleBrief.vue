@@ -6,12 +6,13 @@
     </div>
     <div
       class="article-item"
-      v-for="(item, index) in articles"
+      v-for="(item, index) in list"
       :class="{'act': item._id === cusArticle}"
       @click="chooseArticles(item)">
       <div class="article-item-title">{{item.title}}</div>
       <div class="article-item-mark">{{item.createTime | timestampToTime}}~{{item.updateTime | timestampToTime}}</div>
     </div>
+    <!-- TODO -->
     <div
       class="article-layout-fixed controller-layout-fixed"
       @click.stop="hiddenArticleLayout = !hiddenArticleLayout"
@@ -27,6 +28,15 @@
   import constKey from '../../util/const'
 
   export default {
+    props: {
+      list: {
+        type: Array,
+        default() {
+          return []
+        }
+      },
+      cusArticle: ''
+    },
     data() {
       return {
         filterKeys: '',
@@ -34,37 +44,18 @@
       }
     },
     computed: {
+      /* TODO unless*/
       ...mapState({
-        curBook: state => state.books.curBook,
-        articleList: state => state.articles.catalogMapArticles,
-        treeChainList: state => state.catalogs.curCatalog,
-        cusArticle: state => state.articles.cusArticle
+        // cusArticle: state => state.articles.cusArticle
       }),
-      ...mapGetters(['treeChainList']),
-      articles: function () {
-        if (!Object.keys(this.articleList).length) {
-          bus.$emit('emitArticle', null)
-          return []
-        }
-        const key = this.treeChainList[this.treeChainList.length - 1] === constKey.recentlyArticlesKey ?
-          constKey.recentlyArticlesKey :
-          `${this.curBook}_${this.treeChainList[this.treeChainList.length - 1]}`
-        const getList = this.articleList[key]
-        if (!getList) {
-          bus.$emit('emitArticle', null)
-          return []
-        }
-        this.chooseArticles(getList[0])
-        return getList
-      }
     },
     methods: {
       ...mapMutations([
+        /* TODO unless*/
         MUTATIONS.ARTICLE_CUS_SAVE
       ]),
       chooseArticles: function (item) {
-        bus.$emit('emitArticle', {schemaId: item.schemaId, articleId: item._id, catalogId: item.catalogId})
-        this.$router.push(`/article/${item._id}`)
+        this.$emit('emitToChooseCurArticle', {schemaId: item.schemaId, articleId: item._id, catalogId: item.catalogId})
       }
     }
   }

@@ -133,7 +133,7 @@
         }
         this.fields = []
         setTimeout(() =>{
-          this.articleName = this.articles[editId].title
+          this.articleName = editId === 'new' ? '未命名' : this.articles[editId].title
           this.fields = [ ...fields ]
           this.contents = tempObj
         })
@@ -205,6 +205,11 @@
         if(!result.err) {
           const id = this.editId === 'new' ? result.data.id : this.editId
           await this.getData(id, true)
+          this.$emit('emitUpdateArticle', {
+            schemaId: this.schemaId,
+            catalogId: this.catalogId,
+            articleId: id
+          })
         }
         this.$hideLoading()
       },

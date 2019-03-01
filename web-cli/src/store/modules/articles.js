@@ -44,6 +44,7 @@ const actions = {
     return result
   },
   async [ACTIONS.ARTICLE_RECENTLY_LIST_GET]({ state, commit }){
+    return {}
     const result = await fetch({
       url: '/api/recently_articles',
     })
