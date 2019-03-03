@@ -116,6 +116,20 @@ const actions = {
     }
     return result
   },
+  async [ACTIONS.ARTICLE_CONTENT_PUT]({ dispatch }, params) {
+    console.log('123')
+    const result = await fetch({
+      url: '/api/article_content',
+      method: 'put',
+      data: params
+    })
+/*    if(!result.err) {
+      const { bookId, catalogId } = state.list[params._id]
+      dispatch(ACTIONS.ARTICLE_LIST_GET, { bookId, catalogId, force: true })
+      dispatch(ACTIONS.ARTICLE_RECENTLY_LIST_GET)
+    }*/
+    return result
+  },
 }
 export default {
   state,

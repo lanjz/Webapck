@@ -364,8 +364,8 @@ class ArticleCtl extends BaseCtl {
 
   async modifyContent(ctx, next) {
     try {
-      const merge = {...ctx.request.body, ...this.dbQuery(ctx)}
-      const {err, data: getParams} = await this.addContentBefore(ctx)
+      const merge = { ...ctx.request.body, ...this.dbQuery(ctx) }
+      const { err, data: getParams } = await this.addContentBefore(ctx)
       if (err) {
         ctx.send(2, '', hello.dealError(err))
         return

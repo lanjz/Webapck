@@ -2,7 +2,7 @@
   <div class="article-layout flex direction-column flex-1"  :class="editMeta._id">
     <div class="article-title flex ">
       <div class="flex-1 schema-title-layout relative">
-        <input class="full-input" v-model.trim="articleName"/>
+        <input class="full-input" v-model.trim="articleName" @blur="todoSave" />
       </div>
       <div class="schema-operate">
         <span class="btn"
@@ -13,7 +13,7 @@
     </div>
     <div class="article-content relative flex-1">
       <div class="scroll-box">
-        <div>{{fields}}</div>
+        <div @click="toDoSaveArticleContent">{{fields}}</div>
         <div>{{contents}}</div>
         <div class="form-layout theme-1" v-if="fields&&fields.length">
           <div class="form-group flex direction-column" v-for="(field, index) in fields" :index="index">
@@ -106,36 +106,15 @@
     },
     watch: {
       editMeta: async function (val) {
-        const { MOCK } = process.env
-        const { editId, fields, _id, catalogId } = val
+        const { editId, fields, _id, catalogId, content, title } = val
         this.editId = editId
         this.schemaId = _id
         this.catalogId = catalogId
-        let tempObj = {}
-        if(editId === 'new') {
-          if(fields && fields.length) {
-            fields.forEach((item) => {
-              if(MOCK && item.type === 'select') {
-                tempObj[item._id] = []
-              } else {
-                tempObj [item._id] = item.default ? item.default : ''
-              }
-            })
-          }
-        } else {
-
-          if(!this.articles[editId]) {
-            await this.getData(editId)
-          }
-          if(this.articles[editId].contents && this.articles[editId].contents.length){
-            tempObj = this.articles[editId].contents[0]
-          }
-        }
         this.fields = []
         setTimeout(() =>{
-          this.articleName = editId === 'new' ? '未命名' : this.articles[editId].title
+          this.articleName = editId === 'new' ? '未命名' : title
           this.fields = [ ...fields ]
-          this.contents = tempObj
+          this.contents = content
         })
       },
       editId: function (val) {
@@ -152,6 +131,7 @@
         ACTIONS.ARTICLE_POST,
         ACTIONS.ARTICLE_PUT,
         ACTIONS.ARTICLE_DELETE,
+        ACTIONS.ARTICLE_CONTENT_PUT
       ]),
       changeSelect(id, tar) {
         if(Object.prototype.toString.call(this.contents[id]) !== '[object Array]') {
@@ -228,6 +208,24 @@
           }
         }
         this.$hideLoading()
+      },
+      async toDoSaveArticleContent() {
+        this.$showLoading()
+        await this[ACTIONS.ARTICLE_CONTENT_PUT](
+          {
+            _id: this.editId,
+            content: this.contents,
+          }
+        )
+        this.$emit('emitUpdateArticle', {
+          schemaId: this.schemaId,
+          catalogId: this.catalogId,
+          articleId: this.editId,
+          contentId: this.contents._id
+
+        })
+        this.$hideLoading()
+//        alert()
       },
       async init() {
         const { id } = this.$route.params

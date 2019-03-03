@@ -121,18 +121,18 @@ function passValidAuth(ctx = {}) {
 }
 
 async function checkAuth(ctx, next) {
-  if(!passValidAuth(ctx)) {
-    const getHelloToken = ctx.cookies.get('helloToken')
-    if(!getHelloToken) {
-      ctx.send(4, '', '请登录')
-      return
-    }
-    const { clientUser } = decodeLoginTypeJwt(getHelloToken)
-    if(!clientUser) {
-      ctx.send(4, '', 'token无效请重新登录')
-      return
-    }
-    try{
+  try{
+    if(!passValidAuth(ctx)) {
+      const getHelloToken = ctx.cookies.get('helloToken')
+      if(!getHelloToken) {
+        ctx.send(4, '', '请登录')
+        return
+      }
+      const { clientUser } = decodeLoginTypeJwt(getHelloToken)
+      if(!clientUser) {
+        ctx.send(4, '', 'token无效请重新登录')
+        return
+      }
       const result = await userCtrl.userAuth(clientUser)
       if(!result) {
         ctx.send(4, result, `请重新登录`)
@@ -140,11 +140,11 @@ async function checkAuth(ctx, next) {
       }
       ctx.state.curUser = result
       await next()
-    } catch(e) {
-      ctx.send(2, '', dealError(e))
+    } else {
+      await next()
     }
-  } else {
-    await next()
+  } catch(e) {
+    ctx.send(2, '', dealError(e))
   }
 }
 

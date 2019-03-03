@@ -46,6 +46,7 @@
         schemaList: state => state.schema.list,
         articleList: state => state.articles.catalogMapArticles,
         curBook: state => state.books.curBook,
+        articles: state => state.articles.list
       }),
       ...mapGetters(['treeChainList']),
     },
@@ -58,6 +59,7 @@
         ACTIONS.SCHEMA_LIST_GET,
         ACTIONS.ARTICLE_RECENTLY_LIST_GET,
         ACTIONS.ARTICLE_LIST_GET,
+        ACTIONS.ARTICLE_DES_GET,
       ]),
       getBookData() {
         this[ACTIONS.BOOK_LIST_GET]()
@@ -71,34 +73,45 @@
        *  @param <String> articleId
        *  */
       async chooseCurArticle(arg) {
-        const { articleId } = arg
+        const { catalogId, schemaId, articleId, contentId = '' } = arg
         this.cusArticle = articleId
         this.$router.push(`/article/${articleId}`)
-        this.setEditMeta(arg, articleId)
+        this.setEditMeta(catalogId, schemaId, articleId, contentId)
       },
       /**
        * 创建新文章时， editId设为new
        * */
       async doCreateArticle(arg) {
-        const { catalogId } = arg
+        const { catalogId, schemaId } = arg
         await this.getArticleByCatalogId(catalogId)
-        this.setEditMeta(arg, 'new')
+        this.setEditMeta(catalogId, schemaId, 'new')
       },
+      /**
+       * @param <String> catalogId
+       * @param <String> articleId
+       * @param <String> contentId 如果有则指定用哪个article的content内容作为编辑内容
+       * */
       async doEditArticle(arg) {
-        const { catalogId, articleId } = arg
+        const { catalogId, articleId, contentId = '' } = arg
         await this.getArticleByCatalogId(catalogId)
         if(this.curArticleList && this.curArticleList.length) {
+          const { catalogId, schemaId } = this.curArticleList[0]
           this.chooseCurArticle({
-            ...this.curArticleList[0],
-            articleId: articleId || this.curArticleList[0]._id
+            catalogId,
+            schemaId,
+            articleId: articleId || this.curArticleList[0]._id,
+            contentId
           })
         }
       },
-      setEditMeta(arg, editId) {
-        const {
-          catalogId,
-          schemaId
-        } = arg
+      /**
+       * 设置editEeta的值
+       * @param <String> catalogId
+       * @param <String> catalogId
+       * @param <String> editId
+       * @param <String> contentId
+       * */
+      async setEditMeta(catalogId, schemaId, editId, contentId) {
         if(!schemaId) {
           this.$alert({
             title: '缺少schemaId',
@@ -107,12 +120,100 @@
         }
         const { MOCK } = process.env
         const getSchema = (editId !== 'new' && MOCK) ? Object.values(this.schemaList)[0] : this.schemaList[schemaId]
-        this.editMeta = {
+        const { fields } = getSchema
+        const { tempObj, editTitle} = await this.initContent(editId, fields, contentId)
+        const temEditMeta = {
           ...getSchema,
           catalogId,
-          editId: editId
+          editId: editId,
+          content: JSON.parse(JSON.stringify(tempObj)),
+          title: editTitle
         }
+        const validEditMetaResult = this.validEditMata(temEditMeta)
+        if(validEditMetaResult) {
+          this.$alert({
+            title: 'editMeta的内容有错',
+            content: validEditMetaResult
+          })
+          return
+        }
+        this.editMeta = temEditMeta
+
         this.cusArticle = editId
+      },
+      /**
+       * 初始化编辑时的content内容
+       * @param <String> editId
+       * @param <Object> fields
+       * @param <String> contentId
+       * @return <Object> tempObj <String> editTitle
+       * */
+      async initContent(editId, fields, contentId) {
+        let tempObj = {}
+        let editTitle = ''
+        if(editId === 'new') {
+          if(fields && fields.length) {
+            fields.forEach((item) => {
+              if(MOCK && item.type === 'select') {
+                tempObj[item._id] = []
+              } else {
+                tempObj [item._id] = item.default ? item.default : ''
+              }
+            })
+          }
+        } else {
+          if(!this.articles[editId]) {
+            await this.getData(editId)
+          }
+          editTitle =  this.articles[editId].title
+          if(this.articles[editId].contents && this.articles[editId].contents.length){
+            if(!contentId) {
+              tempObj = this.articles[editId].contents[0]
+            } else {
+              tempObj = this.articles[editId].contents.find(item => item._id === contentId)
+            }
+          }
+        }
+        return { tempObj, editTitle}
+      },
+      /**
+       * 验证editMata是否有效
+       * <String> editId noNull
+       * <Object>fields noNull,
+       * <String>_id noNull,
+       * <String>catalogId noNull,
+       * <String>title,
+       * <Object>content
+       * */
+      validEditMata(data) {
+        const { editId, fields, _id, catalogId, title } = data
+        if(!editId) {
+          return 'editId不能为空'
+        } else if(!title) {
+          return 'title不能为空'
+        }
+        if(!Object.keys(fields).length) {
+          return `fields无效:${JSON.stringify(fields)}`
+        }
+        if(!_id) {
+          return '_id(article)不能为空'
+        }
+        if(!catalogId) {
+          return 'catalogId不能为空'
+        }
+        return null
+      },
+      /**
+      * 获取具体的文章详情
+      * */
+      async getData(id, force = false) {
+        this.editId = id
+        this.$showLoading()
+        const result = await this[ACTIONS.ARTICLE_DES_GET]({
+          _id: id,
+          force
+        })
+        this.$hideLoading()
       },
       /* 根据catalogId获取文章列表 */
       async getArticleByCatalogId(catalogId) {
@@ -152,7 +253,7 @@
           this.editMeta.editId = ''
           return
         }
-        this.curArticleList = getList
+        this.curArticleList = [ ...getList ]
       },
       async init() {
         this.getBookData()
