@@ -11,62 +11,73 @@
         <span class="btn warn" @click="todoDelete" v-if="editId!=='new'">删除</span>
       </div>
     </div>
-    <div class="article-content relative flex-1">
-      <div class="scroll-box">
-        <div @click="toDoSaveArticleContent">{{fields}}</div>
-        <div>{{contents}}</div>
-        <div class="form-layout theme-1" v-if="fields&&fields.length">
-          <div class="form-group flex direction-column" v-for="(field, index) in fields" :index="index">
-            <div class="form-label-layout">
-              {{field.name}}-{{field.type}}：
-            </div>
-            <div class="flex flex-1 align-items-center form-content-layout markdown-layout" v-if="field.type==='markdown'">
-              <markdown-edit v-model="contents[field._id]"></markdown-edit>
-            </div>
-            <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='input'">
-              <input class="form-input" v-model="contents[field._id]" :placeholder="'填写'+field.name"/>
-            </div>
-            <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='textarea'">
-              <textarea type="text" class="form-input"/>
-            </div>
-            <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='radio'">
-              <div
-                class="add-options-item radio-style"
-                :class="{'act':optionsItem.id === contents[field._id]}"
-                v-for="(optionsItem, optionsIndex) in field.options"
-              >
-                {{optionsItem.name}}
-                <input
-                  type="radio"
-                  class="form-radio"
-                  :value="optionsItem.id"
-                  v-model="contents[field._id]">
+    <div class="article-content relative flex-1 flex">
+      <div class="flex-1 relative">
+        <div class="scroll-box">
+          <div @click="toDoSaveArticleContent">{{fields}}</div>
+          <div>{{contents}}</div>
+          <div class="form-layout theme-1" v-if="fields&&fields.length">
+            <div class="form-group flex direction-column" v-for="(field, index) in fields" :index="index">
+              <div class="form-label-layout">
+                {{field.name}}-{{field.type}}：
               </div>
-            </div>
-            <div class=" form-content-layout form-content-layout-select"
-                 v-if="field.type==='select'">
-              <div
-                class="select-style"
-                v-for="(optionsItem, optionsIndex) in field.options"
-                :class="{
+              <div class="flex flex-1 align-items-center form-content-layout markdown-layout" v-if="field.type==='markdown'">
+                <markdown-edit v-model="contents[field._id]"></markdown-edit>
+              </div>
+              <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='input'">
+                <input class="form-input" v-model="contents[field._id]" :placeholder="'填写'+field.name"/>
+              </div>
+              <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='textarea'">
+                <textarea type="text" class="form-input"/>
+              </div>
+              <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='radio'">
+                <div
+                  class="add-options-item radio-style"
+                  :class="{'act':optionsItem.id === contents[field._id]}"
+                  v-for="(optionsItem, optionsIndex) in field.options"
+                >
+                  {{optionsItem.name}}
+                  <input
+                    type="radio"
+                    class="form-radio"
+                    :value="optionsItem.id"
+                    v-model="contents[field._id]">
+                </div>
+              </div>
+              <div class=" form-content-layout form-content-layout-select"
+                   v-if="field.type==='select'">
+                <div
+                  class="select-style"
+                  v-for="(optionsItem, optionsIndex) in field.options"
+                  :class="{
                 'act':Object.prototype.toString.call(contents[field._id]) === '[object Array]'&&
                 contents[field._id].indexOf(optionsItem.id) > -1
               }"
-              >
-                <div class=" flex align-items-center">
-                  <div class="select-iconfont"><i class="iconfont icon-gou"></i></div>
-                  <div>{{optionsItem.name}}</div>
+                >
+                  <div class=" flex align-items-center">
+                    <div class="select-iconfont"><i class="iconfont icon-gou"></i></div>
+                    <div>{{optionsItem.name}}</div>
+                  </div>
+                  <input type="checkBox"
+                         class="form-radio"
+                         :value="optionsItem.id"
+                         @change="changeSelect(field._id, optionsItem)"
+                         :key="optionsItem.id">
                 </div>
-                <input type="checkBox"
-                       class="form-radio"
-                       :value="optionsItem.id"
-                       @change="changeSelect(field._id, optionsItem)"
-                       :key="optionsItem.id">
               </div>
             </div>
           </div>
         </div>
       </div>
+      <div class="flex-1 relative">
+        <div class="scroll-box">
+          <article-content-list
+            :fields=fields
+            :contentList=contentList
+          ></article-content-list>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -75,6 +86,7 @@
   import { mapState, mapGetter, mapMutations, mapActions } from 'vuex'
   import * as MUTATIONS from '../../store/const/mutaions'
   import * as ACTIONS from '../../store/const/actions'
+  import articleContentList from './articleContentList.vue'
   import MarkdownEdit from '../../components/markdownEdit.vue'
 
   export default {
@@ -91,17 +103,25 @@
         schemaId: '',
         catalogId: '',
         test: '123',
-        fields: []
+        fields: [],
       }
     },
     components: {
-      MarkdownEdit
+      MarkdownEdit,
+      articleContentList
     },
     computed: {
       ...mapState({
         catalogs: state => state.catalogs.list,
         bookList: state => state.books.list,
-        articles: state => state.articles.list
+        articles: state => state.articles.list,
+        contentList: function () {
+          if(this.editId === 'new') {
+            return []
+          }
+          const data = this.articles[this.editId].contents
+          return data
+        }
       })
     },
     watch: {
