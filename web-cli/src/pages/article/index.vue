@@ -93,6 +93,10 @@
        * */
       async doEditArticle(arg) {
         const { catalogId, articleId, contentId = '' } = arg
+        // 如果有articleId 则是重编辑和添加过来的，此时应重新获取一下数据
+        if(articleId) {
+          await this.getData(articleId, true)
+        }
         await this.getArticleByCatalogId(catalogId)
         if(this.curArticleList && this.curArticleList.length) {
           const { catalogId, schemaId } = this.curArticleList[0]

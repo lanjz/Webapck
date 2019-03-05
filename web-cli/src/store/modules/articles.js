@@ -130,6 +130,14 @@ const actions = {
     }*/
     return result
   },
+  async [ACTIONS.ARTICLE_CONTENT_POST]({ dispatch }, params) {
+    const result = await fetch({
+      url: '/api/article_content',
+      method: 'post',
+      data: params
+    })
+    return result
+  },
 }
 export default {
   state,

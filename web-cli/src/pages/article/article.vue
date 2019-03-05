@@ -74,6 +74,7 @@
           <article-content-list
             :fields=fields
             :contentList=contentList
+            @focusContent=todoEditContent
           ></article-content-list>
         </div>
       </div>
@@ -104,6 +105,7 @@
         catalogId: '',
         test: '123',
         fields: [],
+        contentList: []
       }
     },
     components: {
@@ -115,27 +117,11 @@
         catalogs: state => state.catalogs.list,
         bookList: state => state.books.list,
         articles: state => state.articles.list,
-        contentList: function () {
-          if(this.editId === 'new') {
-            return []
-          }
-          const data = this.articles[this.editId].contents
-          return data
-        }
       })
     },
     watch: {
-      editMeta: async function (val) {
-        const { editId, fields, _id, catalogId, content, title } = val
-        this.editId = editId
-        this.schemaId = _id
-        this.catalogId = catalogId
-        this.fields = []
-        setTimeout(() =>{
-          this.articleName = editId === 'new' ? '未命名' : title
-          this.fields = [ ...fields ]
-          this.contents = content
-        })
+      editMeta: function (val) {
+        this.setMeta(val)
       },
       editId: function (val) {
         this[MUTATIONS.ARTICLE_CUS_SAVE](val)
@@ -151,8 +137,45 @@
         ACTIONS.ARTICLE_POST,
         ACTIONS.ARTICLE_PUT,
         ACTIONS.ARTICLE_DELETE,
-        ACTIONS.ARTICLE_CONTENT_PUT
+        ACTIONS.ARTICLE_CONTENT_PUT,
+        ACTIONS.ARTICLE_CONTENT_POST
       ]),
+      async setMeta(val) {
+        const { editId, fields, _id, catalogId, content, title } = val
+        this.editId = editId
+        this.schemaId = _id
+        this.catalogId = catalogId
+        this.fields = []
+        setTimeout(() =>{
+          this.getContentList()
+          this.articleName = editId === 'new' ? '未命名' : title
+          this.fields = [ ...fields ]
+          this.contents = content
+        })
+      },
+      todoEditContent(contentItem) {
+        const content = contentItem ? contentItem : {
+          _id: 'new'
+        }
+        const arg = {
+          editId: this.editId,
+          _id: this.schemaId,
+          catalogId: this.catalogId,
+          fields : this.fields,
+          content
+        }
+        this.setMeta(arg)
+      },
+      getContentList() {
+        if(this.editId === 'new') {
+          this.contentList = []
+          return
+        }
+        const data = this.articles[this.editId].contents
+        this.contentList = [ ...data ]
+        console.log('data', this.contentList)
+        return data
+      },
       changeSelect(id, tar) {
         if(Object.prototype.toString.call(this.contents[id]) !== '[object Array]') {
           this.contents[id] = []
@@ -231,17 +254,29 @@
       },
       async toDoSaveArticleContent() {
         this.$showLoading()
-        await this[ACTIONS.ARTICLE_CONTENT_PUT](
-          {
-            _id: this.editId,
-            content: this.contents,
-          }
-        )
+        let contentId = ''
+        if(this.contents._id === 'new') {
+          await this[ACTIONS.ARTICLE_CONTENT_POST](
+            {
+              _id: this.editId,
+              content: this.contents,
+            }
+          )
+        } else {
+          await this[ACTIONS.ARTICLE_CONTENT_PUT](
+            {
+              _id: this.editId,
+              content: this.contents,
+            }
+          )
+          contentId = this.contents._id
+        }
+
         this.$emit('emitUpdateArticle', {
           schemaId: this.schemaId,
           catalogId: this.catalogId,
           articleId: this.editId,
-          contentId: this.contents._id
+          contentId
 
         })
         this.$hideLoading()
