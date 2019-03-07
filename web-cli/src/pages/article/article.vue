@@ -11,58 +11,61 @@
         <span class="btn warn" @click="todoDelete" v-if="editId!=='new'">删除</span>
       </div>
     </div>
-    <div class="article-content relative flex-1 flex">
-      <div class="flex-1 relative">
-        <div class="scroll-box">
-          <div @click="toDoSaveArticleContent">{{fields}}</div>
-          <div>{{contents}}</div>
-          <div class="form-layout theme-1" v-if="fields&&fields.length">
-            <div class="form-group flex direction-column" v-for="(field, index) in fields" :index="index">
-              <div class="form-label-layout">
-                {{field.name}}-{{field.type}}：
-              </div>
-              <div class="flex flex-1 align-items-center form-content-layout markdown-layout" v-if="field.type==='markdown'">
-                <markdown-edit v-model="contents[field._id]"></markdown-edit>
-              </div>
-              <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='input'">
-                <input class="form-input" v-model="contents[field._id]" :placeholder="'填写'+field.name"/>
-              </div>
-              <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='textarea'">
-                <textarea type="text" class="form-input"/>
-              </div>
-              <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='radio'">
-                <div
-                  class="add-options-item radio-style"
-                  :class="{'act':optionsItem.id === contents[field._id]}"
-                  v-for="(optionsItem, optionsIndex) in field.options"
-                >
-                  {{optionsItem.name}}
-                  <input
-                    type="radio"
-                    class="form-radio"
-                    :value="optionsItem.id"
-                    v-model="contents[field._id]">
+    <div class="flex-1 flex">
+      <div
+        @click="isEditContents = true"
+        v-click-outside="toDoSaveArticleContent"
+        class="article-content relative flex-1 flex" :class="{'noSave': dataHasChange}">
+        <div class="flex-1 relative">
+          <div class="scroll-box" >
+            <div class="form-layout theme-1" v-if="fields&&fields.length">
+              <div class="form-group flex direction-column" v-for="(field, index) in fields" :index="index">
+                <div class="form-label-layout">
+                  {{field.name}}-{{field.type}}：
                 </div>
-              </div>
-              <div class=" form-content-layout form-content-layout-select"
-                   v-if="field.type==='select'">
-                <div
-                  class="select-style"
-                  v-for="(optionsItem, optionsIndex) in field.options"
-                  :class="{
+                <div class="flex flex-1 align-items-center form-content-layout markdown-layout" v-if="field.type==='markdown'">
+                  <markdown-edit v-model="contents[field._id]"></markdown-edit>
+                </div>
+                <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='input'">
+                  <input class="form-input" v-model="contents[field._id]" :placeholder="'填写'+field.name"/>
+                </div>
+                <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='textarea'">
+                  <textarea type="text" class="form-input"/>
+                </div>
+                <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='radio'">
+                  <div
+                    class="add-options-item radio-style"
+                    :class="{'act':optionsItem.id === contents[field._id]}"
+                    v-for="(optionsItem, optionsIndex) in field.options"
+                  >
+                    {{optionsItem.name}}
+                    <input
+                      type="radio"
+                      class="form-radio"
+                      :value="optionsItem.id"
+                      v-model="contents[field._id]">
+                  </div>
+                </div>
+                <div class=" form-content-layout form-content-layout-select"
+                     v-if="field.type==='select'">
+                  <div
+                    class="select-style"
+                    v-for="(optionsItem, optionsIndex) in field.options"
+                    :class="{
                 'act':Object.prototype.toString.call(contents[field._id]) === '[object Array]'&&
                 contents[field._id].indexOf(optionsItem.id) > -1
               }"
-                >
-                  <div class=" flex align-items-center">
-                    <div class="select-iconfont"><i class="iconfont icon-gou"></i></div>
-                    <div>{{optionsItem.name}}</div>
+                  >
+                    <div class=" flex align-items-center">
+                      <div class="select-iconfont"><i class="iconfont icon-gou"></i></div>
+                      <div>{{optionsItem.name}}</div>
+                    </div>
+                    <input type="checkBox"
+                           class="form-radio"
+                           :value="optionsItem.id"
+                           @change="changeSelect(field._id, optionsItem)"
+                           :key="optionsItem.id">
                   </div>
-                  <input type="checkBox"
-                         class="form-radio"
-                         :value="optionsItem.id"
-                         @change="changeSelect(field._id, optionsItem)"
-                         :key="optionsItem.id">
                 </div>
               </div>
             </div>
@@ -75,11 +78,12 @@
             :fields=fields
             :contentList=contentList
             @focusContent=todoEditContent
+            :curContentId="contents._id"
           ></article-content-list>
         </div>
       </div>
-
     </div>
+
   </div>
 </template>
 
@@ -105,7 +109,9 @@
         catalogId: '',
         test: '123',
         fields: [],
-        contentList: []
+        contentList: [],
+        cacheContents: {},
+        isEditContents: false
       }
     },
     components: {
@@ -117,7 +123,10 @@
         catalogs: state => state.catalogs.list,
         bookList: state => state.books.list,
         articles: state => state.articles.list,
-      })
+      }),
+      dataHasChange() {
+        return JSON.stringify(this.contents) !== JSON.stringify(this.cacheContents)
+      }
     },
     watch: {
       editMeta: function (val) {
@@ -151,6 +160,7 @@
           this.articleName = editId === 'new' ? '未命名' : title
           this.fields = [ ...fields ]
           this.contents = content
+          this.cacheContents = JSON.parse(JSON.stringify(this.contents))
         })
       },
       todoEditContent(contentItem) {
@@ -253,6 +263,8 @@
         this.$hideLoading()
       },
       async toDoSaveArticleContent() {
+        if(!this.dataHasChange) return
+        this.isEditContents = false
         this.$showLoading()
         let contentId = ''
         if(this.contents._id === 'new') {
@@ -298,7 +310,6 @@
 <style lang="less" scoped>
   .article-layout {
     background: #eee;
-    padding: 0 3px;
     position: relative;
 
     .form-label-layout{
@@ -380,5 +391,8 @@
     .form-group, .form-layout{
       height: 100%;
     }
+  }
+  .noSave{
+    box-shadow: 0 0 4px 1px  @warn-color inset;
   }
 </style>

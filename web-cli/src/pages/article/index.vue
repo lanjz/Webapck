@@ -12,7 +12,7 @@
     <articles
       :editMeta="editMeta"
       v-show="editMeta.editId"
-      @emitUpdateArticle="doEditArticle"
+      @emitUpdateArticle="doUpdateArticle"
     ></articles>
   </div>
 </template>
@@ -91,12 +91,18 @@
        * @param <String> articleId
        * @param <String> contentId 如果有则指定用哪个article的content内容作为编辑内容
        * */
+      async doUpdateArticle(arg) {
+        const { catalogId, articleId, contentId = '', schemaId } = arg
+        await this.getData(articleId, true)
+        this.chooseCurArticle({
+          catalogId,
+          schemaId,
+          articleId: articleId,
+          contentId
+        })
+      },
       async doEditArticle(arg) {
         const { catalogId, articleId, contentId = '' } = arg
-        // 如果有articleId 则是重编辑和添加过来的，此时应重新获取一下数据
-        if(articleId) {
-          await this.getData(articleId, true)
-        }
         await this.getArticleByCatalogId(catalogId)
         if(this.curArticleList && this.curArticleList.length) {
           const { catalogId, schemaId } = this.curArticleList[0]
@@ -153,8 +159,9 @@
        * @return <Object> tempObj <String> editTitle
        * */
       async initContent(editId, fields, contentId) {
+        const { MOCK } = process.env
         let tempObj = {}
-        let editTitle = ''
+        let editTitle = '未命名'
         if(editId === 'new') {
           if(fields && fields.length) {
             fields.forEach((item) => {
