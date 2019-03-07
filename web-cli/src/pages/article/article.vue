@@ -7,7 +7,7 @@
       <div class="schema-operate">
         <span class="btn"
               :class="{'disable-btn': !articleName}"
-              @click="todoSave">保存</span>
+              @click="todoSave" v-if="editId === 'new'">保存</span>
         <span class="btn warn" @click="todoDelete" v-if="editId!=='new'">删除</span>
       </div>
     </div>

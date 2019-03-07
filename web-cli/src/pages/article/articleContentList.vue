@@ -1,5 +1,5 @@
 <template>
- <div class="content-list absolute-full box-shadow-inset">
+ <div class="content-list absolute-full">
    <div class="content-list-item"
         v-for="(contents, index) in contentList" v-if="contentList && contentList.length"
         :key="index"
@@ -22,23 +22,17 @@
          </div>
          <div class="flex flex-1 align-items-center form-content-layout" v-if="field.type==='radio'">
            <div
-             class="add-options-item radio-style"
+             class="add-options-item"
              :class="{'act':optionsItem.id === contents[field._id]}"
              v-if="optionsItem.id === contents[field._id]"
              v-for="(optionsItem, optionsIndex) in field.options"
            >
              {{optionsItem.name}}
-             <input
-               type="radio"
-               class="form-radio"
-               :value="optionsItem.id"
-               v-model="contents[field._id]">
            </div>
+           <div v-if="!contents[field._id]">无</div>
          </div>
-         <div class=" form-content-layout form-content-layout-select"
-              v-if="field.type==='select'">
+         <div class=" form-content-layout flex flex-1 align-items-center " v-if="field.type==='select'">
            <div
-             class="select-style"
              v-for="(optionsItem, optionsIndex) in field.options"
              :class="{
                 'act':Object.prototype.toString.call(contents[field._id]) === '[object Array]'&&
@@ -48,15 +42,10 @@
                 contents[field._id].indexOf(optionsItem.id) > -1"
            >
              <div class=" flex align-items-center">
-               <div class="select-iconfont"><i class="iconfont icon-gou"></i></div>
                <div>{{optionsItem.name}}</div>
              </div>
-             <input type="checkBox"
-                    class="form-radio"
-                    :value="optionsItem.id"
-                    @change="changeSelect(field._id, optionsItem)"
-                    :key="optionsItem.id">
            </div>
+           <div v-if="!contents[field._id] || !contents[field._id].length">无</div>
          </div>
        </div>
      </div>
@@ -82,16 +71,28 @@
 
 <style lang="less">
   .content-list{
-    background: @tree-bg-color;
-    color: @tree-light-color;
+    background: #fff;
+    box-shadow: 1px 0 1px 1px #adabab inset;
+    font-size: 13px;
     .content-list-item{
       padding: 10px;
-      margin-top: 10px;
-      color: @tree-light-color;
-      border-bottom: solid 1px #000;
+      color: @tree-bg-color;
+      border-bottom: solid 1px #adabab;
+      position: relative;
     }
     .content-list-item.act{
-      border: solid 1px @highlight-color
+      /*box-shadow: 1px 0 1px 1px #adabab inset;*/
+      background: #fbfbfb;
+    }
+    .content-list-item.act:after{
+      content: '';
+      width: 3px;
+      height: 100%;
+      background: @highlight-color;
+      left: 0;
+      top: 0;
+      position: absolute;
+      border-radius: 0 2px 2px 0;
     }
     padding-bottom: 60px;
     overflow: auto;
@@ -104,5 +105,15 @@
     bottom: 0;
     left: 0;
     width: 100%;
+    z-index: 2;
+    background: #fbfbfb;
+    font-size: 16px;
+    color: @tree-color;
+  }
+  .form-label-layout{
+    width: auto;
+  }
+  .form-group:not(:first-child) {
+    margin-top: 10px;
   }
 </style>
