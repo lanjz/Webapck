@@ -172,6 +172,7 @@
           _id: this.schemaId,
           catalogId: this.catalogId,
           fields : this.fields,
+          title: this.articleName,
           content
         }
         this.setMeta(arg)
@@ -203,8 +204,7 @@
       },
       todoDelete() {
         this.$alert({
-          content: `你确认要删除"${this.articleName}"`,
-          showCancel: false
+          title: `你确认要删除"${this.articleName}"`,
         })
           .then(async res => {
             if(res) {
@@ -214,8 +214,12 @@
       },
       async doDeleteArticle(id) {
         this.$showLoading()
-        await this[ACTIONS.ARTICLE_DELETE](id)
+        const result = await this[ACTIONS.ARTICLE_DELETE](id)
         this.$hideLoading()
+        this.$emit('emitInitArticle', {
+          schemaId: this.schemaId,
+          catalogId: this.catalogId
+        })
       },
       async todoSave() {
         if(!this.articleName) return

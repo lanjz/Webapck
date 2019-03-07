@@ -13,6 +13,7 @@
       :editMeta="editMeta"
       v-show="editMeta.editId"
       @emitUpdateArticle="doUpdateArticle"
+      @emitInitArticle="doEditArticle"
     ></articles>
   </div>
 </template>

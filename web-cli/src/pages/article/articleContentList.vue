@@ -72,13 +72,15 @@
 <style lang="less">
   .content-list{
     background: #fff;
-    box-shadow: 1px 0 1px 1px #adabab inset;
+    /*box-shadow: 1px 0 1px 1px #adabab inset;*/
     font-size: 13px;
+    position: relative;
     .content-list-item{
       padding: 10px;
       color: @tree-bg-color;
       border-bottom: solid 1px #adabab;
       position: relative;
+      cursor: pointer;
     }
     .content-list-item.act{
       /*box-shadow: 1px 0 1px 1px #adabab inset;*/
@@ -109,6 +111,11 @@
     background: #fbfbfb;
     font-size: 16px;
     color: @tree-color;
+    cursor: pointer;
+    transition: .2s;
+  }
+  .add-content-box:hover{
+    background: #eee;
   }
   .form-label-layout{
     width: auto;
