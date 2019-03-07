@@ -8,7 +8,6 @@
         <span class="btn"
               :class="{'disable-btn': !articleName}"
               @click="todoSave" v-if="editId === 'new'">保存</span>
-        <span class="btn warn" @click="todoDelete" v-if="editId!=='new'">删除</span>
       </div>
     </div>
     <div class="flex-1 flex">
@@ -145,7 +144,6 @@
         ACTIONS.ARTICLE_DES_GET,
         ACTIONS.ARTICLE_POST,
         ACTIONS.ARTICLE_PUT,
-        ACTIONS.ARTICLE_DELETE,
         ACTIONS.ARTICLE_CONTENT_PUT,
         ACTIONS.ARTICLE_CONTENT_POST
       ]),
@@ -201,25 +199,6 @@
 //         this.contents[id] = [ ...arr ]
         this.contents[id].push(tar.id)
         this.contents = JSON.parse(JSON.stringify(this.contents))
-      },
-      todoDelete() {
-        this.$alert({
-          title: `你确认要删除"${this.articleName}"`,
-        })
-          .then(async res => {
-            if(res) {
-              this.doDeleteArticle(this.editId)
-            }
-          })
-      },
-      async doDeleteArticle(id) {
-        this.$showLoading()
-        const result = await this[ACTIONS.ARTICLE_DELETE](id)
-        this.$hideLoading()
-        this.$emit('emitInitArticle', {
-          schemaId: this.schemaId,
-          catalogId: this.catalogId
-        })
       },
       async todoEdit() {
         if(!this.articleName || this.editId === 'new') return
@@ -375,9 +354,11 @@
   }
   .article-title {
     border-bottom: solid 1px @border-color;
-    padding: 15px;
     font-size: 18px;
     background: #fff;
+    height: 65px;
+    line-height: 65px;
+    padding: 0 15px;
 
   }
 

@@ -11,6 +11,7 @@
       @click="chooseArticles(item)">
       <div class="article-item-title">{{item.title}}</div>
       <div class="article-item-mark">{{item.createTime | timestampToTime}}~{{item.updateTime | timestampToTime}}</div>
+      <div class="operate-icon" @click.stop="todoDelete(item)"></div>
     </div>
     <!-- TODO -->
     <div
@@ -54,9 +55,31 @@
         /* TODO unless*/
         MUTATIONS.ARTICLE_CUS_SAVE
       ]),
+      ...mapActions([
+        ACTIONS.ARTICLE_DELETE,
+      ]),
       chooseArticles: function (item) {
         this.$emit('emitToChooseCurArticle', {schemaId: item.schemaId, articleId: item._id, catalogId: item.catalogId})
-      }
+      },
+      todoDelete(item) {
+        this.$alert({
+          title: `你确认要删除"${item.title}"`,
+        })
+          .then(async res => {
+            if(res) {
+              this.doDeleteArticle(item)
+            }
+          })
+      },
+      async doDeleteArticle(item = {}) {
+        this.$showLoading()
+        const result = await this[ACTIONS.ARTICLE_DELETE](item._id)
+        this.$hideLoading()
+        this.$emit('emitInitArticle', {
+          schemaId: item.schemaId,
+          catalogId: item.catalogId
+        })
+      },
     }
   }
 </script>
@@ -75,6 +98,24 @@
       margin-top: 7px;
       font-size: 12px;
     }
+    .operate-icon{
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      right: 7px;
+      top: 7px;
+      position: absolute;
+      z-index: 1;
+      background: @bg-color;
+      color: @article-brief-light-bg;
+      opacity: 0;
+      transform: scale(0);
+      transition: .3s;
+    }
+  }
+  .article-item:hover .operate-icon{
+    opacity: 1;
+    transform: scale(1);
   }
   .article-item.act {
     background: @article-brief-light-bg;

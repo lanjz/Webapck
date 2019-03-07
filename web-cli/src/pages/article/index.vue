@@ -7,13 +7,13 @@
       @emitToChooseCurArticle="chooseCurArticle"
       :list="curArticleList"
       :cusArticle="cusArticle"
+      @emitInitArticle="doEditArticle"
     ></ArticleBrief>
     <div class="flex-1" v-show="!editMeta.editId"></div>
     <articles
       :editMeta="editMeta"
       v-show="editMeta.editId"
       @emitUpdateArticle="doUpdateArticle"
-      @emitInitArticle="doEditArticle"
     ></articles>
   </div>
 </template>
