@@ -50,7 +50,9 @@
        </div>
      </div>
    </div>
-   <div class="add-content-box" @click="todoAddContent">添加内容</div>
+   <div class="add-content-box"
+        :class="{'act': curContentId === 'new'}"
+        @click="todoAddContent">添加内容</div>
  </div>
 
 </template>
@@ -86,15 +88,19 @@
       /*box-shadow: 1px 0 1px 1px #adabab inset;*/
       background: #fbfbfb;
     }
-    .content-list-item.act:after{
+    .content-list-item:after{
       content: '';
       width: 3px;
       height: 100%;
-      background: @highlight-color;
+      background: transparent;
       left: 0;
       top: 0;
       position: absolute;
       border-radius: 0 2px 2px 0;
+      transition: .3s;
+    }
+    .content-list-item.act:after{
+      background: @highlight-color;
     }
     padding-bottom: 60px;
     overflow: auto;
@@ -112,10 +118,14 @@
     font-size: 16px;
     color: @tree-color;
     cursor: pointer;
-    transition: .2s;
+    transition: .3s;
+    border-left: solid 3px transparent;
   }
   .add-content-box:hover{
     background: #eee;
+  }
+  .add-content-box.act{
+    border-left: solid 3px @highlight-color;
   }
   .form-label-layout{
     width: auto;

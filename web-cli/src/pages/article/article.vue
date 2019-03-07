@@ -2,7 +2,7 @@
   <div class="article-layout flex direction-column flex-1"  :class="editMeta._id">
     <div class="article-title flex ">
       <div class="flex-1 schema-title-layout relative">
-        <input class="full-input" v-model.trim="articleName" @blur="todoSave" />
+        <input class="full-input" v-model.trim="articleName" @blur="todoEdit" />
       </div>
       <div class="schema-operate">
         <span class="btn"
@@ -221,31 +221,43 @@
           catalogId: this.catalogId
         })
       },
-      async todoSave() {
-        if(!this.articleName) return
-        let result = {}
+      async todoEdit() {
+        if(!this.articleName || this.editId === 'new') return
         this.$showLoading()
-        if(this.editId === 'new') {
-          result = await this[ACTIONS.ARTICLE_POST]({
-            schemaId: this.schemaId,
-            catalogId: this.catalogId,
-            content: this.contents,
-            title: this.articleName
-          })
-        } else {
-          result = await this[ACTIONS.ARTICLE_PUT]({
-            _id: this.editId,
-            content: this.contents,
-            title: this.articleName
-          })
-        }
+        const result = await this[ACTIONS.ARTICLE_PUT]({
+          _id: this.editId,
+          content: this.contents,
+          title: this.articleName
+        })
         if(!result.err) {
-          const id = this.editId === 'new' ? result.data.id : this.editId
+          const id = this.editId
           await this.getData(id, true)
           this.$emit('emitUpdateArticle', {
             schemaId: this.schemaId,
             catalogId: this.catalogId,
-            articleId: id
+            articleId: id,
+            getData: 'getArticleByCatalogId'
+          })
+        }
+        this.$hideLoading()
+      },
+      async todoSave() {
+        if(!this.articleName) return
+        this.$showLoading()
+        const result = await this[ACTIONS.ARTICLE_POST]({
+          schemaId: this.schemaId,
+          catalogId: this.catalogId,
+          content: this.contents,
+          title: this.articleName
+        })
+        if(!result.err) {
+          const id = result.data.id
+          await this.getData(id, true)
+          this.$emit('emitUpdateArticle', {
+            schemaId: this.schemaId,
+            catalogId: this.catalogId,
+            articleId: id,
+            getData: 'getArticleByCatalogId'
           })
         }
         this.$hideLoading()
@@ -267,7 +279,7 @@
         this.$hideLoading()
       },
       async toDoSaveArticleContent() {
-        if(!this.dataHasChange) return
+        if(!this.dataHasChange || this.editId === 'new') return
         this.isEditContents = false
         this.$showLoading()
         let contentId = ''

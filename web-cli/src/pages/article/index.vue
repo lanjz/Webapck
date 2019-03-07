@@ -93,7 +93,10 @@
        * @param <String> contentId 如果有则指定用哪个article的content内容作为编辑内容
        * */
       async doUpdateArticle(arg) {
-        const { catalogId, articleId, contentId = '', schemaId } = arg
+        const { catalogId, articleId, contentId = '', schemaId, getData = '' } = arg
+        if(getData === 'getArticleByCatalogId') {
+          await this.getArticleByCatalogId(catalogId)
+        }
         await this.getData(articleId, true)
         this.chooseCurArticle({
           catalogId,
