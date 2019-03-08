@@ -1,9 +1,10 @@
 import * as Koa from 'koa'
+import * as favicon from 'koa-favicon'
 import middleware from './middleware/index.js'
+import { STATIC_PATH } from './utils/CONST'
 
-import  mon from './db/test/mon.js'
 const app = new Koa()
-
+app.use(favicon(STATIC_PATH + '/favicon.ico'))
 if(!process.env.JUSTNODE) {
   const webpack = require('webpack')
   const devMiddleware = require('./middleware/webpackConfig');

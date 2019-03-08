@@ -49,6 +49,15 @@ router.put('/article_content', articleCtl.modifyContent)
 router.delete('/article_content', articleCtl.delContent)
 router.get('/article_content', articleCtl.findContent)
 router.get('/recently_articles', articleCtl.findRecentContent)
+router.get('/favicon.ico', async function (ctx, next) {
+  ctx.send(1, 1, '')
+  await next()
+})
+router.get('/', async function (ctx, next) {
+  console.log('未后期')
+  ctx.send(1, 1, '')
+  await next()
+})
 
 router.post('/uploadImg', baseCtl.uploadImg)
 
