@@ -195,10 +195,13 @@
         const result = await this[ACTIONS.CATALOGS_DELETE]({
           _id: this.curNode._id
         })
+        this.$hideLoading()
         if(!result.err) {
+          this.$toast({
+            title: '删除成功'
+          })
           await this.getDate(this.curNode, true)
         }
-        this.$hideLoading()
       },
       /**
        * 重命名input失去焦点时

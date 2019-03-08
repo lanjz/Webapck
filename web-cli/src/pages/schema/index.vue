@@ -156,11 +156,16 @@
             name: this.newSchemaName
           }
         )
+        this.$hideLoading()
+        if(!result.err) {
+          this.$toast({
+            title: '添加成功'
+          })
+        }
         this.showAddInput = false
         this.newSchemaName = ''
         await this.getData()
         this.initCurSchema()
-        this.$hideLoading()
       },
       initCurSchema() {
         if(this.schemaListArr.length) {
@@ -212,8 +217,11 @@
           _id: this.actSchemaObj._id,
           name: this.cacheName
         })
-        if(result.err) return
         await this.getData()
+        if(result.err) return
+        this.$toast({
+          title: '修改成功'
+        })
         this.$hideLoading()
       },
       async init(){
@@ -235,9 +243,12 @@
       async doDeleteSchema() {
         this.$showLoading()
         const result = await this[ACTIONS.SCHEMA_DELETE]({ _id: this.actSchemaObj._id })
+        this.initCurSchema()
         if(!result.err) {
+          this.$toast({
+            title: '删除成功'
+          })
           await this.getData(true)
-          this.initCurSchema()
         }
         this.$hideLoading()
       },
@@ -258,10 +269,14 @@
           schemataId: this.actSchemaObj._id,
           fieldId: item._id
         })
+        this.$hideLoading()
         if(!result.err) {
+          this.$toast({
+            title: '删除成功'
+          })
           await this.getData(true)
         }
-        this.$hideLoading()
+
       }
     },
     mounted() {

@@ -254,6 +254,10 @@
           })
           return
         }
+        const toastMsg = this.field._id ? '修改成功' : '添加成功'
+        this.$toast({
+          title: toastMsg
+        })
         this.field = { ...initSchema }
         this.todoCloseEdit(true)
       },

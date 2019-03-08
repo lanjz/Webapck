@@ -126,10 +126,13 @@
         const result = await this[ACTIONS.BOOK_LIST_DELETE]({
           _id: item._id
         })
+        this.$hideLoading()
         if(!result.err) {
+          this.$toast({
+            title: '删除成功'
+          })
           await this.getData()
         }
-        this.$hideLoading()
       },
       doCloseModal() {
         this.curId = ''
@@ -169,8 +172,11 @@
           })
         }
         this.$showLoading()
-
         if(!result.err) {
+          const toastMsg = !this.curId ? '添加成功' : '修改成功'
+          this.$toast({
+            title: toastMsg
+          })
           await this.getData()
         }
         this.$hideLoading()

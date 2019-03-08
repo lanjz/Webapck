@@ -240,6 +240,9 @@
           list: this.showList
         })
         if(!result.err) {
+          this.$toast({
+            title: '保存成功'
+          })
           const id = this.editId
           await this.getData(id, true)
           this.$emit('emitUpdateArticle', {
@@ -261,6 +264,9 @@
           title: this.articleName
         })
         if(!result.err) {
+          this.$toast({
+            title: '添加成功'
+          })
           const id = result.data.id
           await this.getData(id, true)
           this.$emit('emitUpdateArticle', {
@@ -293,15 +299,16 @@
         this.isEditContents = false
         this.$showLoading()
         let contentId = ''
+        let result = ''
         if(this.contents._id === 'new') {
-          await this[ACTIONS.ARTICLE_CONTENT_POST](
+          result = await this[ACTIONS.ARTICLE_CONTENT_POST](
             {
               _id: this.editId,
               content: this.contents,
             }
           )
         } else {
-          await this[ACTIONS.ARTICLE_CONTENT_PUT](
+          result = await this[ACTIONS.ARTICLE_CONTENT_PUT](
             {
               _id: this.editId,
               content: this.contents,
@@ -309,7 +316,13 @@
           )
           contentId = this.contents._id
         }
-
+        this.$hideLoading()
+        if(!result.err) {
+          const toastMsg = this.contents._id === 'new' ? '添加成功' : '保存成功'
+          this.$toast({
+            title: toastMsg
+          })
+        }
         this.$emit('emitUpdateArticle', {
           schemaId: this.schemaId,
           catalogId: this.catalogId,
@@ -317,8 +330,6 @@
           contentId
 
         })
-        this.$hideLoading()
-//        alert()
       },
       async init() {
         const { id } = this.$route.params

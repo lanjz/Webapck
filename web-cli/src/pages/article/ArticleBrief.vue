@@ -66,6 +66,11 @@
         this.$showLoading()
         const result = await this[ACTIONS.ARTICLE_DELETE](item._id)
         this.$hideLoading()
+        if(!result.err) {
+          this.$toast({
+            title: '删除成功'
+          })
+        }
         this.$emit('emitInitArticle', {
           schemaId: item.schemaId,
           catalogId: item.catalogId

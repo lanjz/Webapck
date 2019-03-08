@@ -71,7 +71,7 @@
   }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
   .content-list{
     background: #fff;
     /*box-shadow: 1px 0 1px 1px #adabab inset;*/
