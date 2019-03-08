@@ -1,5 +1,5 @@
 <template>
-  <div class="article-layout box-shadow" :class="{'hidden-article': hiddenArticleLayout}">
+  <div class="article-layout box-shadow" :class="{'hidden-article': !showBrief}">
     <div class="article-layout-input-box align-items-center">
       <input type="text" class="article-layout-input" v-model="filterKeys"/>
       <i class="iconfont icon-sousuo"></i>
@@ -38,20 +38,14 @@
     data() {
       return {
         filterKeys: '',
-        hiddenArticleLayout: false
       }
     },
     computed: {
-      /* TODO unless*/
       ...mapState({
-        // cusArticle: state => state.articles.cusArticle
+        showBrief: state => state.config.showBrief,
       }),
     },
     methods: {
-      ...mapMutations([
-        /* TODO unless*/
-        MUTATIONS.ARTICLE_CUS_SAVE
-      ]),
       ...mapActions([
         ACTIONS.ARTICLE_DELETE,
       ]),

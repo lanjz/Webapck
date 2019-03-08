@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-1">
-    <div class="catalog-layout box-shadow">
+    <div class="catalog-layout box-shadow" :class="{'hidden-catalog': !showDir}">
       <TreeItem></TreeItem>
     </div>
     <ArticleBrief
@@ -47,7 +47,8 @@
         schemaList: state => state.schema.list,
         articleList: state => state.articles.catalogMapArticles,
         curBook: state => state.books.curBook,
-        articles: state => state.articles.list
+        articles: state => state.articles.list,
+        showDir: state => state.config.showDir,
       }),
       ...mapGetters(['treeChainList']),
     },
@@ -383,5 +384,8 @@
     background: @tree-bg-color;
     color: @tree-color;
     width: 210px;
+  }
+  .hidden-catalog{
+    display: none;
   }
 </style>
