@@ -33,7 +33,7 @@ function showNextMsg(options) {
 }
 function MessageBox(options){
   return new Promise((resolve, reject) => {
-    tempPro =  resolve
+    tempPro = resolve
     showNextMsg(options)
   })
 }

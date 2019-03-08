@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-1">
+  <div class="flex flex-1" @click="tet">
     <div class="catalog-layout box-shadow" :class="{'hidden-catalog': !showDir}">
       <TreeItem></TreeItem>
     </div>
@@ -292,6 +292,11 @@
 
         })
       },
+      tet() {
+        this.$toast({
+          title: '\'TEST\''
+        })
+      }
     },
     mounted() {
       this.init()
