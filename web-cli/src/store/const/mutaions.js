@@ -17,3 +17,7 @@ export const ARTICLE_DES_SAVE = 'ARTICLE_DES_SAVE'
 export const ARTICLE_CUS_SAVE = 'ARTICLE_CUS_SAVE'
 
 export const USER_SAVE = 'USER_SAVE'
+
+// config
+
+export const CONFIG_TOGGLE_SAVE = 'CONFIG_TOGGLE_SAVE'

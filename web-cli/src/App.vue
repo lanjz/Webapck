@@ -2,12 +2,24 @@
     <div class="app flex direction-column">
       <Header/>
       <Layout/>
-      <Footer/>
+      <!--<Footer/>-->
+      <div class="controller-layout-fixed">
+        <div
+          class="controller-layout-item"
+          @click.stop="doSetConfig('showDir')"
+          :class="{'act' : showDir}">简介</div>
+        <div
+          class="controller-layout-item"
+          @click.stop="doSetConfig('showBrief')"
+          :class="{'act' : showBrief}">文档</div>
+      </div>
     </div>
 
 </template>
 
 <script>
+  import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
+  import * as MUTATIONS from './store/const/mutaions'
   import './assets/styles/global.less'
   import './assets/styles/app.less'
   import Header from './components/layout/Header.vue'
@@ -20,11 +32,52 @@
       Header,
       Footer,
       Layout
+    },
+    computed: {
+      ...mapState({
+        showDir: state => state.config.showDir,
+        showBrief: state => state.config.showBrief,
+      })
+    },
+    methods: {
+      ...mapMutations([
+        MUTATIONS.CONFIG_TOGGLE_SAVE
+      ]),
+      doSetConfig(tar) {
+        this[MUTATIONS.CONFIG_TOGGLE_SAVE]({
+          tar,
+          val: !this[tar]
+        })
+      }
+    },
+    data() {
+      return {
+        hiddenArticleLayout: false
+      }
     }
   }
 </script>
 <style lang="less">
   @import '//at.alicdn.com/t/font_992689_basv9zzmjn.css';
+  .controller-layout-fixed{
+    position: fixed;
+    bottom: 50px;
+    left: 0;
+    z-index: 10;
+    .controller-layout-item{
+      width: 30px;
+      height: 20px;
+      line-height: 20px;
+      cursor: pointer;
+      background: @tree-color;
+      border-radius: 0 20px 20px 0;
+      margin-bottom: 10px;
+    }
+    .controller-layout-item.act{
+      background: @highlight-color;
+    }
+  }
+
   /*@import "//at.alicdn.com/t/font_992689_pswgkexoa3.css";*/
   /*      background: @bg-color;
     }

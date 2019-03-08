@@ -23,7 +23,8 @@
         v-show="(showList&&showEditContent)||!showList"
         @click="isEditContents = true"
         v-click-outside="toDoSaveArticleContent"
-        class="article-content relative flex-1 flex" :class="{'noSave': dataHasChange}">
+        class="article-content relative flex-1 flex">
+        <div class="noSave" v-show="dataHasChange"></div>
         <div class="flex-1 relative">
           <div class="scroll-box" >
             <div class="form-layout theme-1" v-if="fields&&fields.length">
@@ -438,6 +439,13 @@
     }
   }
   .noSave{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 1;
     box-shadow: 0 0 4px 1px  @warn-color inset;
+
   }
 </style>

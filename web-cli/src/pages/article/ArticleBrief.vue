@@ -15,11 +15,6 @@
         <i class="iconfont icon-shanchu1"></i>
       </div>
     </div>
-    <!-- TODO -->
-    <div
-      class="article-layout-fixed controller-layout-fixed"
-      @click.stop="hiddenArticleLayout = !hiddenArticleLayout"
-      :class="{'act' : !hiddenArticleLayout}">简介</div>
   </div>
 </template>
 <script>
@@ -177,8 +172,5 @@
     color: @tree-light-color;
     outline: #fff;
     padding-right: 46px;
-  }
-  .article-layout-fixed{
-    bottom: 100px;;
   }
 </style>
