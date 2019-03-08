@@ -8,6 +8,9 @@
         <span class="btn"
               :class="{'disable-btn': !articleName}"
               @click="todoSave" v-if="editId === 'new'">保存</span>
+        <div class="operate-list-operate" :class="{'act': showList}" v-else @click.stop="toggleList">
+          <i class="iconfont icon-list"></i>
+        </div>
       </div>
     </div>
     <div class="flex-1 flex">
@@ -71,7 +74,7 @@
           </div>
         </div>
       </div>
-      <div class="flex-1 relative">
+      <div class="flex-1 relative" v-if="showList">
         <div class="scroll-box">
           <article-content-list
             :fields=fields
@@ -102,6 +105,7 @@
     data: function () {
       return {
         articleName: '未命名',
+        cacheName: '未命名',
         contents: {},
         editId: 'new',
         schemaId: '',
@@ -110,7 +114,8 @@
         fields: [],
         contentList: [],
         cacheContents: {},
-        isEditContents: false
+        isEditContents: false,
+        showList: false
       }
     },
     components: {
@@ -148,14 +153,15 @@
         ACTIONS.ARTICLE_CONTENT_POST
       ]),
       async setMeta(val) {
-        const { editId, fields, _id, catalogId, content, title } = val
+        const { editId, fields, _id, catalogId, content, title, list } = val
         this.editId = editId
         this.schemaId = _id
         this.catalogId = catalogId
         this.fields = []
         setTimeout(() =>{
           this.getContentList()
-          this.articleName = editId === 'new' ? '未命名' : title
+          this.cacheName = this.articleName = editId === 'new' ? '未命名' : title
+          this.showList = list || false
           this.fields = [ ...fields ]
           this.contents = content
           this.cacheContents = JSON.parse(JSON.stringify(this.contents))
@@ -171,6 +177,7 @@
           catalogId: this.catalogId,
           fields : this.fields,
           title: this.articleName,
+          list: this.showList,
           content
         }
         this.setMeta(arg)
@@ -200,13 +207,28 @@
         this.contents[id].push(tar.id)
         this.contents = JSON.parse(JSON.stringify(this.contents))
       },
-      async todoEdit() {
-        if(!this.articleName || this.editId === 'new') return
+      toggleList() {
+        this.showList = !this.showList
+        if(!this.articleName){
+          this.articleName = this.cacheName
+        }
+        this.todoEdit(true)
+      },
+      async todoEdit(force = false) {
+        if(!force){
+          if(!this.articleName ||
+            this.editId === 'new' ||
+            this.cacheName === this.articleName
+          ) {
+            return
+          }
+        }
         this.$showLoading()
         const result = await this[ACTIONS.ARTICLE_PUT]({
           _id: this.editId,
           content: this.contents,
-          title: this.articleName
+          title: this.articleName,
+          list: this.showList
         })
         if(!result.err) {
           const id = this.editId
@@ -359,7 +381,15 @@
     height: 65px;
     line-height: 65px;
     padding: 0 15px;
-
+    .operate-list-operate{
+      .iconfont{
+        font-size: 25px;
+        cursor: pointer;
+      }
+    }
+    .operate-list-operate.act{
+      color: @highlight-color;
+    }
   }
 
   .article-content {

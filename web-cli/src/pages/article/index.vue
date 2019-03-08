@@ -135,11 +135,12 @@
         const { MOCK } = process.env
         const getSchema = (editId !== 'new' && MOCK) ? Object.values(this.schemaList)[0] : this.schemaList[schemaId]
         const { fields } = getSchema
-        const { tempObj, editTitle} = await this.initContent(editId, fields, contentId)
+        const { tempObj, editTitle, list } = await this.initContent(editId, fields, contentId)
         const temEditMeta = {
           ...getSchema,
           catalogId,
           editId: editId,
+          list,
           content: JSON.parse(JSON.stringify(tempObj)),
           title: editTitle
         }
@@ -166,6 +167,7 @@
         const { MOCK } = process.env
         let tempObj = {}
         let editTitle = '未命名'
+        let showList = false
         if(editId === 'new') {
           if(fields && fields.length) {
             fields.forEach((item) => {
@@ -181,6 +183,7 @@
             await this.getData(editId)
           }
           editTitle =  this.articles[editId].title
+          showList =  this.articles[editId].list
           if(this.articles[editId].contents && this.articles[editId].contents.length){
             if(!contentId) {
               tempObj = this.articles[editId].contents[0]
@@ -189,7 +192,7 @@
             }
           }
         }
-        return { tempObj, editTitle}
+        return { tempObj, editTitle, list: showList}
       },
       /**
        * 验证editMata是否有效

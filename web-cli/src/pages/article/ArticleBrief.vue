@@ -11,7 +11,9 @@
       @click="chooseArticles(item)">
       <div class="article-item-title">{{item.title}}</div>
       <div class="article-item-mark">{{item.createTime | timestampToTime}}~{{item.updateTime | timestampToTime}}</div>
-      <div class="operate-icon" @click.stop="todoDelete(item)"></div>
+      <div class="operate-icon" @click.stop="todoDelete(item)">
+        <i class="iconfont icon-shanchu1"></i>
+      </div>
     </div>
     <!-- TODO -->
     <div
@@ -107,10 +109,15 @@
       position: absolute;
       z-index: 1;
       background: @bg-color;
-      color: @article-brief-light-bg;
       opacity: 0;
       transform: scale(0);
       transition: .3s;
+      color: @warn-color;
+      text-align: center;
+      line-height: 30px;
+      .iconfont{
+        font-size: 18px;
+      }
     }
   }
   .article-item:hover .operate-icon{

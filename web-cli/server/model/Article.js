@@ -3,7 +3,7 @@ import baseModel from './BaseModel'
 class ArticleModel extends baseModel {
   constructor() {
     super()
-    this.assectPath = '_id bookId catalogId schemaId title contents createTime updateTime'
+    this.assectPath = '_id bookId catalogId schemaId title list contents createTime updateTime'
   }
 
   getName() {
@@ -35,6 +35,10 @@ class ArticleModel extends baseModel {
       title: {
         type: String,
         required: true
+      },
+      list: {
+        type: Boolean,
+        default: false
       },
       contents: Array,
       ...this.baseModel()
