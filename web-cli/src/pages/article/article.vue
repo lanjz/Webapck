@@ -159,7 +159,8 @@
         ACTIONS.ARTICLE_POST,
         ACTIONS.ARTICLE_PUT,
         ACTIONS.ARTICLE_CONTENT_PUT,
-        ACTIONS.ARTICLE_CONTENT_POST
+        ACTIONS.ARTICLE_CONTENT_POST,
+        ACTIONS.ARTICLE_CONTENT_DELETE
       ]),
       async setMeta(val) {
         const { editId, fields, _id, catalogId, content, title, list } = val
@@ -192,8 +193,23 @@
         }
         this.setMeta(arg)
       },
-      doDeleteContent() {
-        // TODO
+      async doDeleteContent(item) {
+        this.$showLoading()
+        const result = await this[ACTIONS.ARTICLE_CONTENT_DELETE]({
+          articleId: this.editId,
+          contentId: item._id
+        })
+        this.$hideLoading()
+        if(!result.err){
+          this.$toast({
+            title: '删除成功'
+          })
+          this.$emit('emitUpdateArticle', {
+            schemaId: this.schemaId,
+            catalogId: this.catalogId,
+            articleId: this.editId,
+          })
+        }
       },
       getContentList() {
         if(this.editId === 'new') {
@@ -332,7 +348,6 @@
           catalogId: this.catalogId,
           articleId: this.editId,
           contentId
-
         })
       },
       async init() {

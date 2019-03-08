@@ -117,7 +117,6 @@ const actions = {
     return result
   },
   async [ACTIONS.ARTICLE_CONTENT_PUT]({ dispatch }, params) {
-    console.log('123')
     const result = await fetch({
       url: '/api/article_content',
       method: 'put',
@@ -134,6 +133,14 @@ const actions = {
     const result = await fetch({
       url: '/api/article_content',
       method: 'post',
+      data: params
+    })
+    return result
+  },
+  async [ACTIONS.ARTICLE_CONTENT_DELETE]({ dispatch }, params) {
+    const result = await fetch({
+      url: '/api/article_content',
+      method: 'delete',
       data: params
     })
     return result
