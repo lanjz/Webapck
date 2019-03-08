@@ -185,7 +185,6 @@
         this.curField = JSON.parse(JSON.stringify(tar)) || {}
       },
       doHideEdit(force) {
-        console.log('force', force)
         this.curField = null
         this.getData(force)
       },

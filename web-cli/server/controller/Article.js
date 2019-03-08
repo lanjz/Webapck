@@ -528,7 +528,6 @@ class ArticleCtl extends BaseCtl {
     try{
       // 如果没有提供start和limit则查找全部
       const result = await this.Model.listWithPaging({ start, limit, dbQuery, sort: { updateTime: -1 } })
-      console.log('result', result)
       ctx.send(1, result, '')
     } catch (e) {
       ctx.send(2, '', hello.dealError(e))

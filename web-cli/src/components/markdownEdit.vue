@@ -65,7 +65,6 @@
       }
     },
     mounted() {
-      console.log('this.values', this.data)
       this.markDownValue = this.data || ''
     }
   }

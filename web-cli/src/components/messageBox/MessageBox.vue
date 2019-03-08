@@ -30,7 +30,6 @@
       }
     },
     mounted() {
-      console.log('弹空组件', this)
     }
   }
 </script>

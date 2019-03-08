@@ -73,7 +73,6 @@ const mutations = {
 
 const actions = {
   async [ACTIONS.CATALOGS_GET]({ commit }, params) {
-    console.log('params', params)
     const result = await fetch({
       url: '/api/catalogs',
       data: params

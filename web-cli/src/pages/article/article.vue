@@ -218,7 +218,6 @@
         }
         const data = this.articles[this.editId].contents
         this.contentList = [ ...data ]
-        console.log('data', this.contentList)
         return data
       },
       changeSelect(id, tar) {

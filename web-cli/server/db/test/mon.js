@@ -27,7 +27,6 @@ function mon() {
     }, { autoIndex: false })
     kittyScheme.methods.speak = () => {
       const greeting = kittyScheme.name ? `Meow name is${kittyScheme.name}` : "I don't have a name "
-      console.log('greeting', greeting)
     }
     const Kitten = mongoose.model('Kitten', kittyScheme)
     const silence = new Kitten({ name: 5 })

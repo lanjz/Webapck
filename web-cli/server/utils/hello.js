@@ -69,12 +69,10 @@ function mkdirsSync( dirname ) {
   if(fs.existsSync(dirname)) {
     return true
   }
-  console.log(path.sep, dirname)
   dirname
     .split(path.sep)
     .reduce((currentPath, folder) => {
       currentPath += folder + path.sep
-      console.log('currentPath', currentPath, fs.existsSync(currentPath))
       if(!fs.existsSync(currentPath)) {
         fs.mkdirSync(currentPath)
       }
