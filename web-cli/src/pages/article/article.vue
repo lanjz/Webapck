@@ -8,13 +8,19 @@
         <span class="btn"
               :class="{'disable-btn': !articleName}"
               @click="todoSave" v-if="editId === 'new'">保存</span>
-        <div class="operate-list-operate" :class="{'act': showList}" v-else @click.stop="toggleList">
-          <i class="iconfont icon-list"></i>
+        <div class="operate-list-operate" v-else>
+          <div class="icon-box" :class="{'act': showEditContent}" @click.stop="showEditContent=!showEditContent" v-if="showList">
+            <i class="iconfont icon-zuoye1"></i>
+          </div>
+          <div class="icon-box" :class="{'act': showList}" @click.stop="toggleList">
+            <i class="iconfont icon-wendang"></i>
+          </div>
         </div>
       </div>
     </div>
     <div class="flex-1 flex">
       <div
+        v-show="(showList&&showEditContent)||!showList"
         @click="isEditContents = true"
         v-click-outside="toDoSaveArticleContent"
         class="article-content relative flex-1 flex" :class="{'noSave': dataHasChange}">
@@ -115,7 +121,8 @@
         contentList: [],
         cacheContents: {},
         isEditContents: false,
-        showList: false
+        showList: false,
+        showEditContent: false
       }
     },
     components: {
@@ -168,6 +175,7 @@
         })
       },
       todoEditContent(contentItem) {
+        this.showEditContent = true
         const content = contentItem ? contentItem : {
           _id: 'new'
         }
@@ -383,12 +391,22 @@
     padding: 0 15px;
     .operate-list-operate{
       .iconfont{
-        font-size: 25px;
+        font-size: 20px;
         cursor: pointer;
       }
-    }
-    .operate-list-operate.act{
-      color: @highlight-color;
+      .icon-box{
+        border: solid 1px @tree-color;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        display: inline-block;
+      }
+      .icon-box.act{
+        background: @highlight-color;
+        color: #fff;
+      }
     }
   }
 

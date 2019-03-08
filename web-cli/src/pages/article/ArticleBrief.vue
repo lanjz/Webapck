@@ -108,16 +108,20 @@
       top: 7px;
       position: absolute;
       z-index: 1;
-      background: @bg-color;
+      background: #5f5f5f;
       opacity: 0;
       transform: scale(0);
       transition: .3s;
-      color: @warn-color;
       text-align: center;
       line-height: 30px;
+      color: @article-brief-light-bg;
       .iconfont{
         font-size: 18px;
       }
+    }
+    .operate-icon:hover{
+      background: @warn-color;
+      color: #fff;
     }
   }
   .article-item:hover .operate-icon{
