@@ -20,6 +20,7 @@ class ArticleCtl extends BaseCtl {
     this.delContent = this.delContent.bind(this)
     this.contentCount = this.contentCount.bind(this)
     this.findSchema = this.findSchema.bind(this)
+    this.findRecentContent = this.findRecentContent.bind(this)
     this.contentValidator = {
       input: this.stringConValid,
       date: this.dateConValid,
@@ -505,6 +506,33 @@ class ArticleCtl extends BaseCtl {
       ctx.send(1, {
         data: result[0],
         count: getCount
+      }, '')
+    } catch (e) {
+      ctx.send(2, '', hello.dealError(e, ctx.request.body.username))
+    } finally {
+      await next()
+    }
+  }
+  async findRecentContent(ctx, next) {
+    try {
+      const { _id, start = 0, limit = 20 } = ctx.request.query
+      if (!_id) {
+        ctx.send(2, '', '缺少_id')
+        return
+      }
+      const result = await this.Model.list(
+        {
+          _id,
+          ...this.dbQuery(ctx)
+        },
+        {
+          contents: {
+            $slice: [parseInt(start), parseInt(limit)]
+          }
+        }
+      )
+      ctx.send(1, {
+        data: result,
       }, '')
     } catch (e) {
       ctx.send(2, '', hello.dealError(e, ctx.request.body.username))

@@ -48,6 +48,7 @@ router.post('/article_content', articleCtl.addContent)
 router.put('/article_content', articleCtl.modifyContent)
 router.delete('/article_content', articleCtl.delContent)
 router.get('/article_content', articleCtl.findContent)
+router.get('/recently_articles', articleCtl.findRecentContent)
 
 router.post('/uploadImg', baseCtl.uploadImg)
 
