@@ -6,6 +6,9 @@
         @click="focusContent(contents)"
         :class="{'act': curContentId === contents._id}"
    >
+     <div class="operate-icon" @click.stop="todoDelete(contents)">
+       <i class="iconfont icon-shanchu1"></i>
+     </div>
      <div class="form-layout theme-1" v-if="fields&&fields.length">
        <div class="form-group flex" v-for="(field, index) in fields" :index="index">
          <div class="form-label-layout">
@@ -66,7 +69,17 @@
       },
       focusContent(item) {
         this.$emit('focusContent', { ...item} )
-      }
+      },
+      todoDelete(item) {
+        this.$alert({
+          title: `你确认要删除此内容`,
+        })
+          .then(async res => {
+            if(res) {
+              this.$emit('emitDeleteItem', { ...item} )
+            }
+          })
+      },
     }
   }
 </script>
@@ -132,5 +145,33 @@
   }
   .form-group:not(:first-child) {
     margin-top: 10px;
+  }
+  .operate-icon{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    right: 7px;
+    top: 7px;
+    position: absolute;
+    z-index: 1;
+    background: #5f5f5f;
+    opacity: 0;
+    transform: scale(0);
+    transition: .3s;
+    text-align: center;
+    line-height: 30px;
+    color: @article-brief-light-bg;
+    .iconfont{
+      font-size: 18px;
+      color: #fff;
+    }
+  }
+  .operate-icon:hover{
+    background: @warn-color;
+    color: #fff;
+  }
+  .content-list-item:hover .operate-icon{
+    opacity: 1;
+    transform: scale(1);
   }
 </style>

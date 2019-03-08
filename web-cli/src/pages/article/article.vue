@@ -87,6 +87,7 @@
             :fields=fields
             :contentList=contentList
             @focusContent=todoEditContent
+            @emitDeleteItem="doDeleteContent"
             :curContentId="contents._id"
           ></article-content-list>
         </div>
@@ -190,6 +191,9 @@
           content
         }
         this.setMeta(arg)
+      },
+      doDeleteContent() {
+        // TODO
       },
       getContentList() {
         if(this.editId === 'new') {
