@@ -443,7 +443,7 @@ class ArticleCtl extends BaseCtl {
         },
         {
           $pull: {
-            contents: { _id: contentId }
+            contents: { _id: hello.strToObjectId(contentId) }
           }
         })
       if (result && !result.ok) {
