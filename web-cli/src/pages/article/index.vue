@@ -67,6 +67,11 @@
         this[ACTIONS.BOOK_LIST_GET]()
         this[ACTIONS.SCHEMA_LIST_GET]()
         this[ACTIONS.ARTICLE_RECENTLY_LIST_GET]()
+          .then(res => {
+            this.doEditArticle({
+              catalogId: constKey.recentlyArticlesKey
+            })
+          })
       },
       /**
        *  获取文章详情 设置编辑内容 editId设为articleId

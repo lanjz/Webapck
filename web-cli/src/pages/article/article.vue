@@ -5,7 +5,7 @@
         <input class="full-input" v-model.trim="articleName" @blur="todoEdit" />
       </div>
       <div class="schema-operate">
-        <span class="btn"
+        <span class="schema-operate-btn"
               :class="{'disable-btn': !articleName}"
               @click="todoSave" v-if="editId === 'new'">保存</span>
         <div class="operate-list-operate" v-else>
@@ -477,5 +477,16 @@
     z-index: 1;
     box-shadow: 0 0 4px 1px  @warn-color inset;
 
+  }
+  .schema-operate-btn{
+    height: 30px;
+    line-height: 30px;
+    width: 80px;
+    text-align: center;
+    background: @bg-color;
+    color: #fff;
+    display: inline-block;
+    border-radius: 2px;
+    font-size: 14px;
   }
 </style>

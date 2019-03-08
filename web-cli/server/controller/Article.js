@@ -375,7 +375,6 @@ class ArticleCtl extends BaseCtl {
         ctx.send(2, '', '缺少_id(content)')
         return
       }
-      console.log('this.dbQuery(ctx)', this.dbQuery(ctx))
       const findContent = await this.Model.findOne(
         {
           _id: merge._id,
@@ -384,7 +383,6 @@ class ArticleCtl extends BaseCtl {
         },
         {"contents.$": 1}
       )
-      console.log('findContent', findContent)
       if (!findContent) {
         ctx.send(2, '', `${merge.content._id}不存在`)
         return
@@ -393,7 +391,6 @@ class ArticleCtl extends BaseCtl {
         ...findContent.contents[0],
         ...getParams
       }
-      console.log('mergeContent', mergeContent)
       mergeContent.updateTime = (new Date()).getTime()
 
       const projection = {}
@@ -459,17 +456,22 @@ class ArticleCtl extends BaseCtl {
     }
   }
   async find(ctx, next) {
-    const { start = 0, limit = 0, catalogId } = ctx.request.query
+    const { start = 0, limit = 0, catalogId, bookId } = ctx.request.query
     if(!catalogId) {
       ctx.send(2, '', '缺少catalogId')
       return
     }
+    if(!bookId) {
+      ctx.send(2, '', '缺少bookId')
+      return
+    }
     const dbQuery = {
       ...this.dbQuery(ctx),
-      catalogId
+      catalogId,
+      bookId
     }
     // 如果没有提供start和limit则查找全部
-    const findFn = this.Model.listWithPaging(start, limit, dbQuery)
+    const findFn = this.Model.listWithPaging({ start, limit, dbQuery })
     try{
       const result = await Promise.all([findFn, this.Model.listCount(dbQuery)])
       ctx.send(1, {
@@ -514,29 +516,23 @@ class ArticleCtl extends BaseCtl {
     }
   }
   async findRecentContent(ctx, next) {
-    try {
-      const { _id, start = 0, limit = 20 } = ctx.request.query
-      if (!_id) {
-        ctx.send(2, '', '缺少_id')
-        return
-      }
-      const result = await this.Model.list(
-        {
-          _id,
-          ...this.dbQuery(ctx)
-        },
-        {
-          contents: {
-            $slice: [parseInt(start), parseInt(limit)]
-          }
-        }
-      )
-      ctx.send(1, {
-        data: result,
-      }, '')
+    const { start = 0, limit = 20, bookId } = ctx.request.query
+    if (!bookId) {
+      ctx.send(2, '', '缺少bookId')
+      return
+    }
+    const dbQuery = {
+      ...this.dbQuery(ctx),
+      bookId
+    }
+    try{
+      // 如果没有提供start和limit则查找全部
+      const result = await this.Model.listWithPaging({ start, limit, dbQuery, sort: { updateTime: -1 } })
+      console.log('result', result)
+      ctx.send(1, result, '')
     } catch (e) {
-      ctx.send(2, '', hello.dealError(e, ctx.request.body.username))
-    } finally {
+      ctx.send(2, '', hello.dealError(e))
+    }finally {
       await next()
     }
   }

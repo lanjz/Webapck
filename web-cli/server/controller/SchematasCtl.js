@@ -462,7 +462,7 @@ class SchematasCtl extends BaseCtl {
     const { start = 0, limit = 0 } = ctx.request.query
     const dbQuery = this.dbQuery(ctx)
     // 如果没有提供start和limit则查找全部
-    const findFn = this.Model.listWithPaging(start, limit, dbQuery, true)
+    const findFn = this.Model.listWithPaging({ start, limit, dbQuery, addLean: true })
     try{
       const result = await Promise.all([findFn, this.Model.listCount(dbQuery)])
       let bookList = result[0] || []

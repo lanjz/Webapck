@@ -103,15 +103,16 @@ class baseModel {
   listLean(...args) {
     return this.Model.find(...args).lean().select(this.assectPath).exec()
   }
-  listWithPaging(start = 0, limit = 0, query = {}, addLean = false) {
+  listWithPaging({ start = 0, limit = 0, dbQuery = {}, addLean = false, sort }) {
     start = parseInt(start);
     limit = parseInt(limit);
-    let fn = this.Model.find(query)
+    sort = sort ? sort : { _id: -1 }
+    let fn = this.Model.find(dbQuery)
     if(addLean){
       fn = fn.lean()
     }
     return fn
-      .sort({ _id: -1 })
+      .sort(sort)
       .skip(start)
       .limit(limit)
       .select(this.assectPath)

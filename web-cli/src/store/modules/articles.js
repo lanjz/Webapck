@@ -43,14 +43,17 @@ const actions = {
     }
     return result
   },
-  async [ACTIONS.ARTICLE_RECENTLY_LIST_GET]({ state, commit }){
+  async [ACTIONS.ARTICLE_RECENTLY_LIST_GET]({ rootState, state, commit }){
     const result = await fetch({
       url: '/api/recently_articles',
+      data: {
+        bookId: rootState.books.curBook
+      }
     })
     const { err, data } = result
     if(!err) {
       commit(MUTATIONS.ARTICLE_LIST_SAVE, {
-        data: data.list, catalogId: constKey.recentlyArticlesKey
+        data, catalogId: constKey.recentlyArticlesKey
       })
     }
     return result
