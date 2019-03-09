@@ -47,6 +47,7 @@
 <script>
   import { mapState, mapGetters, mapMutations } from 'vuex'
   import * as MUTATIONS from '../../store/const/mutaions'
+  import bus from '../../global/eventBus'
   export default {
     computed: {
       ...mapState({
@@ -75,6 +76,7 @@
       },
       todoSetCurBook(item) {
         this[MUTATIONS.BOOK_CUR_UPDATE](item._id)
+        bus.$emit('updateCurBooks')
       },
     }
   }

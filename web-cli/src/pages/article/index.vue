@@ -67,16 +67,24 @@
        * 初始化的时候，获取book列表 字段 最近文章
        * 最近文章加载完后，显示预览列表和显示第一篇文章
        * */
-      getBookData() {
-        console.log('1')
-        this[ACTIONS.BOOK_LIST_GET]()
-        this[ACTIONS.SCHEMA_LIST_GET]()
-        this[ACTIONS.ARTICLE_RECENTLY_LIST_GET]()
-          .then(res => {
-            this.doShowArticleFromCatalog({
-              catalogId: constKey.recentlyArticlesKey
+      async getBookData() {
+        Promise.all([this[ACTIONS.BOOK_LIST_GET](), this[ACTIONS.SCHEMA_LIST_GET]()])
+          .then(() => {
+            this[ACTIONS.ARTICLE_RECENTLY_LIST_GET]()
+              .then(() => {
+                this.doShowArticleFromCatalog({
+                  catalogId: constKey.recentlyArticlesKey
+                })
+              })
+          })
+          .catch(err => {
+            this.$alert({
+              title: 'getBookData',
+              content: err.message()
             })
           })
+
+
       },
       /**
        *  获取文章详情 设置编辑内容 editId设为articleId
@@ -151,6 +159,12 @@
         }
         const { MOCK } = process.env
         const getSchema = (editId !== 'new' && MOCK) ? Object.values(this.schemaList)[0] : this.schemaList[schemaId]
+        if(!getSchema) {
+          this.$alert({
+            title: `schemaId:${schemaId}缺少fields`
+          })
+        }
+        console.info('setEditMeta', schemaId)
         const { fields } = getSchema
         const { tempObj, editTitle, list } = await this.initContent(editId, fields, contentId)
         const temEditMeta = {
@@ -313,7 +327,10 @@
           } else {
             this.doShowArticleFromCatalog(arg)
           }
-
+        })
+        bus.$on('updateCurBooks', () => {
+          this[MUTATIONS.CATALOGS_CUR_SAVE](constKey.recentlyArticlesKey)
+          this.getBookData()
         })
       },
     },
