@@ -7,7 +7,7 @@
       @emitToChooseCurArticle="chooseCurArticle"
       :list="curArticleList"
       :cusArticle="cusArticle"
-      @emitInitArticle="doEditArticle"
+      @emitInitArticle="doShowArticleFromCatalog"
     ></ArticleBrief>
     <div class="flex-1" v-show="!editMeta.editId"></div>
     <articles
@@ -63,13 +63,17 @@
         ACTIONS.ARTICLE_LIST_GET,
         ACTIONS.ARTICLE_DES_GET,
       ]),
+      /**
+       * 初始化的时候，获取book列表 字段 最近文章
+       * 最近文章加载完后，显示预览列表和显示第一篇文章
+       * */
       getBookData() {
         console.log('1')
         this[ACTIONS.BOOK_LIST_GET]()
         this[ACTIONS.SCHEMA_LIST_GET]()
         this[ACTIONS.ARTICLE_RECENTLY_LIST_GET]()
           .then(res => {
-            this.doEditArticle({
+            this.doShowArticleFromCatalog({
               catalogId: constKey.recentlyArticlesKey
             })
           })
@@ -112,7 +116,13 @@
           contentId
         })
       },
-      async doEditArticle(arg) {
+      /**
+       * 根据catalogs和articleId获取文章
+       * @param <String> catalogs
+       * @param <String> articleId
+       * @param <String> contentId 如果有，则用当前内容做为编辑对象
+       * */
+      async doShowArticleFromCatalog(arg) {
         const { catalogId, articleId, contentId = '' } = arg
         await this.getArticleByCatalogId(catalogId)
         if(this.curArticleList && this.curArticleList.length) {
@@ -240,7 +250,10 @@
         })
         this.$hideLoading()
       },
-      /* 根据catalogId获取文章列表 */
+      /* *
+       * 根据catalogId获取文章列表
+       * 如果Id是‘recently’ 则是获取最近编辑文章
+        * */
       async getArticleByCatalogId(catalogId) {
         if(catalogId === constKey.recentlyArticlesKey){
           this.setArticleBrief()
@@ -262,12 +275,16 @@
         this.$hideLoading()
         return result
       },
+      /**
+       * 根据当前catalog获取对应文章列表
+       * */
       setArticleBrief() {
         if (!Object.keys(this.articleList).length) {
           this.curArticleList = []
           this.editMeta.editId = ''
           return
         }
+        // 获取当前是在编辑哪个catalog
         const curCatalog = this.treeChainList[this.treeChainList.length - 1]
         const key = curCatalog === constKey.recentlyArticlesKey ?
           constKey.recentlyArticlesKey :
@@ -294,7 +311,7 @@
           if(isNew) {
             this.doCreateArticle(arg)
           } else {
-            this.doEditArticle(arg)
+            this.doShowArticleFromCatalog(arg)
           }
 
         })
