@@ -87,7 +87,7 @@
     "url-loader": "^1.1.2",
     "vue-style-loader": "^4.1.2",
     "vue-template-compiler": "^2.5.17",
-    "webpack-dev-server": "^3.1.10",
+    "webpack-dev-server": "^3.1.11",
     "xml-loader": "^1.2.1"
   },
   "peerDependencies": {

@@ -64,6 +64,7 @@
         ACTIONS.ARTICLE_DES_GET,
       ]),
       getBookData() {
+        console.log('1')
         this[ACTIONS.BOOK_LIST_GET]()
         this[ACTIONS.SCHEMA_LIST_GET]()
         this[ACTIONS.ARTICLE_RECENTLY_LIST_GET]()
@@ -241,8 +242,8 @@
       },
       /* 根据catalogId获取文章列表 */
       async getArticleByCatalogId(catalogId) {
-        if(this.catalogId === constKey.recentlyArticlesKey){
-          // this.getRecentlyArticles()
+        if(catalogId === constKey.recentlyArticlesKey){
+          this.setArticleBrief()
           return
         }
         if(!this.curBook){
@@ -280,6 +281,7 @@
         this.curArticleList = [ ...getList ]
       },
       async init() {
+        this[MUTATIONS.CATALOGS_CUR_SAVE](constKey.recentlyArticlesKey)
         this.getBookData()
         /**
          * @params <Object> arg 包含schemaId字段id和当前articleId(如果是添加则为'new')
