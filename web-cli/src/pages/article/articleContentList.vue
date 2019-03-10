@@ -10,7 +10,7 @@
        <i class="iconfont icon-shanchu1"></i>
      </div>
      <div class="form-layout theme-1" v-if="fields&&fields.length">
-       <div class="form-group flex" v-for="(field, index) in fields" :index="index">
+       <div class="form-group flex" v-for="(field, index) in fields" :index="index" :class="'content-list-'+index">
          <div class="form-label-layout">
            {{field.name}}：
          </div>
@@ -173,5 +173,8 @@
   .content-list-item:hover .operate-icon{
     opacity: 1;
     transform: scale(1);
+  }
+  .content-list-0{
+    font-size: 16px;
   }
 </style>

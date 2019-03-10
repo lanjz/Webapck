@@ -425,8 +425,11 @@
     background: @tree-bg-color;
     color: @tree-color;
     width: 210px;
+    max-width: 210px;
+    transition: .3s ;
   }
   .hidden-catalog{
-    display: none;
+    max-width: 0;
+    overflow: hidden;
   }
 </style>

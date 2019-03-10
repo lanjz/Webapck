@@ -7,11 +7,11 @@
         <div
           class="controller-layout-item"
           @click.stop="doSetConfig('showDir')"
-          :class="{'act' : showDir}">简介</div>
+          :class="{'act' : showDir}"><i class="iconfont icon-neirong"></i></div>
         <div
           class="controller-layout-item"
           @click.stop="doSetConfig('showBrief')"
-          :class="{'act' : showBrief}">文档</div>
+          :class="{'act' : showBrief}"><i class="iconfont icon-shujia1"></i></div>
       </div>
     </div>
 
@@ -66,15 +66,19 @@
     z-index: 10;
     .controller-layout-item{
       width: 30px;
-      height: 20px;
-      line-height: 20px;
+      height: 30px;
+      line-height: 30px;
       cursor: pointer;
       background: @tree-color;
       border-radius: 0 20px 20px 0;
       margin-bottom: 10px;
+      text-align: center;
+    }
+    .iconfont{
+      font-size: 18px;
     }
     .controller-layout-item.act{
-      background: @highlight-color;
+      background:#FFF;
     }
   }
 

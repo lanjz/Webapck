@@ -1,28 +1,29 @@
 <template>
   <div class="article-layout box-shadow flex direction-column" :class="{'hidden-article': !showBrief}">
-    <div class="article-layout-input-box align-items-center">
-      <input type="text" class="article-layout-input" v-model="filterKeys"/>
-      <i class="iconfont icon-sousuo"></i>
-    </div>
-    <div class="flex-1 article-item-box" >
-      <div
-        class="article-item"
-        v-for="(item, index) in filterList"
-        :key="index"
-        :class="{'act': item._id === cusArticle}"
-        @click="chooseArticles(item)">
-        <div class="article-item-title">{{item.title}}</div>
-        <div class="article-label">
-          <span class="article-label-item">{{item.bookId|getBookName(bookList)}}</span>
-          <span class="article-label-item">{{item.schemaId|getCatalogsName(schemaList)}}</span>
-        </div>
-        <div class="article-item-mark">{{item.createTime | timestampToBriefTime}}~{{item.updateTime | timestampToBriefTime}}</div>
-        <div class="operate-icon" @click.stop="todoDelete(item)">
-          <i class="iconfont icon-shanchu1"></i>
+    <div class="flex-1 flex direction-column article-min-width">
+      <div class="article-layout-input-box align-items-center">
+        <input type="text" class="article-layout-input" v-model="filterKeys"/>
+        <i class="iconfont icon-sousuo"></i>
+      </div>
+      <div class="flex-1 article-item-box" >
+        <div
+          class="article-item"
+          v-for="(item, index) in filterList"
+          :key="index"
+          :class="{'act': item._id === cusArticle}"
+          @click="chooseArticles(item)">
+          <div class="article-item-title">{{item.title}}</div>
+          <div class="article-label">
+            <span class="article-label-item">{{item.bookId|getBookName(bookList)}}</span>
+            <span class="article-label-item">{{item.schemaId|getCatalogsName(schemaList)}}</span>
+          </div>
+          <div class="article-item-mark">{{item.createTime | timestampToBriefTime}}~{{item.updateTime | timestampToBriefTime}}</div>
+          <div class="operate-icon" @click.stop="todoDelete(item)">
+            <i class="iconfont icon-shanchu1"></i>
+          </div>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 <script>
@@ -108,8 +109,9 @@
 <style lang="less" scoped="">
   .article-item {
     padding: 10px 20px;
-    max-width: 230px;
+    width: 230px;
     cursor: pointer;
+
     position: relative;
     border-bottom: solid 1px #000;
     .article-item-title {
@@ -165,10 +167,14 @@
     background: @bg-color;
     color: @tree-color;
     max-width: 500px;
-    transition: .5s;
+    transition: .3s ;
+    .article-min-width{
+      min-width: 230px;
+    }
   }
   .article-layout.hidden-article{
     max-width: 0;
+    overflow: hidden;
   }
 
   .article-layout-input-box{
