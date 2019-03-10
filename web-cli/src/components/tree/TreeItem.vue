@@ -47,7 +47,7 @@
         <div class="catalog-operate-item hadChild">
           新建文件
           <div class="operate-item-child">
-            <div class="catalog-operate-item" :class="{'builtIn': item.builtIn}" v-for="(item, index) in schemaList" @click.stop="todoCreateFile(item)">{{renameCatalog}}{{item.name}}</div>
+            <div class="catalog-operate-item" :class="{'builtIn': item.builtIn}" v-for="(item, index) in schemaList" @click.stop="todoCreateFile(item)">{{item.name}}</div>
           </div>
         </div>
         <div class="catalog-operate-item" @click.stop="doCreateTemDir">新建文件夹</div>

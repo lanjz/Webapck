@@ -30,7 +30,7 @@
             <div class="form-layout theme-1" v-if="fields&&fields.length">
               <div class="form-group flex direction-column" v-for="(field, index) in fields" :index="index">
                 <div class="form-label-layout">
-                  {{field.name}}-{{field.type}}：
+                  {{field.name}}：
                 </div>
                 <div class="flex flex-1 align-items-center form-content-layout markdown-layout" v-if="field.type==='markdown'">
                   <markdown-edit v-model="contents[field._id]"></markdown-edit>
