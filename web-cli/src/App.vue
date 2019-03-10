@@ -58,7 +58,7 @@
   }
 </script>
 <style lang="less">
-  @import '//at.alicdn.com/t/font_992689_basv9zzmjn.css';
+  @import '//at.alicdn.com/t/font_992689_gyvzflq1sbv.css';
   .controller-layout-fixed{
     position: fixed;
     bottom: 50px;

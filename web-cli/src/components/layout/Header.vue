@@ -1,7 +1,8 @@
 <template>
   <div class="head flex">
     <div class="logo">
-      <img src="../../assets/imgs/small-LOGO.png">
+      <i class="iconfont icon-biji"></i>
+      <!--<img src="../../assets/imgs/small-LOGO.png">-->
     </div>
     <div class="flex flex-1 align-items-center justify-content-end">
       <div class="head-nav flex">
@@ -61,5 +62,9 @@
       width: 100%;
       height: 100%;
     }
+  }
+  .icon-biji{
+    font-size: 35px;
+    color: #fff;
   }
 </style>
