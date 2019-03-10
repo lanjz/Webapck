@@ -7,10 +7,15 @@
     <div
       class="article-item"
       v-for="(item, index) in list"
+      :key="index"
       :class="{'act': item._id === cusArticle}"
       @click="chooseArticles(item)">
       <div class="article-item-title">{{item.title}}</div>
-      <div class="article-item-mark">{{item.createTime | timestampToTime}}~{{item.updateTime | timestampToTime}}</div>
+      <div class="article-label">
+        <span class="article-label-item">{{item.bookId|getBookName(bookList)}}</span>
+        <span class="article-label-item">{{item.schemaId|getCatalogsName(schemaList)}}</span>
+      </div>
+      <div class="article-item-mark">{{item.createTime | timestampToBriefTime}}~{{item.updateTime | timestampToBriefTime}}</div>
       <div class="operate-icon" @click.stop="todoDelete(item)">
         <i class="iconfont icon-shanchu1"></i>
       </div>
@@ -43,7 +48,19 @@
     computed: {
       ...mapState({
         showBrief: state => state.config.showBrief,
+        bookList: state => state.books.list,
+        schemaList: state => state.schema.list,
+
       }),
+    },
+    filters: {
+      getBookName: function (id, bookList) {
+        return bookList[id] ? bookList[id].name : ''
+      },
+      getCatalogsName: function(id, schemaList) {
+        console.log('this', schemaList)
+        return schemaList[id] ? schemaList[id].name : ''
+      }
     },
     methods: {
       ...mapActions([
@@ -171,5 +188,17 @@
     color: @tree-light-color;
     outline: #fff;
     padding-right: 46px;
+  }
+  .article-label{
+    margin: 7px 0;
+  }
+  .article-label-item{
+    display: inline-block;
+    padding: 2px 5px;
+    background: #5f5f5f;
+    color: @bg-color;
+    border-radius: 2px;
+    margin-bottom: 3px;
+    font-size: 13px;
   }
 </style>
