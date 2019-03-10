@@ -1,25 +1,28 @@
 <template>
-  <div class="article-layout box-shadow" :class="{'hidden-article': !showBrief}">
+  <div class="article-layout box-shadow flex direction-column" :class="{'hidden-article': !showBrief}">
     <div class="article-layout-input-box align-items-center">
       <input type="text" class="article-layout-input" v-model="filterKeys"/>
       <i class="iconfont icon-sousuo"></i>
     </div>
-    <div
-      class="article-item"
-      v-for="(item, index) in list"
-      :key="index"
-      :class="{'act': item._id === cusArticle}"
-      @click="chooseArticles(item)">
-      <div class="article-item-title">{{item.title}}</div>
-      <div class="article-label">
-        <span class="article-label-item">{{item.bookId|getBookName(bookList)}}</span>
-        <span class="article-label-item">{{item.schemaId|getCatalogsName(schemaList)}}</span>
-      </div>
-      <div class="article-item-mark">{{item.createTime | timestampToBriefTime}}~{{item.updateTime | timestampToBriefTime}}</div>
-      <div class="operate-icon" @click.stop="todoDelete(item)">
-        <i class="iconfont icon-shanchu1"></i>
+    <div class="flex-1 article-item-box" >
+      <div
+        class="article-item"
+        v-for="(item, index) in filterList"
+        :key="index"
+        :class="{'act': item._id === cusArticle}"
+        @click="chooseArticles(item)">
+        <div class="article-item-title">{{item.title}}</div>
+        <div class="article-label">
+          <span class="article-label-item">{{item.bookId|getBookName(bookList)}}</span>
+          <span class="article-label-item">{{item.schemaId|getCatalogsName(schemaList)}}</span>
+        </div>
+        <div class="article-item-mark">{{item.createTime | timestampToBriefTime}}~{{item.updateTime | timestampToBriefTime}}</div>
+        <div class="operate-icon" @click.stop="todoDelete(item)">
+          <i class="iconfont icon-shanchu1"></i>
+        </div>
       </div>
     </div>
+
   </div>
 </template>
 <script>
@@ -50,6 +53,12 @@
         showBrief: state => state.config.showBrief,
         bookList: state => state.books.list,
         schemaList: state => state.schema.list,
+        filterList: function () {
+          if(!this.filterKeys) {
+            return this.list
+          }
+          return this.list.filter((item) => item.title.indexOf(this.filterKeys) > -1)
+        }
 
       }),
     },
@@ -153,7 +162,6 @@
   }
   .article-layout {
     padding: 15px 0;
-    overflow: auto;
     background: @bg-color;
     color: @tree-color;
     max-width: 500px;
@@ -200,5 +208,9 @@
     border-radius: 2px;
     margin-bottom: 3px;
     font-size: 13px;
+  }
+  .article-item-box{
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 </style>
